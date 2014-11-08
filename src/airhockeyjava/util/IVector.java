@@ -19,14 +19,14 @@ package airhockeyjava.util;
 /** Encapsulates a general vector. Allows chaining operations by returning a reference to itself in all modification methods. See
  * {@link Vector2} and {@link Vector3} for specific implementations.
  * @author Xoppa */
-public interface Vector<T extends Vector<T>> {
+public interface IVector<T extends IVector<T>> {
 	/** @return a copy of this vector */
 	T cpy ();
 
 	/** @return The euclidean length */
 	float len ();
 
-	/** This method is faster than {@link Vector#len()} because it avoids calculating a square root. It is useful for comparisons,
+	/** This method is faster than {@link IVector#len()} because it avoids calculating a square root. It is useful for comparisons,
 	 * but not for getting accurate lengths, as the return value is the square of the actual length.
 	 * @return The squared euclidean length */
 	float len2 ();
@@ -77,7 +77,7 @@ public interface Vector<T extends Vector<T>> {
 	 * @return the distance between this and the other vector */
 	float dst (T v);
 
-	/** This method is faster than {@link Vector#dst(Vector)} because it avoids calculating a square root. It is useful for
+	/** This method is faster than {@link IVector#dst(IVector)} because it avoids calculating a square root. It is useful for
 	 * comparisons, but not for getting accurate distances, as the return value is the square of the actual distance.
 	 * @param v The other vector
 	 * @return the squared distance between this and the other vector */
@@ -116,20 +116,20 @@ public interface Vector<T extends Vector<T>> {
 	/** @return true if this vector is in line with the other vector (either in the same or the opposite direction) */
 	boolean isOnLine (T other);
 
-	/** @return true if this vector is collinear with the other vector ({@link #isOnLine(Vector, float)} &&
-	 *         {@link #hasSameDirection(Vector)}). */
+	/** @return true if this vector is collinear with the other vector ({@link #isOnLine(IVector, float)} &&
+	 *         {@link #hasSameDirection(IVector)}). */
 	boolean isCollinear (T other, float epsilon);
 
-	/** @return true if this vector is collinear with the other vector ({@link #isOnLine(Vector)} &&
-	 *         {@link #hasSameDirection(Vector)}). */
+	/** @return true if this vector is collinear with the other vector ({@link #isOnLine(IVector)} &&
+	 *         {@link #hasSameDirection(IVector)}). */
 	boolean isCollinear (T other);
 
-	/** @return true if this vector is opposite collinear with the other vector ({@link #isOnLine(Vector, float)} &&
-	 *         {@link #hasOppositeDirection(Vector)}). */
+	/** @return true if this vector is opposite collinear with the other vector ({@link #isOnLine(IVector, float)} &&
+	 *         {@link #hasOppositeDirection(IVector)}). */
 	boolean isCollinearOpposite (T other, float epsilon);
 
-	/** @return true if this vector is opposite collinear with the other vector ({@link #isOnLine(Vector)} &&
-	 *         {@link #hasOppositeDirection(Vector)}). */
+	/** @return true if this vector is opposite collinear with the other vector ({@link #isOnLine(IVector)} &&
+	 *         {@link #hasOppositeDirection(IVector)}). */
 	boolean isCollinearOpposite (T other);
 
 	/** @return Whether this vector is perpendicular with the other vector. True if the dot product is 0. */

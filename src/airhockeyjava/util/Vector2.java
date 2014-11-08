@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /** Encapsulates a 2D vector. Allows chaining methods by returning a reference to itself
  * @author badlogicgames@gmail.com */
-public class Vector2 implements Serializable, Vector<Vector2> {
+public class Vector2 implements Serializable, IVector<Vector2> {
 	private static final long serialVersionUID = 913902788239530931L;
 
 	public final static Vector2 X = new Vector2(1, 0);
