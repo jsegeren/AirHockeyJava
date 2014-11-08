@@ -1,6 +1,5 @@
 package airhockeyjava.physical;
 
-import airhockeyjava.util.Position;
 import airhockeyjava.util.Vector2;
 
 /**
@@ -32,7 +31,7 @@ public interface IMovingItem {
 	 * Method to retrieve position of the item for the current state.
 	 * @return Position the position
 	 */
-	public abstract Position getPosition();
+	public abstract Vector2 getPosition();
 	
 	/**
 	 * Method to retrieve the velocity of the item (if available) for the current state.

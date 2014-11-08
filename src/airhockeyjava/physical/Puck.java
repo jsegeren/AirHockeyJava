@@ -4,11 +4,11 @@ import airhockeyjava.util.Vector2;
 import airhockeyjava.util.Color;
 
 /** 
- * Class to represent the mallet.
+ * Class to represent the puck.
  * @author Joshua Segeren
  *
  */
-public class Mallet extends MovingItem {
+public class Puck extends MovingItem {
 	
 	/**
 	 * Expected constructor.
@@ -16,7 +16,7 @@ public class Mallet extends MovingItem {
 	 * @param velocity
 	 * @param color
 	 */
-	public Mallet(Vector2 position, Vector2 velocity, Color color) {
+	public Puck(Vector2 position, Vector2 velocity, Color color) {
 		super(position, velocity, color);
 	}
 }
