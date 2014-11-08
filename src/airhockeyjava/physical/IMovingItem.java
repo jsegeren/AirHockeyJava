@@ -39,4 +39,10 @@ public interface IMovingItem {
 	 */
 	public abstract Vector2 getVelocity();
 	
+	/**
+	 * Method to retrieve the radius of the item.
+	 * @return float the radius
+	 */
+	public abstract float getRadius();
+	
 }

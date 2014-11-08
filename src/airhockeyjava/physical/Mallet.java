@@ -1,7 +1,6 @@
 package airhockeyjava.physical;
 
 import airhockeyjava.util.Vector2;
-import airhockeyjava.util.Color;
 
 /** 
  * Class to represent the mallet.
@@ -16,7 +15,7 @@ public class Mallet extends MovingItem {
 	 * @param velocity
 	 * @param color
 	 */
-	public Mallet(Vector2 position, Vector2 velocity, Color color) {
-		super(position, velocity, color);
+	public Mallet(Vector2 position, Vector2 velocity, float radius) {
+		super(position, velocity, radius);
 	}
 }

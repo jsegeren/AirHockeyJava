@@ -1,11 +1,12 @@
 package airhockeyjava.graphics;
 
 /**
- * Interface for the GUI layer. Intended to provide its own internal loop for rendering the visual output.
+ * Interface for the GUI layer. Extends Runnable to enforce ability to run in separate thread.
+ * Intended to provide its own internal loop for rendering the visual output.
  * @author Joshua Segeren
  *
  */
-public interface IGuiLayer {
+public interface IGuiLayer extends Runnable {
 	
 	/**
 	 * Method to start rendering.

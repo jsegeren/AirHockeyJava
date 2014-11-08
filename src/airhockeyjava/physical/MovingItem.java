@@ -1,7 +1,6 @@
 package airhockeyjava.physical;
 
 import airhockeyjava.util.Vector2;
-import airhockeyjava.util.Color;
 
 /** 
  * Superclass to represent moving items.
@@ -12,18 +11,18 @@ public class MovingItem implements IMovingItem {
 	
 	private Vector2 position;
 	private Vector2 velocity;
-	private Color color;
 	private float weight; // Used in simulated friction calculation
+	private final float radius;
 	
 	/**
 	 * Constructor which sets the starting state of the item.
 	 * @param position
 	 * @param velocity
 	 */
-	public MovingItem(Vector2 position, Vector2 velocity, Color color) {
+	public MovingItem(Vector2 position, Vector2 velocity, float radius) {
 		this.position = position;
 		this.velocity = velocity;
-		this.color = color;
+		this.radius = radius;
 	}
 	
 	@Override
@@ -50,5 +49,10 @@ public class MovingItem implements IMovingItem {
 	@Override
 	public Vector2 getVelocity() {
 		return this.velocity;
+	}
+	
+	@Override
+	public float getRadius() {
+		return this.radius;
 	}
 }
