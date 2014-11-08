@@ -1,9 +1,7 @@
-/**
- * 
- */
 package airhockeyjava.physical;
 
 /**
+ * Interface for all moving pieces on table
  * @author Joshua Segeren
  *
  */
@@ -17,6 +15,6 @@ public interface MovingPiece {
 	 */
 	public boolean willCollide(MovingPiece otherPiece, float dt);
 	
-	public void updatePosition
+	public void updatePosition(float dt);
 	
 }
