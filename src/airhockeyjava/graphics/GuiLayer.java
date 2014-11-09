@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
-import java.util.Set;
 
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Table;
@@ -47,6 +46,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private long fps = 0;
 
 	private boolean isRunning = true;
+
 
 	public static void main(String[] args) {
 		GuiLayer game = new GuiLayer(new Game(Game.GameTypeEnum.SIMULATED_GAME_TYPE));
@@ -105,6 +105,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		}
 
 		setVisible(false);
+
 	}
 
 	/**
@@ -166,14 +167,15 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * Draw a MovingItem to the table
 	 * 
 	 * @param item
-	 * @param buffer
+	 * @param context
+	 * @param color
 	 */
 	private void drawMovingItem(IMovingItem item, Graphics context, Color color) {
 		context.setColor(color);
 		Vector2 position = item.getPosition();
-		float radius = scale(item.getRadius());
+		float radius = item.getRadius();
 		context.drawOval((int) scale(position.x) + TABLE_OFFSET_X, (int) scale(position.y)
-				+ TABLE_OFFSET_Y, (int) scale(radius), (int) scale(radius));
+				+ TABLE_OFFSET_Y, (int) scale(radius*2), (int) scale(radius*2));
 	}
 
 	/**
