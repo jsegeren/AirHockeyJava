@@ -1,15 +1,13 @@
 package airhockeyjava.input;
 
+import java.awt.event.MouseMotionListener; 
+
 /**
  * Interface for the input layer. Extends runnable to enforce ability to run in separate thread.
  * 
  * @author Joshua Segeren
  *
  */
-public interface IInputLayer extends Runnable {
-
-	/**
-	 * Method to start accepting input.
-	 */
-	public abstract void start();
+public interface IInputLayer extends Runnable, MouseMotionListener {
+	
 }
