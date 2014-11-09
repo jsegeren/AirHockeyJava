@@ -7,18 +7,18 @@ package airhockeyjava.physical;
  */
 public class Table {
 	// Constants
-	private static final float DEFAULT_LENGTH = 5;
-	private static final float DEFAULT_WIDTH = 2;
+	private static final float DEFAULT_HEIGHT_METERS = 1.8f;
+	private static final float DEFAULT_WIDTH_METERS = 3f;
 	
-	private float width; // Defined to be the shorter dimension
-	private float length; // Defined to be the longer dimension
+	private float width; // Defined to be the longer dimension
+	private float height; // Defined to be the shorter dimension
 	
 	/**
 	 * Default constructor.
 	 */
 	public Table() {
-		this.length = DEFAULT_LENGTH;
-		this.width = DEFAULT_WIDTH;
+		this.height = DEFAULT_HEIGHT_METERS;
+		this.width = DEFAULT_WIDTH_METERS;
 	}
 	
 	/**
@@ -26,13 +26,13 @@ public class Table {
 	 * @param length Longer dimension of the table.
 	 * @param width Shorter dimension of the table.
 	 */
-	public Table(float length, float width) {
-		this.length = length;
+	public Table(float height, float width) {
+		this.height = height;
 		this.width = width;
 	}
 	
-	public float getLength() {
-		return this.length;
+	public float getHeight() {
+		return this.height;
 	}
 	
 	public float getWidth() {
