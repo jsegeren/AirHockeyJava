@@ -5,14 +5,15 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
+import airhockeyjava.game.Constants;
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Table;
 
 import javax.swing.JPanel;
 
 import airhockeyjava.game.Game;
-import airhockeyjava.game.Constants;
 import airhockeyjava.util.*;
+import airhockeyjava.util.Conversion;
 
 /**
  * Class for simulation UI layer.
@@ -27,38 +28,29 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	private Game game; // Reference to the top-level game object itself to have access to global variables
 
-	private final static int FPS = 60;
-
-	private final static int TABLE_OFFSET_X = 80;
-	private final static int TABLE_OFFSET_Y = 60;
-
-	private final static int INFO_BAR_WIDTH = 200;
-
-	private float scale = 100;
-
 	private InfoBar infoBar;
 
 	private BufferedImage backBuffer;
 
-	private long frameTime = 1000000000 / FPS;
+	private long frameTime = 1000000000 / Constants.FPS;
 	private long fps = 0;
 
 	private boolean isRunning = true;
 
-//	public static void main(String[] args) {
-//		GuiLayer guiLayer = new GuiLayer(new Game(Game.GameTypeEnum.SIMULATED_GAME_TYPE));
-//
-//		JFrame frame = new JFrame("AirHockey");
-//		frame.setTitle("AirHockey");
-//		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-//		frame.setResizable(false);
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.add(guiLayer);
-//		frame.setVisible(true);
-//
-//		guiLayer.run();
-//		System.exit(0);
-//	}
+	//	public static void main(String[] args) {
+	//		GuiLayer guiLayer = new GuiLayer(new Game(Game.GameTypeEnum.SIMULATED_GAME_TYPE));
+	//
+	//		JFrame frame = new JFrame("AirHockey");
+	//		frame.setTitle("AirHockey");
+	//		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+	//		frame.setResizable(false);
+	//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	//		frame.add(guiLayer);
+	//		frame.setVisible(true);
+	//
+	//		guiLayer.run();
+	//		System.exit(0);
+	//	}
 
 	public GuiLayer(Game currentGame) {
 		this.game = currentGame;
@@ -93,10 +85,13 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 			}
 
 			// Sleep until next frame
-			try {
-				Thread.sleep((lastLoopTime - System.nanoTime() + frameTime) / 1000000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			long sleepTime = (lastLoopTime - System.nanoTime() + frameTime) / 1000000;
+			if (sleepTime > 0) {
+				try {
+					Thread.sleep(sleepTime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 
 		}
@@ -111,14 +106,13 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	void initialize() {
 
 		// Create a buffered image
-		this.backBuffer = new BufferedImage(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, BufferedImage.TYPE_INT_RGB);
-
-		// Set the scale of the UI, based on the table width;
-		setScale();
+		this.backBuffer = new BufferedImage(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT,
+				BufferedImage.TYPE_INT_RGB);
 
 		//Init an info bar
-		this.infoBar = new InfoBar(Constants.WINDOW_WIDTH - INFO_BAR_WIDTH, TABLE_OFFSET_Y, INFO_BAR_WIDTH,
-				(int) scale(this.game.gameTable.getHeight()));
+		this.infoBar = new InfoBar(Constants.WINDOW_WIDTH - Constants.INFO_BAR_WIDTH,
+				Constants.TABLE_OFFSET_Y, Constants.INFO_BAR_WIDTH,
+				scale(this.game.gameTable.getHeight()));
 	}
 
 	/**
@@ -155,8 +149,8 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 */
 	private void drawTable(Table table, Graphics context, Color color) {
 		context.setColor(Color.WHITE);
-		context.drawRect(TABLE_OFFSET_X, TABLE_OFFSET_Y, (int) scale(table.getWidth()),
-				(int) scale(table.getHeight()));
+		context.drawRect(Constants.TABLE_OFFSET_X, Constants.TABLE_OFFSET_Y,
+				scale(table.getWidth()), scale(table.getHeight()));
 
 	}
 
@@ -171,8 +165,8 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		context.setColor(color);
 		Vector2 position = item.getPosition();
 		float radius = item.getRadius();
-		context.drawOval((int) scale(position.x) + TABLE_OFFSET_X, (int) scale(position.y)
-				+ TABLE_OFFSET_Y, (int) scale(radius*2), (int) scale(radius*2));
+		context.drawOval(scale(position.x - radius) + Constants.TABLE_OFFSET_X, scale(position.y - radius)
+				+ Constants.TABLE_OFFSET_Y, scale(radius * 2), scale(radius * 2));
 	}
 
 	/**
@@ -180,17 +174,8 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * 
 	 * @param value
 	 */
-	private float scale(float value) {
-		return value * this.scale;
-	}
-
-	/*
-	 * Set the scaling factor of the display based on the table length
-	 */
-	private void setScale() {
-		this.scale = (Constants.WINDOW_WIDTH - INFO_BAR_WIDTH - (TABLE_OFFSET_X * 2))
-				/ game.gameTable.getWidth();
-		System.out.println(this.scale);
+	private int scale(float value) {
+		return Conversion.meterToPixel(value);
 	}
 
 	private class InfoBar {

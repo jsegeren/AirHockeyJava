@@ -9,6 +9,7 @@ import airhockeyjava.physical.Table;
 import airhockeyjava.graphics.GuiLayer;
 import airhockeyjava.input.IInputLayer;
 import airhockeyjava.input.InputLayer;
+import airhockeyjava.util.Conversion;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -41,7 +42,7 @@ public class Game {
 
 	public Set<IMovingItem> movingItems;
 	public Table gameTable;
-	
+
 	public Puck gamePuck;
 	public Mallet userMallet;
 	public Mallet robotMallet;
@@ -69,7 +70,7 @@ public class Game {
 
 		// Initialize the game object and game layers
 		game = new Game(gameType);
-		
+
 		JFrame frame = new JFrame("AirHockey");
 		frame.setTitle("AirHockey");
 		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
@@ -90,11 +91,11 @@ public class Game {
 			long updateLengthTime = currentTime - lastLoopTime;
 			lastLoopTime = currentTime;
 			double deltaTime = updateLengthTime / ((double) OPTIMAL_TIME); // nanoseconds
-			
+
 			// Update frame counter
 			lastFpsTime += updateLengthTime;
 			fps++;
-			
+
 			// Update FPS counter and remaining game time if a second has passed since last recorded
 			if (lastFpsTime >= 1000000000) {
 				System.out.println(String.format("FPS: %d", fps));
@@ -102,33 +103,36 @@ public class Game {
 				fps = 0;
 				game.gameTimeRemainingSeconds -= 1; // Decrement the game time by 1 second
 			}
-			
-			game.updateStates((float)deltaTime);
-			
+
+			game.updateStates((float) deltaTime);
+
 			// If target FPS = 60 (for example), want each frame to take 10 ms, 
 			// we sleep until the next target frame, taking into account the time
 			// taken to run the loop. Note this is given in ms, but other variables are in
 			// nanoseconds.
-			try { 
-				Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
+			long sleepTime = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
+			if (sleepTime > 0) {
+				try {
+					Thread.sleep(sleepTime);
+				} catch (InterruptedException e) {
+					// TODO figure out what to do with this exception, e.g. rethrow as RuntimeException?
+					e.printStackTrace();
+				}
 			}
-			catch (InterruptedException e) {
-				// TODO figure out what to do with this exception, e.g. rethrow as RuntimeException?
-				e.printStackTrace();
-			}
-
 		}
 	}
-	
+
 	private void updateStates(float deltaTime) {
 		// If simulated, we need to use input data to update user mallet state
 		// Also need to use mocked detection layer to update puck position via physics
 		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
 			// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
-			game.userMallet.getPosition().x = game.inputLayer.getMouseX();
-			System.out.println(String.format("mouseX: %d", game.userMallet.getPosition().x));
-			game.userMallet.getPosition().y = game.inputLayer.getMouseY();
-			System.out.println(String.format("mouseY: %d", game.userMallet.getPosition().y));
+			game.userMallet.getPosition().x = Conversion.pixelToMeter(game.inputLayer.getMouseX()
+					- Constants.TABLE_OFFSET_X);
+			System.out.println(String.format("mouseX: %f", game.userMallet.getPosition().x));
+			game.userMallet.getPosition().y = Conversion.pixelToMeter(game.inputLayer.getMouseY()
+					- Constants.TABLE_OFFSET_Y);
+			System.out.println(String.format("mouseY: %f", game.userMallet.getPosition().y));
 
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
 		}

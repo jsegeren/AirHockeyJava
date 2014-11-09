@@ -9,14 +9,15 @@ package airhockeyjava.game;
  *
  */
 public class Constants {
-	public static final double INTERSECTION_EPSILON_METERS = 0.0025; // 2.5 millimetres
+	public static final float FAKE_VELOCITY_BURST = 0.01f; // TODO Replace. Just using burst of energy upon collisions
+	public static final double INTERSECTION_EPSILON_METERS = 0.025; // 2.5 millimetres
 	public static final int GAME_SIMULATION_TARGET_FPS = 60;
 	public static final float GAME_TIME_SECONDS = 5f;
 	public static final float GAME_TABLE_HEIGHT_METERS = 1.3f;
 	public static final float GAME_TABLE_WIDTH_METERS = 2.5f;
-	public static final float GAME_PUCK_RADIUS_METERS = 0.025f; // 2.5 centimetres
+	public static final float GAME_PUCK_RADIUS_METERS = 0.05f; // 2.5 centimetres
 	public static final float GAME_PUCK_MASS_GRAMS = 50f;
-	public static final float GAME_MALLET_RADIUS_METERS = 0.035f; // 3.5 centimetres
+	public static final float GAME_MALLET_RADIUS_METERS = 0.07f; // 3.5 centimetres
 	public static final float GAME_MALLET_MASS_GRAMS = 0f; // Doesn't matter
 
 	// Quick visual of coordinate convention being used here, where tuples are in (x,y) form:
@@ -40,6 +41,17 @@ public class Constants {
 	public static final float ROBOT_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_Y = 0f;
-	public static final int WINDOW_WIDTH = 1024;
-	public static final int WINDOW_HEIGHT = 768;
+
+	//GUI CONSTANTS
+	public final static int FPS = 60;
+	public final static int WINDOW_WIDTH = 1024;
+	public final static int WINDOW_HEIGHT = 768;
+
+	public final static int TABLE_OFFSET_X = 80;
+	public final static int TABLE_OFFSET_Y = 60;
+
+	public final static int INFO_BAR_WIDTH = 200;
+
+	public final static float SCALE = (Constants.WINDOW_WIDTH - Constants.INFO_BAR_WIDTH - (Constants.TABLE_OFFSET_X * 2))
+			/ Constants.GAME_TABLE_WIDTH_METERS;
 }
