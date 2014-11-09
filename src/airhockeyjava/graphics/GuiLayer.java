@@ -32,25 +32,11 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	private BufferedImage backBuffer;
 
-	private long frameTime = 1000000000 / Constants.FPS;
+	private long frameTime = 1000000000 / Constants.GUI_FPS;
 	private long fps = 0;
 
 	private boolean isRunning = true;
 
-	//	public static void main(String[] args) {
-	//		GuiLayer guiLayer = new GuiLayer(new Game(Game.GameTypeEnum.SIMULATED_GAME_TYPE));
-	//
-	//		JFrame frame = new JFrame("AirHockey");
-	//		frame.setTitle("AirHockey");
-	//		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-	//		frame.setResizable(false);
-	//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	//		frame.add(guiLayer);
-	//		frame.setVisible(true);
-	//
-	//		guiLayer.run();
-	//		System.exit(0);
-	//	}
 
 	public GuiLayer(Game currentGame) {
 		this.game = currentGame;

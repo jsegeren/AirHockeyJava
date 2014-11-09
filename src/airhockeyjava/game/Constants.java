@@ -43,14 +43,12 @@ public class Constants {
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_Y = 0f;
 
 	//GUI CONSTANTS
-	public final static int FPS = 60;
+	public final static int GUI_FPS = 60;
 	public final static int WINDOW_WIDTH = 1024;
-	public final static int WINDOW_HEIGHT = 768;
-
-	public final static int TABLE_OFFSET_X = 80;
-	public final static int TABLE_OFFSET_Y = 60;
-
-	public final static int INFO_BAR_WIDTH = 200;
+	public final static int WINDOW_HEIGHT = 512;
+	public final static int TABLE_OFFSET_X = 16;
+	public final static int TABLE_OFFSET_Y = 16;
+	public final static int INFO_BAR_WIDTH = 140;
 
 	public final static float SCALE = (Constants.WINDOW_WIDTH - Constants.INFO_BAR_WIDTH - (Constants.TABLE_OFFSET_X * 2))
 			/ Constants.GAME_TABLE_WIDTH_METERS;
