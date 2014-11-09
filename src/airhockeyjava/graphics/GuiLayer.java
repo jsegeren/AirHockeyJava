@@ -1,7 +1,6 @@
 package airhockeyjava.graphics;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
@@ -41,7 +40,6 @@ public class GuiLayer extends JPanel {
 	
     private BufferedImage backBuffer;
     
-    private long timer = System.currentTimeMillis();
     private long frameTime = 1000000000 / FPS;
     private long fps = 0; 
    
@@ -103,7 +101,6 @@ public class GuiLayer extends JPanel {
                 fpsCounter++;
                 lastFpsTime += (System.nanoTime() - lastLoopTime);
                 if (lastFpsTime >= 10000000){
-                   System.out.println(fpsCounter);
                    this.fps = fpsCounter;
                    lastFpsTime = 0;
                    fpsCounter = 0;
@@ -189,8 +186,8 @@ public class GuiLayer extends JPanel {
     	Vector2 position = item.getPosition();
     	float radius = scale(item.getRadius());
     	context.drawOval(
-    			(int)scale(position.x) + this.TABLE_OFFSET_X, 
-    			(int)scale(position.y) + this.TABLE_OFFSET_Y, 
+    			(int)scale(position.x) + TABLE_OFFSET_X, 
+    			(int)scale(position.y) + TABLE_OFFSET_Y, 
     			(int)scale(radius), 
     			(int)scale(radius));
     }
@@ -221,7 +218,6 @@ public class GuiLayer extends JPanel {
     	
     	private static final int LINE_HEIGHT = 20;
     	private static final int INDENT = 0;
-    	private static final int FONT_SIZE = 10;
     	
     	InfoBar(int x, int y, int width, int height){
     		this.x = x;
