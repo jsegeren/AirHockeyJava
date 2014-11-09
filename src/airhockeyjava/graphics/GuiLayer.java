@@ -4,15 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
-import java.util.Set;
 
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Table;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import airhockeyjava.game.Game;
+import airhockeyjava.game.Constants;
 import airhockeyjava.util.*;
 
 /**
@@ -29,8 +28,6 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private Game game; // Reference to the top-level game object itself to have access to global variables
 
 	private final static int FPS = 60;
-	private final static int WINDOW_WIDTH = 1024;
-	private final static int WINDOW_HEIGHT = 768;
 
 	private final static int TABLE_OFFSET_X = 80;
 	private final static int TABLE_OFFSET_Y = 60;
@@ -48,20 +45,20 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	private boolean isRunning = true;
 
-	public static void main(String[] args) {
-		GuiLayer game = new GuiLayer(new Game(Game.GameTypeEnum.SIMULATED_GAME_TYPE));
-
-		JFrame frame = new JFrame("AirHockey");
-		frame.setTitle("AirHockey");
-		frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(game);
-		frame.setVisible(true);
-
-		game.run();
-		System.exit(0);
-	}
+//	public static void main(String[] args) {
+//		GuiLayer guiLayer = new GuiLayer(new Game(Game.GameTypeEnum.SIMULATED_GAME_TYPE));
+//
+//		JFrame frame = new JFrame("AirHockey");
+//		frame.setTitle("AirHockey");
+//		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+//		frame.setResizable(false);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.add(guiLayer);
+//		frame.setVisible(true);
+//
+//		guiLayer.run();
+//		System.exit(0);
+//	}
 
 	public GuiLayer(Game currentGame) {
 		this.game = currentGame;
@@ -113,13 +110,13 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	void initialize() {
 
 		// Create a buffered image
-		this.backBuffer = new BufferedImage(WINDOW_WIDTH, WINDOW_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		this.backBuffer = new BufferedImage(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, BufferedImage.TYPE_INT_RGB);
 
 		// Set the scale of the UI, based on the table width;
 		setScale();
 
 		//Init an info bar
-		this.infoBar = new InfoBar(WINDOW_WIDTH - INFO_BAR_WIDTH, TABLE_OFFSET_Y, INFO_BAR_WIDTH,
+		this.infoBar = new InfoBar(Constants.WINDOW_WIDTH - INFO_BAR_WIDTH, TABLE_OFFSET_Y, INFO_BAR_WIDTH,
 				(int) scale(this.game.gameTable.getHeight()));
 	}
 
@@ -131,7 +128,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		Graphics bufferContext = backBuffer.getGraphics();
 
 		bufferContext.setColor(Color.BLACK);
-		bufferContext.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		bufferContext.fillRect(0, 0, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
 
 		drawTable(this.game.gameTable, bufferContext, Color.WHITE);
 
@@ -189,7 +186,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * Set the scaling factor of the display based on the table length
 	 */
 	private void setScale() {
-		this.scale = (WINDOW_WIDTH - INFO_BAR_WIDTH - (TABLE_OFFSET_X * 2))
+		this.scale = (Constants.WINDOW_WIDTH - INFO_BAR_WIDTH - (TABLE_OFFSET_X * 2))
 				/ game.gameTable.getWidth();
 		System.out.println(this.scale);
 	}

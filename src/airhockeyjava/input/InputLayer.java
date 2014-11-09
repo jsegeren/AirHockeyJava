@@ -1,39 +1,58 @@
 package airhockeyjava.input;
 
+import java.awt.Point;
 import java.awt.event.MouseEvent;
-import javax.swing.JPanel;
+
+import airhockeyjava.graphics.GuiLayer;
 
 /**
  * Makes handling input a lot simpler
  */
 public class InputLayer implements IInputLayer {
+	Point p;
+	private int mouseX;
+	private int mouseY;
 
-	private JPanel jpanel;
-	private int mouseX = 0; // Pixel x coordinate
-	private int mouseY = 0; // Pixel y coordinate
+	public InputLayer(GuiLayer guiLayer) {
+		guiLayer.addMouseListener(this);
+		guiLayer.addMouseMotionListener(this);
+	}
 
-	public InputLayer(JPanel jframe) {
-		this.jpanel = jpanel;
+	public void mouseClicked(MouseEvent me) {
+	}
+
+	public void mouseEntered(MouseEvent me) {
+	}
+
+	public void mouseExited(MouseEvent me) {
+	}
+
+	public void mousePressed(MouseEvent me) {
+		p = me.getPoint();
+	}
+
+	public void mouseReleased(MouseEvent me) {
+		p = null;
+	}
+
+	public void mouseDragged(MouseEvent me) {
+		p = me.getPoint();
 	}
 
 	public int getMouseX() {
-		return mouseX;
+		return this.mouseX;
 	}
 
 	public int getMouseY() {
-		return mouseY;
+		return this.mouseY;
 	}
 
-	public void mouseDragged(MouseEvent e) {
-	};
-
-	public void mouseMoved(MouseEvent e) {
-		mouseX = e.getX();
-		mouseY = e.getY();
+	public void mouseMoved(MouseEvent me) {
+		mouseX = me.getX();
+		mouseY = me.getY();
 	}
 
 	public void run() {
-		jpanel.addMouseMotionListener(this);
 	}
 
 }

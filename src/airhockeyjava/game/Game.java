@@ -13,6 +13,8 @@ import airhockeyjava.input.InputLayer;
 import java.util.Set;
 import java.util.HashSet;
 
+import javax.swing.JFrame;
+
 /**
  * Top-level class for the game. Used for both simulated and actual games. Simulated games will
  * simply need to swap out the detection module with the mocked version.
@@ -67,6 +69,14 @@ public class Game {
 
 		// Initialize the game object and game layers
 		game = new Game(gameType);
+		
+		JFrame frame = new JFrame("AirHockey");
+		frame.setTitle("AirHockey");
+		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(game.guiLayer);
+		frame.setVisible(true);
 
 		// Start the threads
 		game.guiLayerThread.start();
@@ -140,7 +150,7 @@ public class Game {
 		movingItems.add(userMallet);
 		movingItems.add(robotMallet);
 
-		guiLayer = new GuiLayer(game);
+		guiLayer = new GuiLayer(this);
 		guiLayerThread = new Thread(guiLayer);
 
 		// For simulated game, instantiate the simulated detection/prediction layer thread
@@ -149,7 +159,7 @@ public class Game {
 			// TODO should the GUI thread and input thread be the same instead of two separate threads?
 			inputLayer = new InputLayer(guiLayer);
 			inputLayerThread = new Thread(inputLayer);
-			detectionLayer = new SimulatedDetection(game);
+			detectionLayer = new SimulatedDetection(this);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package airhockeyjava.input;
 
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 /**
@@ -8,7 +9,7 @@ import java.awt.event.MouseMotionListener;
  * @author Joshua Segeren
  *
  */
-public interface IInputLayer extends Runnable, MouseMotionListener {
+public interface IInputLayer extends Runnable, MouseMotionListener, MouseListener {
 
 	/**
 	 * Retrieve mouse position x-coordinate
