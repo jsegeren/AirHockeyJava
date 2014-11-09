@@ -7,11 +7,11 @@ import airhockeyjava.util.Vector2;
  * @author Joshua Segeren
  *
  */
-public class MovingItem implements IMovingItem {
+public abstract class MovingItem implements IMovingItem {
 	
 	private Vector2 position;
 	private Vector2 velocity;
-	private float weight; // Used in simulated friction calculation
+	private final float mass; // Used in simulated friction calculation
 	private final float radius;
 	
 	/**
@@ -19,26 +19,17 @@ public class MovingItem implements IMovingItem {
 	 * @param position
 	 * @param velocity
 	 */
-	public MovingItem(Vector2 position, Vector2 velocity, float radius) {
+	protected MovingItem(Vector2 position, Vector2 velocity, float radius, float mass) {
 		this.position = position;
 		this.velocity = velocity;
 		this.radius = radius;
+		this.mass = mass;
 	}
 	
 	@Override
-	public boolean willCollide(IMovingItem otherPiece) {
+	public boolean willCollide(IMovingItem otherPiece, float deltaTime) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-	
-	@Override
-	public void updatePosition() {
-		// TODO implement physics for next position calculation
-	}
-	
-	@Override
-	public void updateVelocity() {
-		// TODO implement physics for next velocity calculation
 	}
 	
 	@Override

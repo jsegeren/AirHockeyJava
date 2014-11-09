@@ -10,9 +10,12 @@ import java.util.HashSet;
 
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Table;
+
 import javax.swing.JFrame; 
 import javax.swing.JLabel;
 
+import airhockeyjava.game.Game;
+import airhockeyjava.game.Game.GameTypeEnum;
 import airhockeyjava.physical.*;
 import airhockeyjava.util.*;
 
@@ -23,6 +26,8 @@ import airhockeyjava.util.*;
  */
 
 public class GuiLayer extends JFrame implements IGuiLayer {
+	
+	private Game game; // Reference to the top-level game object itself to have access to global variables
 
     private final static int FPS = 60; 
     private final static int WINDOW_WIDTH = 1024; 
@@ -44,19 +49,13 @@ public class GuiLayer extends JFrame implements IGuiLayer {
     private long frameTime = 1000 / FPS;
 
     public static void main(String[] args) { 
-    	
-    		Set<IMovingItem> set = new HashSet<IMovingItem>();
-    		MovingItem item = new MovingItem(new Vector2(0,0), new Vector2(0,0), 0.5f);
-    		set.add(item);
-    		
-    	    GuiLayer game = new GuiLayer(set); 
-            game.start();
+    	    GuiLayer guiLayer = new GuiLayer(new Game(GameTypeEnum.SIMULATED_GAME_TYPE)); 
+            guiLayer.start();
             System.exit(0); 
     } 
 
-	public GuiLayer(Set<IMovingItem> movingItems) {
-		this.movingItems = movingItems != null? movingItems : new HashSet<IMovingItem>();
-		this.table = (table != null)? table : new Table();
+	public GuiLayer(Game game) {
+		this.game = game;
 	}
 
 	/* (non-Javadoc)
@@ -108,7 +107,7 @@ public class GuiLayer extends JFrame implements IGuiLayer {
             bufferContext.setColor(Color.BLACK); 
             bufferContext.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT); 
 
-            drawTable(this.table, bufferContext, Color.WHITE);
+            drawTable(game.gameTable, bufferContext, Color.WHITE);
             
             Iterator<IMovingItem> iter = this.movingItems.iterator();
             while(iter.hasNext()){
@@ -157,7 +156,7 @@ public class GuiLayer extends JFrame implements IGuiLayer {
      * Set the scaling factor of the display based on the table length
      */
     private void setScale(){
-    	this.scale = (WINDOW_WIDTH - INFO_BAR_WIDTH - (TABLE_OFFSET_X * 2)) / this.table.getWidth();
+    	this.scale = (WINDOW_WIDTH - INFO_BAR_WIDTH - (TABLE_OFFSET_X * 2)) / game.gameTable.getWidth();
     	System.out.println(this.scale);
     }
     

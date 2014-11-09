@@ -21,7 +21,7 @@ public class Mallet extends MovingItem {
 	 * @param color
 	 */
 	public Mallet(Vector2 position, Vector2 velocity, float radius, boolean isUserControlled) {
-		super(position, velocity, radius);
+		super(position, velocity, radius, Constants.GAME_MALLET_MASS_GRAMS);
 		this.isUserControlled = isUserControlled;
 	}
 
@@ -33,7 +33,8 @@ public class Mallet extends MovingItem {
 	 * @param isUserControlled
 	 */
 	public Mallet(Vector2 position, Vector2 velocity, boolean isUserControlled) {
-		super(position, velocity, Constants.GAME_MALLET_RADIUS_METERS);
+		super(position, velocity, Constants.GAME_MALLET_RADIUS_METERS,
+				Constants.GAME_MALLET_MASS_GRAMS);
 		this.isUserControlled = isUserControlled;
 	}
 
@@ -51,7 +52,7 @@ public class Mallet extends MovingItem {
 						: Constants.ROBOT_MALLET_INITIAL_VELOCITY_X,
 				isUserControlled ? Constants.USER_MALLET_INITIAL_VELOCITY_Y
 						: Constants.ROBOT_MALLET_INITIAL_VELOCITY_Y),
-				Constants.GAME_MALLET_RADIUS_METERS);
+				Constants.GAME_MALLET_RADIUS_METERS, Constants.GAME_MALLET_MASS_GRAMS);
 		this.isUserControlled = isUserControlled;
 	}
 

@@ -6,11 +6,9 @@ import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Mallet;
 import airhockeyjava.physical.Puck;
 import airhockeyjava.physical.Table;
-import airhockeyjava.graphics.IGuiLayer;
 import airhockeyjava.graphics.GuiLayer;
 import airhockeyjava.input.IInputLayer;
 import airhockeyjava.input.InputLayer;
-import airhockeyjava.util.Vector2;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -31,22 +29,29 @@ public class Game {
 	}
 
 	// Local constants and physical parameters
+	private static final long OPTIMAL_TIME = 1000000000 / Constants.GAME_SIMULATION_TARGET_FPS;
 	private static final GameTypeEnum gameType = GameTypeEnum.SIMULATED_GAME_TYPE;
 
-	// Local variables
-	private float gameTimeRemainingSeconds;
-	private int userScore = 0;
-	private int robotScore = 0;
+	// Game-related global variables
+	public float gameTimeRemainingSeconds;
+	public int userScore = 0;
+	public int robotScore = 0;
 
-	private Table gameTable;
-	private Puck gamePuck;
-	private Mallet userMallet;
-	private Mallet robotMallet;
+	public Set<IMovingItem> movingItems;
+	public Table gameTable;
+	
+	public Puck gamePuck;
+	public Mallet userMallet;
+	public Mallet robotMallet;
 
 	// Application layer interfaces
 	private IDetection detectionLayer;
-	private IGuiLayer guiLayer;
+	private GuiLayer guiLayer;
 	private IInputLayer inputLayer;
+
+	// Threads
+	private Thread guiLayerThread;
+	private Thread inputLayerThread;
 
 	// Game object itself!
 	private static Game game;
@@ -56,46 +61,95 @@ public class Game {
 	 * when game is finished. Void return.
 	 */
 	public static void main() {
+		long lastLoopTime = System.nanoTime();
+		long lastFpsTime = 0;
+		long fps = 0;
+
 		// Initialize the game object and game layers
 		game = new Game(gameType);
 
-		// Main loop for game logic
+		// Start the threads
+		game.guiLayerThread.start();
+		game.inputLayerThread.start();
+
+		// Main loop for game logic. We want to update everything as fast as possible (i.e. no discretization)
 		while (true) {
+			// Determine how long it's been since last update; this will be used to calculate
+			// how far entities should move this loop
+			long currentTime = System.nanoTime();
+			long updateLengthTime = currentTime - lastLoopTime;
+			lastLoopTime = currentTime;
+			double deltaTime = updateLengthTime / ((double) OPTIMAL_TIME); // nanoseconds
+			
+			// Update frame counter
+			lastFpsTime += updateLengthTime;
+			fps++;
+			
+			// Update FPS counter and remaining game time if a second has passed since last recorded
+			if (lastFpsTime >= 1000000000) {
+				System.out.println(String.format("FPS: %d", fps));
+				lastFpsTime = 0;
+				fps = 0;
+				game.gameTimeRemainingSeconds -= 1; // Decrement the game time by 1 second
+			}
+			
+			game.updateStates((float)deltaTime);
+			
+			// If target FPS = 60 (for example), want each frame to take 10 ms, 
+			// we sleep until the next target frame, taking into account the time
+			// taken to run the loop. Note this is given in ms, but other variables are in
+			// nanoseconds.
+			try { 
+				Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
+			}
+			catch (InterruptedException e) {
+				// TODO figure out what to do with this exception, e.g. rethrow as RuntimeException?
+				e.printStackTrace();
+			}
 
 		}
+	}
+	
+	private void updateStates(float deltaTime) {
+		// If simulated, we need to use input data to update user mallet state
+		// Also need to use mocked detection layer to update puck position via physics
+		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
+			game.userMallet.getPosition().x = game.inputLayer.getMouseX();
+			game.userMallet.getPosition().y = game.inputLayer.getMouseY();
 
+			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
+		}
 	}
 
 	/**
 	 * Top-level constructor
 	 */
-	private Game(GameTypeEnum gameType) {
+	public Game(GameTypeEnum gameType) {
 		// Initialize member variables
 		gameTimeRemainingSeconds = Constants.GAME_TIME_SECONDS;
-		
+
 		// Instantiate physical game items with default constants
 		gameTable = new Table(Constants.GAME_TABLE_HEIGHT_METERS, Constants.GAME_TABLE_WIDTH_METERS);
 		gamePuck = new Puck();
 		userMallet = new Mallet(true);
 		robotMallet = new Mallet(false);
-		
-		// Initialize items set to pass to appropriate layers
-		Set<IMovingItem> movingItems = new HashSet<IMovingItem>();
+
+		// Initialize items set which is accessible to other layers
+		movingItems = new HashSet<IMovingItem>();
 		movingItems.add(gamePuck);
 		movingItems.add(userMallet);
 		movingItems.add(robotMallet);
-		
-		guiLayer = new GuiLayer(movingItems);
-		Thread guiLayerThread = new Thread(guiLayer);
+
+		guiLayer = new GuiLayer(game);
+		guiLayerThread = new Thread(guiLayer);
 
 		// For simulated game, instantiate the simulated detection/prediction layer thread
 		// and the input layer thread which is responsible for the user position.
 		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
-			// TODO should the gui thread and input thread be the same instead of two separate threads?
+			// TODO should the GUI thread and input thread be the same instead of two separate threads?
 			inputLayer = new InputLayer(guiLayer);
-			Thread inputLayerThread = new Thread(inputLayer);
-			
-			detectionLayer = new SimulatedDetection(movingItems);
+			inputLayerThread = new Thread(inputLayer);
+			detectionLayer = new SimulatedDetection(game);
 		}
 	}
 }

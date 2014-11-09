@@ -9,26 +9,6 @@ import airhockeyjava.util.Vector2;
  *
  */
 public interface IMovingItem {
-
-	/**
-	 * Method to check whether two moving items will collide, given their current trajectories, and
-	 * expected friction.
-	 * 
-	 * @param otherItem
-	 * @return true if collision imminent
-	 */
-	public abstract boolean willCollide(IMovingItem otherItem);
-
-	/**
-	 * Method to update position of item for the next state.
-	 */
-	public abstract void updatePosition();
-
-	/**
-	 * Method to update velocity of item for the next state.
-	 */
-	public abstract void updateVelocity();
-
 	/**
 	 * Method to retrieve position of the item for the current state.
 	 * 

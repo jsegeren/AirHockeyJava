@@ -19,17 +19,17 @@ public class Puck extends MovingItem {
 	 * @param color
 	 */
 	public Puck(Vector2 position, Vector2 velocity, float radius) {
-		super(position, velocity, radius);
+		super(position, velocity, radius, Constants.GAME_PUCK_MASS_GRAMS);
 	}
 
 	public Puck(Vector2 position, Vector2 velocity) {
-		super(position, velocity, Constants.GAME_PUCK_RADIUS_METERS);
+		super(position, velocity, Constants.GAME_PUCK_RADIUS_METERS, Constants.GAME_PUCK_MASS_GRAMS);
 	}
 
 	public Puck() {
 		super(new Vector2(Constants.GAME_PUCK_INITIAL_POSITION_X,
 				Constants.GAME_PUCK_INITIAL_POSITION_Y), new Vector2(
 				Constants.GAME_PUCK_INITIAL_VELOCITY_X, Constants.GAME_PUCK_INITIAL_VELOCITY_Y),
-				Constants.GAME_PUCK_RADIUS_METERS);
+				Constants.GAME_PUCK_RADIUS_METERS, Constants.GAME_PUCK_MASS_GRAMS);
 	}
 }
