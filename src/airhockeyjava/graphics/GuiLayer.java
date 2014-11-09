@@ -102,6 +102,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		}
 
 		setVisible(false);
+
 	}
 
 	/**
@@ -163,14 +164,15 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * Draw a MovingItem to the table
 	 * 
 	 * @param item
-	 * @param buffer
+	 * @param context
+	 * @param color
 	 */
 	private void drawMovingItem(IMovingItem item, Graphics context, Color color) {
 		context.setColor(color);
 		Vector2 position = item.getPosition();
-		float radius = scale(item.getRadius());
+		float radius = item.getRadius();
 		context.drawOval((int) scale(position.x) + TABLE_OFFSET_X, (int) scale(position.y)
-				+ TABLE_OFFSET_Y, (int) scale(radius), (int) scale(radius));
+				+ TABLE_OFFSET_Y, (int) scale(radius*2), (int) scale(radius*2));
 	}
 
 	/**

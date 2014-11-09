@@ -124,8 +124,11 @@ public class Game {
 		// If simulated, we need to use input data to update user mallet state
 		// Also need to use mocked detection layer to update puck position via physics
 		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
+			// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
 			game.userMallet.getPosition().x = game.inputLayer.getMouseX();
+			System.out.println(String.format("mouseX: %d", game.userMallet.getPosition().x));
 			game.userMallet.getPosition().y = game.inputLayer.getMouseY();
+			System.out.println(String.format("mouseY: %d", game.userMallet.getPosition().y));
 
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
 		}
