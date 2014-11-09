@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
+import airhockeyjava.game.Constants;
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Table;
 
@@ -13,6 +14,7 @@ import javax.swing.JPanel;
 
 import airhockeyjava.game.Game;
 import airhockeyjava.util.*;
+import airhockeyjava.util.Conversion;
 
 /**
  * Class for simulation UI layer.
@@ -27,22 +29,13 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	private Game game; // Reference to the top-level game object itself to have access to global variables
 
-	private final static int FPS = 60;
-	private final static int WINDOW_WIDTH = 1024;
-	private final static int WINDOW_HEIGHT = 768;
-
-	private final static int TABLE_OFFSET_X = 80;
-	private final static int TABLE_OFFSET_Y = 60;
-
-	private final static int INFO_BAR_WIDTH = 200;
-
 	private float scale = 100;
 
 	private InfoBar infoBar;
 
 	private BufferedImage backBuffer;
 
-	private long frameTime = 1000000000 / FPS;
+	private long frameTime = 1000000000 / Constants.FPS;
 	private long fps = 0;
 
 	private boolean isRunning = true;
@@ -53,7 +46,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 		JFrame frame = new JFrame("AirHockey");
 		frame.setTitle("AirHockey");
-		frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(game);
@@ -114,14 +107,14 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	void initialize() {
 
 		// Create a buffered image
-		this.backBuffer = new BufferedImage(WINDOW_WIDTH, WINDOW_HEIGHT, BufferedImage.TYPE_INT_RGB);
-
-		// Set the scale of the UI, based on the table width;
-		setScale();
+		this.backBuffer = new BufferedImage(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, BufferedImage.TYPE_INT_RGB);
 
 		//Init an info bar
-		this.infoBar = new InfoBar(WINDOW_WIDTH - INFO_BAR_WIDTH, TABLE_OFFSET_Y, INFO_BAR_WIDTH,
-				(int) scale(this.game.gameTable.getHeight()));
+		this.infoBar = new InfoBar(
+				Constants.WINDOW_WIDTH - Constants.INFO_BAR_WIDTH, 
+				Constants.TABLE_OFFSET_Y, 
+				Constants.INFO_BAR_WIDTH,
+				scale(this.game.gameTable.getHeight()));
 	}
 
 	/**
@@ -132,7 +125,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		Graphics bufferContext = backBuffer.getGraphics();
 
 		bufferContext.setColor(Color.BLACK);
-		bufferContext.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		bufferContext.fillRect(0, 0, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
 
 		drawTable(this.game.gameTable, bufferContext, Color.WHITE);
 
@@ -158,8 +151,11 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 */
 	private void drawTable(Table table, Graphics context, Color color) {
 		context.setColor(Color.WHITE);
-		context.drawRect(TABLE_OFFSET_X, TABLE_OFFSET_Y, (int) scale(table.getWidth()),
-				(int) scale(table.getHeight()));
+		context.drawRect(
+				Constants.TABLE_OFFSET_X, 
+				Constants.TABLE_OFFSET_Y, 
+				scale(table.getWidth()),
+				scale(table.getHeight()));
 
 	}
 
@@ -174,8 +170,11 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		context.setColor(color);
 		Vector2 position = item.getPosition();
 		float radius = item.getRadius();
-		context.drawOval((int) scale(position.x) + TABLE_OFFSET_X, (int) scale(position.y)
-				+ TABLE_OFFSET_Y, (int) scale(radius*2), (int) scale(radius*2));
+		context.drawOval(
+				scale(position.x) + Constants.TABLE_OFFSET_X,
+				scale(position.y) + Constants.TABLE_OFFSET_Y,
+				scale(radius*2),
+				scale(radius*2));
 	}
 
 	/**
@@ -183,17 +182,8 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * 
 	 * @param value
 	 */
-	private float scale(float value) {
-		return value * this.scale;
-	}
-
-	/*
-	 * Set the scaling factor of the display based on the table length
-	 */
-	private void setScale() {
-		this.scale = (WINDOW_WIDTH - INFO_BAR_WIDTH - (TABLE_OFFSET_X * 2))
-				/ game.gameTable.getWidth();
-		System.out.println(this.scale);
+	private int scale(float value) {
+		return Conversion.meterToPixel(value);
 	}
 
 	private class InfoBar {
