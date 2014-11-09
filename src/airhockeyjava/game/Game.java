@@ -60,7 +60,7 @@ public class Game {
 	 * Entry-point application method. Starts and runs a game of air hockey. Currently terminates
 	 * when game is finished. Void return.
 	 */
-	public static void main() {
+	public static void main(String[] args) {
 		long lastLoopTime = System.nanoTime();
 		long lastFpsTime = 0;
 		long fps = 0;

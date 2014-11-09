@@ -7,10 +7,6 @@ package airhockeyjava.graphics;
  * @author Joshua Segeren
  *
  */
-public interface IGuiLayer extends Runnable{
-
-	/**
-	 * Method to start rendering.
-	 */
-	public abstract void start();
+public interface IGuiLayer extends Runnable {
+	
 }

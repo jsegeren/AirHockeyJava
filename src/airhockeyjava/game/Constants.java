@@ -14,9 +14,9 @@ public class Constants {
 	public static final float GAME_TIME_SECONDS = 5f;
 	public static final float GAME_TABLE_HEIGHT_METERS = 1.8f;
 	public static final float GAME_TABLE_WIDTH_METERS = 3f;
-	public static final float GAME_PUCK_RADIUS_METERS = 0.025f; // 2.5 centimetres
+	public static final float GAME_PUCK_RADIUS_METERS = 0.0025f; // 2.5 centimetres
 	public static final float GAME_PUCK_MASS_GRAMS = 50f;
-	public static final float GAME_MALLET_RADIUS_METERS = 0.035f; // 3.5 centimetres
+	public static final float GAME_MALLET_RADIUS_METERS = 0.0035f; // 3.5 centimetres
 	public static final float GAME_MALLET_MASS_GRAMS = 0f; // Doesn't matter
 
 	// Quick visual of coordinate convention being used here, where tuples are in (x,y) form:

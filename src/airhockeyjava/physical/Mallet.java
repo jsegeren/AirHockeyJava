@@ -55,16 +55,4 @@ public class Mallet extends MovingItem {
 				Constants.GAME_MALLET_RADIUS_METERS, Constants.GAME_MALLET_MASS_GRAMS);
 		this.isUserControlled = isUserControlled;
 	}
-
-	@Override
-	public Vector2 getPosition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Vector2 getVelocity() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

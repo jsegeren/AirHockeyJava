@@ -27,12 +27,6 @@ public abstract class MovingItem implements IMovingItem {
 	}
 	
 	@Override
-	public boolean willCollide(IMovingItem otherPiece, float deltaTime) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	@Override
 	public Vector2 getPosition() {
 		return this.position;
 	}
