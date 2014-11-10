@@ -16,7 +16,7 @@ import airhockeyjava.util.*;
 
 /**
  * Class for simulation UI layer.
- * 
+ *
  * @author Joshua Segeren
  * @author Evan Skeete
  */
@@ -30,18 +30,22 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private BufferedImage imgBuffer;
 	private Graphics bufferContext;
 	private InfoBar infoBar;
+	private String[] externalInfoBarData;
 
 	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FPS;
 	private long currentFps = 0;
 
-	
+	/*
+	 * Constructor
+	 */
 	public GuiLayer(Game currentGame) {
 		this.game = currentGame;
 	}
 
-	/* 
+	/*
 	 * Run the graphics thread
 	 */
+	@Override
 	public void run() {
 
 		long lastLoopTime = System.nanoTime();
@@ -53,7 +57,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 		// Provide loop based on desired refresh rate to render output based on item positions
 		while (true) {
-			
+
 			// Determine how long it's been since last update; this will be used to calculate
 			// how far entities should move this loop
 			long currentTime = System.nanoTime();
@@ -89,28 +93,6 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	}
 
 	/**
-	 * Initialize the window
-	 */
-	void initialize() {
-
-		// Create a buffered image
-		this.imgBuffer = new BufferedImage(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT,
-				BufferedImage.TYPE_INT_RGB);
-		
-		// Save the context of the buffered image to draw to
-		this.bufferContext = imgBuffer.getGraphics();
-
-		//Init an info bar
-		this.infoBar = new InfoBar(
-				Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH,
-				Constants.GUI_TABLE_OFFSET_Y, 
-				Constants.GUI_INFO_BAR_WIDTH,
-				Constants.GUI_WINDOW_HEIGHT - Constants.GUI_TABLE_OFFSET_Y,
-				this.bufferContext
-				);
-	}
-
-	/**
 	 * Draw all objects to the screen
 	 */
 	@Override
@@ -129,12 +111,45 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		this.infoBar.writeLine("");
 		this.infoBar.writeLine("FPS:" + this.currentFps);
 
+		for(int i =0; i < this.externalInfoBarData.length; i++) {
+			this.infoBar.writeLine(this.externalInfoBarData[i]);
+		}
+
 		graphicsContext.drawImage(this.imgBuffer, 0, 0, this);
 	}
 
 	/**
+	 * Set data to be displayed in the info pane
+	 */
+	public void setExternalInfoBarData(String[] externalData){
+		this.externalInfoBarData = externalData;
+	}
+
+	/**
+	 * Initialize the window
+	 */
+	private void initialize() {
+
+		// Create a buffered image
+		this.imgBuffer = new BufferedImage(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT,
+				BufferedImage.TYPE_INT_RGB);
+
+		// Save the context of the buffered image to draw to
+		this.bufferContext = imgBuffer.getGraphics();
+
+		//Init an info bar
+		this.infoBar = new InfoBar(
+				Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH,
+				Constants.GUI_TABLE_OFFSET_Y,
+				Constants.GUI_INFO_BAR_WIDTH,
+				Constants.GUI_WINDOW_HEIGHT - Constants.GUI_TABLE_OFFSET_Y,
+				this.bufferContext
+				);
+	}
+
+	/**
 	 * Clear the entire screen
-	 * 
+	 *
 	 * @param context
 	 */
 	private void clearScreen() {
@@ -145,51 +160,51 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	/**
 	 * Draw a table
-	 * 
+	 *
 	 * @param table
 	 * @param context
 	 */
 	private void drawTable(Table table) {
 		Graphics context = this.bufferContext;
 		context.setColor(Color.BLUE);
-		
+
 		//Draw the table border
 		context.drawRect(
-				Constants.GUI_TABLE_OFFSET_X, 
+				Constants.GUI_TABLE_OFFSET_X,
 				Constants.GUI_TABLE_OFFSET_Y,
-				scale(Constants.GAME_TABLE_WIDTH_METERS), 
+				scale(Constants.GAME_TABLE_WIDTH_METERS),
 				scale(Constants.GAME_TABLE_HEIGHT_METERS)
 				);
 
 		//Draw the center line
 		context.drawLine(
-				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS/2), 
+				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS/2),
 				Constants.GUI_TABLE_OFFSET_Y,
-				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS/2), 
+				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS/2),
 				Constants.GUI_TABLE_OFFSET_Y + scale(Constants.GAME_TABLE_HEIGHT_METERS)
 				);
 
 		context.setColor(Color.RED);
 		//Draw player goal
 		context.fillRect(
-				Constants.GUI_TABLE_OFFSET_X, 
+				Constants.GUI_TABLE_OFFSET_X,
 				Constants.GUI_TABLE_OFFSET_Y + scale(Constants.GAME_TABLE_HEIGHT_METERS - Constants.GAME_GOAL_WIDTH_METERS) / 2,
-				5, 
+				scale(Constants.GAME_GOAL_ALLOWANCE),
 				scale(Constants.GAME_GOAL_WIDTH_METERS)
 				);
 
 		//Draw robot goal
 		context.fillRect(
-				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS) - 5, 
+				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS) - 5,
 				Constants.GUI_TABLE_OFFSET_Y + scale(Constants.GAME_TABLE_HEIGHT_METERS - Constants.GAME_GOAL_WIDTH_METERS) / 2,
-				5, 
+				scale(Constants.GAME_GOAL_ALLOWANCE),
 				scale(Constants.GAME_GOAL_WIDTH_METERS)
 				);
 	}
 
 	/**
 	 * Draw a MovingItem to the table
-	 * 
+	 *
 	 * @param item
 	 * @param context
 	 * @param color
@@ -199,13 +214,13 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		context.setColor(color);
 		Vector2 position = item.getPosition();
 		float radius = item.getRadius();
-		context.drawOval(scale(position.x - radius) + Constants.GUI_TABLE_OFFSET_X, scale(position.y - radius)
+		context.fillOval(scale(position.x - radius) + Constants.GUI_TABLE_OFFSET_X, scale(position.y - radius)
 				+ Constants.GUI_TABLE_OFFSET_Y, scale(radius * 2), scale(radius * 2));
 	}
 
 	/**
 	 * Scale a value from meters to pixels
-	 * 
+	 *
 	 * @param value
 	 */
 	private int scale(float value) {
@@ -245,7 +260,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 		/**
 		 * Draw a line of text to the info bar
-		 * 
+		 *
 		 * @param string
 		 */
 		private void writeLine(String string) {

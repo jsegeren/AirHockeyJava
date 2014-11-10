@@ -19,7 +19,9 @@ public class Constants {
 	public static final float GAME_PUCK_MASS_GRAMS = 50f;
 	public static final float GAME_MALLET_RADIUS_METERS = 0.07f; // 3.5 centimetres
 	public static final float GAME_MALLET_MASS_GRAMS = 0f; // Doesn't matter
-	public static final float GAME_GOAL_WIDTH_METERS = 0.2f;
+	public static final float GAME_GOAL_WIDTH_METERS = 0.3f;
+	// Allowed distance from edge that a goal can be counted, since the puck never actually goes into the goal
+	public static final float GAME_GOAL_ALLOWANCE = 0.015f;
 
 	// Quick visual of coordinate convention being used here, where tuples are in (x,y) form:
 	//

@@ -26,6 +26,7 @@ public abstract class MovingItem implements IMovingItem {
 		this.mass = mass;
 	}
 	
+
 	@Override
 	public Vector2 getPosition() {
 		return this.position;
@@ -34,6 +35,10 @@ public abstract class MovingItem implements IMovingItem {
 	@Override
 	public Vector2 getVelocity() {
 		return this.velocity;
+	}
+	
+	public void setVelocity(Vector2 velocity) {
+		this.velocity = velocity;
 	}
 	
 	@Override
