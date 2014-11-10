@@ -1,10 +1,10 @@
 package airhockeyjava.game;
 
 /**
- * 
+ *
  * Top-level class for constants. This allows us to cleanly and statically reference constants
  * throughout the project code, and make necessary changes quickly.
- * 
+ *
  * @author Joshua Segeren
  *
  */
@@ -31,7 +31,7 @@ public class Constants {
 	//  y  |            |
 	//     |____________|
 	// (0, HEIGHT)         (WIDTH, HEIGHT)
-	// 
+	//
 	public static final float GAME_PUCK_INITIAL_POSITION_X = GAME_TABLE_WIDTH_METERS / 2f;
 	public static final float GAME_PUCK_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float GAME_PUCK_INITIAL_VELOCITY_X = 0f;
@@ -44,15 +44,15 @@ public class Constants {
 	public static final float ROBOT_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_Y = 0f;
-	
+
 
 	//GUI CONSTANTS
 	public final static int GUI_FPS = 60;
-	public final static int GUI_WINDOW_WIDTH = 1024;
-	public final static int GUI_WINDOW_HEIGHT = 768;
-	public final static int GUI_TABLE_OFFSET_X = 32;
-	public final static int GUI_TABLE_OFFSET_Y = 128;
-	public final static int GUI_INFO_BAR_WIDTH = 140;
+	public final static int GUI_WINDOW_WIDTH = 1280;
+	public final static int GUI_WINDOW_HEIGHT = 600;
+	public final static int GUI_TABLE_OFFSET_X = 64;
+	public final static int GUI_TABLE_OFFSET_Y = 64;
+	public final static int GUI_INFO_BAR_WIDTH = 256;
 
 	public final static float GUI_SCALING_FACTOR = (Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH - (Constants.GUI_TABLE_OFFSET_X * 2))
 			/ Constants.GAME_TABLE_WIDTH_METERS;

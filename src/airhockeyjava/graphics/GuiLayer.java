@@ -54,6 +54,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 		initialize();
 		setVisible(true);
+		setFocusable(true);
 
 		// Provide loop based on desired refresh rate to render output based on item positions
 		while (true) {
@@ -108,6 +109,11 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 		this.infoBar.clear();
 		this.infoBar.writeLine("Welcome to Airhockey");
+		this.infoBar.writeLine("");
+		this.infoBar.writeLine("Key Bindings");
+		this.infoBar.writeLine("R: Reset puck");
+		this.infoBar.writeLine("M: Toggle mallet movement restriction");
+		this.infoBar.writeLine("G: Toggle goal detection");
 		this.infoBar.writeLine("");
 		this.infoBar.writeLine("FPS:" + this.currentFps);
 

@@ -12,6 +12,7 @@ import airhockeyjava.input.InputLayer;
 import airhockeyjava.util.Conversion;
 import airhockeyjava.util.Vector2;
 
+import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -135,6 +136,29 @@ public class Game {
 		});
 	}
 
+	private void handleKeyPresses(){
+		int lastKeyPressed = this.inputLayer.handleKeyPress();
+		while (lastKeyPressed != KeyEvent.VK_UNDEFINED) {
+
+			switch (lastKeyPressed) {
+				case KeyEvent.VK_R:
+					resetPuck();
+					break;
+				case KeyEvent.VK_M:
+					this.settings.restrictUserMalletMovement = !this.settings.restrictUserMalletMovement;
+					break;
+				case KeyEvent.VK_G:
+					this.settings.goalDetectionOn = !this.settings.goalDetectionOn;
+					break;
+				default:
+					break;
+
+			}
+
+			lastKeyPressed = this.inputLayer.handleKeyPress();
+		}
+	}
+
 	/**
 	 * Check if a goal has been scored by the robot or user
 	 * If a goal is scored, update score and reset puck
@@ -210,6 +234,8 @@ public class Game {
 	 * Update the game state
 	 */
 	private void updateStates(float deltaTime) {
+
+		handleKeyPresses();
 
 		if (this.settings.goalDetectionOn) checkAndUpdateScore();
 
