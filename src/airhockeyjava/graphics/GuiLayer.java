@@ -3,10 +3,14 @@ package airhockeyjava.graphics;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import airhockeyjava.game.Constants;
 import airhockeyjava.physical.IMovingItem;
+import airhockeyjava.physical.Mallet;
+import airhockeyjava.physical.MovingItem;
+import airhockeyjava.physical.Puck;
 import airhockeyjava.physical.Table;
 
 import javax.swing.JPanel;
@@ -31,6 +35,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private Graphics bufferContext;
 	private InfoBar infoBar;
 	private String[] externalInfoBarData;
+	private HashMap<Class<?>, Color> colorMap;
 
 	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FPS;
 	private long currentFps = 0;
@@ -40,6 +45,11 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 */
 	public GuiLayer(Game currentGame) {
 		this.game = currentGame;
+
+		//Setup a map of object type to color. TODO Not sure if this makes sense...
+		this.colorMap = new HashMap<Class<?>, Color>();
+		this.colorMap.put(Puck.class, Constants.GUI_PUCK_COLOR);
+		this.colorMap.put(Mallet.class, Constants.GUI_MALLET_COLOR);
 	}
 
 	/*
@@ -104,7 +114,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 		Iterator<IMovingItem> iter = this.game.movingItems.iterator();
 		while (iter.hasNext()) {
-			drawMovingItem(iter.next(), Color.WHITE);
+			drawMovingItem(iter.next());
 		}
 
 		this.infoBar.clear();
@@ -158,7 +168,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 */
 	private void clearScreen() {
 		Graphics context = this.bufferContext;
-		context.setColor(Color.BLACK);
+		context.setColor(Constants.GUI_BG_COLOR);
 		context.fillRect(0, 0, Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
 	}
 
@@ -170,7 +180,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 */
 	private void drawTable(Table table) {
 		Graphics context = this.bufferContext;
-		context.setColor(Color.BLUE);
+		context.setColor(Constants.GUI_TABLE_COLOR);
 
 		//Draw the table border
 		context.drawRect(
@@ -188,7 +198,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 				Constants.GUI_TABLE_OFFSET_Y + scale(Constants.GAME_TABLE_HEIGHT_METERS)
 				);
 
-		context.setColor(Color.RED);
+		context.setColor(Constants.GUI_GOAL_COLOR);
 		//Draw player goal
 		context.fillRect(
 				Constants.GUI_TABLE_OFFSET_X,
@@ -210,11 +220,10 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * Draw a MovingItem to the table
 	 *
 	 * @param item
-	 * @param color
 	 */
-	private void drawMovingItem(IMovingItem item, Color color) {
+	private void drawMovingItem(IMovingItem item) {
 		Graphics context = this.bufferContext;
-		context.setColor(color);
+		context.setColor(this.colorMap.get(item.getClass()));
 		Vector2 position = item.getPosition();
 		float radius = item.getRadius();
 		context.fillOval(scale(position.x - radius) + Constants.GUI_TABLE_OFFSET_X, scale(position.y - radius)
@@ -256,7 +265,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		 * Clear the info bar
 		 */
 		private void clear() {
-			this.context.setColor(Color.BLACK);
+			this.context.setColor(Constants.GUI_BG_COLOR);
 			this.context.drawRect(this.x, this.y, this.width, this.height);
 			this.cursor = this.y;
 		}
@@ -267,7 +276,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		 * @param string
 		 */
 		private void writeLine(String string) {
-			this.context.setColor(Color.WHITE);
+			this.context.setColor(Constants.GUI_TEXT_COLOR);
 			this.context.drawString(string, this.x + INDENT, this.cursor);
 			this.cursor += LINE_HEIGHT;
 

@@ -1,10 +1,12 @@
 package airhockeyjava.game;
 
+import java.awt.Color;
+
 /**
  *
  * Top-level class for constants. This allows us to cleanly and statically reference constants
  * throughout the project code, and make necessary changes quickly.
- * 
+ *
  * @author Joshua Segeren, Evan Skeete
  *
  */
@@ -49,20 +51,27 @@ public class Constants {
 	/**
 	 * GUI Constants
 	 */
-	public final static int GUI_FPS = 60;
+	public final static int GUI_FPS = 120;
 	public final static int GUI_WINDOW_WIDTH = 1280;
 	public final static int GUI_WINDOW_HEIGHT = 600;
 	public final static int GUI_TABLE_OFFSET_X = 64;
 	public final static int GUI_TABLE_OFFSET_Y = 64;
 	public final static int GUI_INFO_BAR_WIDTH = 256;
 
+	public final static Color GUI_PUCK_COLOR = Color.GRAY;
+	public final static Color GUI_MALLET_COLOR = Color.GREEN;
+	public final static Color GUI_TABLE_COLOR = Color.BLUE;
+	public final static Color GUI_GOAL_COLOR = Color.RED;
+	public final static Color GUI_BG_COLOR = Color.BLACK;
+	public final static Color GUI_TEXT_COLOR = Color.WHITE;
+
 	public final static float GUI_SCALING_FACTOR = (Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH - (Constants.GUI_TABLE_OFFSET_X * 2))
 			/ Constants.GAME_TABLE_WIDTH_METERS;
-	
+
 	/**
 	 * Simulation Model Constants
 	 */
 	public static final int NUMBER_PREVIOUS_STATES_TRACKED = 2; // Number of previous positions to use in determining velocity
 	public static final int GAME_SIMULATION_TARGET_FPS = 60;
-	public static final float FAKE_VELOCITY_BURST = 0.01f; // TODO Replace. Just using burst of energy upon collisions
+	public static final float FAKE_VELOCITY_BURST = 0.02f; // TODO Replace. Just using burst of energy upon collisions
 }
