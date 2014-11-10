@@ -155,8 +155,6 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	/**
 	 * Clear the entire screen
-	 *
-	 * @param context
 	 */
 	private void clearScreen() {
 		Graphics context = this.bufferContext;
@@ -212,7 +210,6 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * Draw a MovingItem to the table
 	 *
 	 * @param item
-	 * @param context
 	 * @param color
 	 */
 	private void drawMovingItem(IMovingItem item, Color color) {

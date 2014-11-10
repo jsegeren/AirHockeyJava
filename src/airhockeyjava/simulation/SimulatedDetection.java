@@ -11,7 +11,7 @@ import airhockeyjava.util.Vector2;
  * Class for the simulated game physics. Mocks out the detection layer for simulating game physics.
  * TODO determine whether detection layer is responsible for choosing which it should update or if
  * this should be specified by the constructing/calling class (i.e. Game class).
- * 
+ *
  * @author Joshua Segeren
  *
  */
@@ -72,7 +72,7 @@ public class SimulatedDetection implements IDetection {
 	 *  2) Collision between puck and mallet do not affect the velocity/position of the mallet. That is, all
 	 *   energy is transferred to the puck. This seems reasonable as the mallet is being held in a fixed position
 	 *   but obviously this is not completely accurate.
-	 * 
+	 *
 	 * @param deltaTime
 	 */
 	private void updatePuckState(float deltaTime) {
@@ -130,14 +130,18 @@ public class SimulatedDetection implements IDetection {
 	 * @param deltaTime
 	 */
 	private void updateUserMalletState() {
-		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
+		//Get the mouse coordinates relative to the table
 		int mouseX = inputLayer.getMouseX() - Constants.GUI_TABLE_OFFSET_X;
 		int mouseY = inputLayer.getMouseY() - Constants.GUI_TABLE_OFFSET_Y;
 
+		// Update the mallet position, restricting it to the bounds of the table
+		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
 		float newPositionX = Math.max(
-				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX) : Math
-						.min(Conversion.pixelToMeter(mouseX),
-								Constants.GAME_TABLE_WIDTH_METERS / 2f)), 0f);
+				Math.min(
+						Conversion.pixelToMeter(mouseX),
+						(game.settings.restrictUserMalletMovement) ? Constants.GAME_TABLE_WIDTH_METERS / 2f : Constants.GAME_TABLE_WIDTH_METERS),
+				0f);
+
 		float newPositionY = Math.max(
 				Math.min(Conversion.pixelToMeter(mouseY), Constants.GAME_TABLE_HEIGHT_METERS), 0f);
 
