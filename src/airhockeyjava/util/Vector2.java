@@ -27,54 +27,58 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	public final static Vector2 Y = new Vector2(0, 1);
 	public final static Vector2 Zero = new Vector2(0, 0);
 
+	public static double angleBetween(Vector2 a, Vector2 b) {
+		return Math.acos(a.dot(b) / a.len() * b.len()) * (180.0 / Math.PI);
+	}
+
 	/** the x-component of this vector **/
 	public float x;
 	/** the y-component of this vector **/
 	public float y;
 
 	/** Constructs a new vector at (0,0) */
-	public Vector2 () {
+	public Vector2() {
 	}
 
 	/** Constructs a vector with the given components
 	 * @param x The x-component
 	 * @param y The y-component */
-	public Vector2 (float x, float y) {
+	public Vector2(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}
 
 	/** Constructs a vector from the given vector
 	 * @param v The vector */
-	public Vector2 (Vector2 v) {
+	public Vector2(Vector2 v) {
 		set(v);
 	}
 
 	@Override
-	public Vector2 cpy () {
+	public Vector2 cpy() {
 		return new Vector2(this);
 	}
 
-	public static float len (float x, float y) {
-		return (float)Math.sqrt(x * x + y * y);
+	public static float len(float x, float y) {
+		return (float) Math.sqrt(x * x + y * y);
 	}
 
 	@Override
-	public float len () {
-		return (float)Math.sqrt(x * x + y * y);
+	public float len() {
+		return (float) Math.sqrt(x * x + y * y);
 	}
 
-	public static float len2 (float x, float y) {
+	public static float len2(float x, float y) {
 		return x * x + y * y;
 	}
 
 	@Override
-	public float len2 () {
+	public float len2() {
 		return x * x + y * y;
 	}
 
 	@Override
-	public Vector2 set (Vector2 v) {
+	public Vector2 set(Vector2 v) {
 		x = v.x;
 		y = v.y;
 		return this;
@@ -84,14 +88,14 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	 * @param x The x-component
 	 * @param y The y-component
 	 * @return This vector for chaining */
-	public Vector2 set (float x, float y) {
+	public Vector2 set(float x, float y) {
 		this.x = x;
 		this.y = y;
 		return this;
 	}
 
 	@Override
-	public Vector2 sub (Vector2 v) {
+	public Vector2 sub(Vector2 v) {
 		x -= v.x;
 		y -= v.y;
 		return this;
@@ -101,14 +105,14 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	 * @param x The x-component of the other vector
 	 * @param y The y-component of the other vector
 	 * @return This vector for chaining */
-	public Vector2 sub (float x, float y) {
+	public Vector2 sub(float x, float y) {
 		this.x -= x;
 		this.y -= y;
 		return this;
 	}
 
 	@Override
-	public Vector2 nor () {
+	public Vector2 nor() {
 		float len = len();
 		if (len != 0) {
 			x /= len;
@@ -118,7 +122,7 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	}
 
 	@Override
-	public Vector2 add (Vector2 v) {
+	public Vector2 add(Vector2 v) {
 		x += v.x;
 		y += v.y;
 		return this;
@@ -128,27 +132,27 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	 * @param x The x-component
 	 * @param y The y-component
 	 * @return This vector for chaining */
-	public Vector2 add (float x, float y) {
+	public Vector2 add(float x, float y) {
 		this.x += x;
 		this.y += y;
 		return this;
 	}
 
-	public static float dot (float x1, float y1, float x2, float y2) {
+	public static float dot(float x1, float y1, float x2, float y2) {
 		return x1 * x2 + y1 * y2;
 	}
 
 	@Override
-	public float dot (Vector2 v) {
+	public float dot(Vector2 v) {
 		return x * v.x + y * v.y;
 	}
 
-	public float dot (float ox, float oy) {
+	public float dot(float ox, float oy) {
 		return x * ox + y * oy;
 	}
 
 	@Override
-	public Vector2 scl (float scalar) {
+	public Vector2 scl(float scalar) {
 		x *= scalar;
 		y *= scalar;
 		return this;
@@ -156,63 +160,63 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 
 	/** Multiplies this vector by a scalar
 	 * @return This vector for chaining */
-	public Vector2 scl (float x, float y) {
+	public Vector2 scl(float x, float y) {
 		this.x *= x;
 		this.y *= y;
 		return this;
 	}
 
 	@Override
-	public Vector2 scl (Vector2 v) {
+	public Vector2 scl(Vector2 v) {
 		this.x *= v.x;
 		this.y *= v.y;
 		return this;
 	}
 
 	@Override
-	public Vector2 mulAdd (Vector2 vec, float scalar) {
+	public Vector2 mulAdd(Vector2 vec, float scalar) {
 		this.x += vec.x * scalar;
 		this.y += vec.y * scalar;
 		return this;
 	}
 
 	@Override
-	public Vector2 mulAdd (Vector2 vec, Vector2 mulVec) {
+	public Vector2 mulAdd(Vector2 vec, Vector2 mulVec) {
 		this.x += vec.x * mulVec.x;
 		this.y += vec.y * mulVec.y;
 		return this;
 	}
 
-	public static float dst (float x1, float y1, float x2, float y2) {
+	public static float dst(float x1, float y1, float x2, float y2) {
 		final float x_d = x2 - x1;
 		final float y_d = y2 - y1;
-		return (float)Math.sqrt(x_d * x_d + y_d * y_d);
+		return (float) Math.sqrt(x_d * x_d + y_d * y_d);
 	}
 
 	@Override
-	public float dst (Vector2 v) {
+	public float dst(Vector2 v) {
 		final float x_d = v.x - x;
 		final float y_d = v.y - y;
-		return (float)Math.sqrt(x_d * x_d + y_d * y_d);
+		return (float) Math.sqrt(x_d * x_d + y_d * y_d);
 	}
 
 	/** @param x The x-component of the other vector
 	 * @param y The y-component of the other vector
 	 * @return the distance between this and the other vector */
-	public float dst (float x, float y) {
+	public float dst(float x, float y) {
 		final float x_d = x - this.x;
 		final float y_d = y - this.y;
-		return (float)Math.sqrt(x_d * x_d + y_d * y_d);
+		return (float) Math.sqrt(x_d * x_d + y_d * y_d);
 	}
 
-	public static float dst2 (float x1, float y1, float x2, float y2) {
+	public static float dst2(float x1, float y1, float x2, float y2) {
 		final float x_d = x2 - x1;
 		final float y_d = y2 - y1;
 		return x_d * x_d + y_d * y_d;
 	}
 
 	@Override
-	public float dst2 (Vector2 v) {
+	public float dst2(Vector2 v) {
 		final float x_d = v.x - x;
 		final float y_d = v.y - y;
 		return x_d * x_d + y_d * y_d;
@@ -221,14 +225,14 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	/** @param x The x-component of the other vector
 	 * @param y The y-component of the other vector
 	 * @return the squared distance between this and the other vector */
-	public float dst2 (float x, float y) {
+	public float dst2(float x, float y) {
 		final float x_d = x - this.x;
 		final float y_d = y - this.y;
 		return x_d * x_d + y_d * y_d;
 	}
 
 	@Override
-	public Vector2 limit (float limit) {
+	public Vector2 limit(float limit) {
 		if (len2() > limit * limit) {
 			nor();
 			scl(limit);
@@ -237,23 +241,26 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	}
 
 	@Override
-	public Vector2 clamp (float min, float max) {
+	public Vector2 clamp(float min, float max) {
 		final float l2 = len2();
-		if (l2 == 0f) return this;
-		if (l2 > max * max) return nor().scl(max);
-		if (l2 < min * min) return nor().scl(min);
+		if (l2 == 0f)
+			return this;
+		if (l2 > max * max)
+			return nor().scl(max);
+		if (l2 < min * min)
+			return nor().scl(min);
 		return this;
 	}
 
 	@Override
-	public String toString () {
+	public String toString() {
 		return "[" + x + ":" + y + "]";
 	}
 
 	/** Left-multiplies this vector by the given matrix
 	 * @param mat the matrix
 	 * @return this vector */
-	public Vector2 mul (Matrix3 mat) {
+	public Vector2 mul(Matrix3 mat) {
 		float x = this.x * mat.val[0] + this.y * mat.val[3] + mat.val[6];
 		float y = this.x * mat.val[1] + this.y * mat.val[4] + mat.val[7];
 		this.x = x;
@@ -264,7 +271,7 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	/** Calculates the 2D cross product between this and the given vector.
 	 * @param v the other vector
 	 * @return the cross product */
-	public float crs (Vector2 v) {
+	public float crs(Vector2 v) {
 		return this.x * v.y - this.y * v.x;
 	}
 
@@ -272,33 +279,34 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	 * @param x the x-coordinate of the other vector
 	 * @param y the y-coordinate of the other vector
 	 * @return the cross product */
-	public float crs (float x, float y) {
+	public float crs(float x, float y) {
 		return this.x * y - this.y * x;
 	}
 
 	/** @return the angle in degrees of this vector (point) relative to the x-axis. Angles are towards the positive y-axis (typically
 	 *         counter-clockwise) and between 0 and 360. */
-	public float angle () {
-		float angle = (float)Math.atan2(y, x) * MathUtils.radiansToDegrees;
-		if (angle < 0) angle += 360;
+	public float angle() {
+		float angle = (float) Math.atan2(y, x) * MathUtils.radiansToDegrees;
+		if (angle < 0)
+			angle += 360;
 		return angle;
 	}
 
 	/** @return the angle in radians of this vector (point) relative to the x-axis. Angles are towards the positive y-axis.
 	 *         (typically counter-clockwise) */
-	public float angleRad () {
-		return (float)Math.atan2(y, x);
+	public float angleRad() {
+		return (float) Math.atan2(y, x);
 	}
 
 	/** Sets the angle of the vector in degrees relative to the x-axis, towards the positive y-axis (typically counter-clockwise).
 	 * @param degrees The angle in degrees to set. */
-	public Vector2 setAngle (float degrees) {
+	public Vector2 setAngle(float degrees) {
 		return setAngleRad(degrees * MathUtils.degreesToRadians);
 	}
 
 	/** Sets the angle of the vector in radians relative to the x-axis, towards the positive y-axis (typically counter-clockwise).
 	 * @param radians The angle in radians to set. */
-	public Vector2 setAngleRad (float radians) {
+	public Vector2 setAngleRad(float radians) {
 		this.set(len(), 0f);
 		this.rotateRad(radians);
 
@@ -307,15 +315,15 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 
 	/** Rotates the Vector2 by the given angle, counter-clockwise assuming the y-axis points up.
 	 * @param degrees the angle in degrees */
-	public Vector2 rotate (float degrees) {
+	public Vector2 rotate(float degrees) {
 		return rotateRad(degrees * MathUtils.degreesToRadians);
 	}
 
 	/** Rotates the Vector2 by the given angle, counter-clockwise assuming the y-axis points up.
 	 * @param radians the angle in radians */
-	public Vector2 rotateRad (float radians) {
-		float cos = (float)Math.cos(radians);
-		float sin = (float)Math.sin(radians);
+	public Vector2 rotateRad(float radians) {
+		float cos = (float) Math.cos(radians);
+		float sin = (float) Math.sin(radians);
 
 		float newX = this.x * cos - this.y * sin;
 		float newY = this.x * sin + this.y * cos;
@@ -327,7 +335,7 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	}
 
 	/** Rotates the Vector2 by 90 degrees in the specified direction, where >= 0 is counter-clockwise and < 0 is clockwise. */
-	public Vector2 rotate90 (int dir) {
+	public Vector2 rotate90(int dir) {
 		float x = this.x;
 		if (dir >= 0) {
 			this.x = -y;
@@ -340,20 +348,20 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	}
 
 	@Override
-	public Vector2 lerp (Vector2 target, float alpha) {
+	public Vector2 lerp(Vector2 target, float alpha) {
 		final float invAlpha = 1.0f - alpha;
 		this.x = (x * invAlpha) + (target.x * alpha);
 		this.y = (y * invAlpha) + (target.y * alpha);
 		return this;
 	}
-	
+
 	@Override
-	public Vector2 interpolate (Vector2 target, float alpha, Interpolation interpolator) {
+	public Vector2 interpolate(Vector2 target, float alpha, Interpolation interpolator) {
 		return lerp(target, interpolator.apply(0f, 1f, alpha));
 	}
 
 	@Override
-	public int hashCode () {
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + NumberUtils.floatToIntBits(x);
@@ -362,104 +370,114 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	}
 
 	@Override
-	public boolean equals (Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		Vector2 other = (Vector2)obj;
-		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x)) return false;
-		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(other.y)) return false;
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vector2 other = (Vector2) obj;
+		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x))
+			return false;
+		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(other.y))
+			return false;
 		return true;
 	}
 
 	@Override
-	public boolean epsilonEquals (Vector2 other, float epsilon) {
-		if (other == null) return false;
-		if (Math.abs(other.x - x) > epsilon) return false;
-		if (Math.abs(other.y - y) > epsilon) return false;
+	public boolean epsilonEquals(Vector2 other, float epsilon) {
+		if (other == null)
+			return false;
+		if (Math.abs(other.x - x) > epsilon)
+			return false;
+		if (Math.abs(other.y - y) > epsilon)
+			return false;
 		return true;
 	}
 
 	/** Compares this vector with the other vector, using the supplied epsilon for fuzzy equality testing.
 	 * @return whether the vectors are the same. */
-	public boolean epsilonEquals (float x, float y, float epsilon) {
-		if (Math.abs(x - this.x) > epsilon) return false;
-		if (Math.abs(y - this.y) > epsilon) return false;
+	public boolean epsilonEquals(float x, float y, float epsilon) {
+		if (Math.abs(x - this.x) > epsilon)
+			return false;
+		if (Math.abs(y - this.y) > epsilon)
+			return false;
 		return true;
 	}
 
 	@Override
-	public boolean isUnit () {
+	public boolean isUnit() {
 		return isUnit(0.000000001f);
 	}
 
 	@Override
-	public boolean isUnit (final float margin) {
+	public boolean isUnit(final float margin) {
 		return Math.abs(len2() - 1f) < margin;
 	}
 
 	@Override
-	public boolean isZero () {
+	public boolean isZero() {
 		return x == 0 && y == 0;
 	}
 
 	@Override
-	public boolean isZero (final float margin) {
+	public boolean isZero(final float margin) {
 		return len2() < margin;
 	}
 
 	@Override
-	public boolean isOnLine (Vector2 other) {
+	public boolean isOnLine(Vector2 other) {
 		return MathUtils.isZero(x * other.y - y * other.x);
 	}
 
 	@Override
-	public boolean isOnLine (Vector2 other, float epsilon) {
+	public boolean isOnLine(Vector2 other, float epsilon) {
 		return MathUtils.isZero(x * other.y - y * other.x, epsilon);
 	}
 
 	@Override
-	public boolean isCollinear (Vector2 other, float epsilon) {
+	public boolean isCollinear(Vector2 other, float epsilon) {
 		return isOnLine(other, epsilon) && dot(other) > 0f;
 	}
 
 	@Override
-	public boolean isCollinear (Vector2 other) {
+	public boolean isCollinear(Vector2 other) {
 		return isOnLine(other) && dot(other) > 0f;
 	}
 
 	@Override
-	public boolean isCollinearOpposite (Vector2 other, float epsilon) {
+	public boolean isCollinearOpposite(Vector2 other, float epsilon) {
 		return isOnLine(other, epsilon) && dot(other) < 0f;
 	}
 
 	@Override
-	public boolean isCollinearOpposite (Vector2 other) {
+	public boolean isCollinearOpposite(Vector2 other) {
 		return isOnLine(other) && dot(other) < 0f;
 	}
 
 	@Override
-	public boolean isPerpendicular (Vector2 vector) {
+	public boolean isPerpendicular(Vector2 vector) {
 		return MathUtils.isZero(dot(vector));
 	}
 
 	@Override
-	public boolean isPerpendicular (Vector2 vector, float epsilon) {
+	public boolean isPerpendicular(Vector2 vector, float epsilon) {
 		return MathUtils.isZero(dot(vector), epsilon);
 	}
 
 	@Override
-	public boolean hasSameDirection (Vector2 vector) {
+	public boolean hasSameDirection(Vector2 vector) {
 		return dot(vector) > 0;
 	}
 
 	@Override
-	public boolean hasOppositeDirection (Vector2 vector) {
+	public boolean hasOppositeDirection(Vector2 vector) {
 		return dot(vector) < 0;
 	}
 
 	@Override
-	public Vector2 setZero () {
+	public Vector2 setZero() {
 		this.x = 0;
 		this.y = 0;
 		return this;

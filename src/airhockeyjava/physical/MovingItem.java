@@ -113,13 +113,20 @@ public abstract class MovingItem implements IMovingItem {
 
 		// Calculate and update the velocity, position if changed
 		if (!newPosition.equals(oldestState.position)) {
-			this.position = newPosition;
 			Vector2 newVelocity = new Vector2(newPosition);
 			float deltaTimeSeconds = ((float) (currentState.nanoTime - oldestState.nanoTime)) / 1000000000f;
-			newVelocity = newVelocity.sub(oldestState.position).scl(1f / deltaTimeSeconds);
+			newVelocity.sub(oldestState.position).scl(1f / deltaTimeSeconds);
 
-			if (!this.velocity.equals(newVelocity)) {
-				this.velocity = newVelocity;
+			// Need to enforce maximum speed limit on user paddle; recalculate position if necessary
+			Vector2 newLimitedVelocity = new Vector2(newVelocity)
+					.limit(Constants.MAX_USER_MALLET_SPEED_METERS_PER_SECOND);
+
+			Vector2 distanceDifference = newVelocity.sub(new Vector2(newLimitedVelocity)).scl(
+					deltaTimeSeconds);
+			this.position = newPosition.sub(distanceDifference);
+
+			if (!this.velocity.equals(newLimitedVelocity)) {
+				this.velocity = newLimitedVelocity;
 				if (this.velocity.x - 0 > 0.00001 || this.velocity.y - 0 > 0.00001) {
 					System.out.println(String.format("v_x = %f, v_y = %f", this.velocity.x,
 							this.velocity.y));

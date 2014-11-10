@@ -30,7 +30,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private BufferedImage imgBuffer;
 	private Graphics bufferContext;
 	private InfoBar infoBar;
-	private String[] externalInfoBarData;
+	private String[] externalInfoBarData = new String[]{};
 
 	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FPS;
 	private long currentFps = 0;

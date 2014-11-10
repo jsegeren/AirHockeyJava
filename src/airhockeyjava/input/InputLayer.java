@@ -76,20 +76,19 @@ public class InputLayer implements IInputLayer {
 
 	@Override
 	public void keyPressed(KeyEvent ke) {
-		// TODO Auto-generated method stub
-
+		System.out.println(ke.toString());
+		this.unhandledKeyPresses.push(ke.getKeyCode());
 	}
 
 	@Override
 	public void keyReleased(KeyEvent ke) {
-		this.unhandledKeyPresses.push(ke.getKeyCode());
 	}
 
 	/**
 	 * Returns the last key pressed or VK_UNDEFINED if all keypresses have been handled
 	 */
 	@Override
-	public int handleKeyPress(){
+	public int handleKeyPress() {
 		try {
 			return this.unhandledKeyPresses.pop();
 		} catch (EmptyStackException e) {

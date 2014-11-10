@@ -139,7 +139,6 @@ public class Game {
 	private void handleKeyPresses() {
 		int lastKeyPressed = this.inputLayer.handleKeyPress();
 		while (lastKeyPressed != KeyEvent.VK_UNDEFINED) {
-
 			switch (lastKeyPressed) {
 			case KeyEvent.VK_R:
 				resetPuck();
@@ -206,6 +205,7 @@ public class Game {
 	 */
 	private void updateStates(float deltaTime) {
 
+		setGameInfoDisplay();
 		handleKeyPresses();
 
 		if (this.settings.goalDetectionOn)
@@ -219,9 +219,6 @@ public class Game {
 		// Otherwise we will use the vision system
 		else if (gameType == GameTypeEnum.REAL_GAME_TYPE) {
 		}
-
-		setGameInfoDisplay();
-
 	}
 
 	/**

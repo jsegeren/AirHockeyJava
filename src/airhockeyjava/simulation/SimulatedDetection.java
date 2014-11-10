@@ -4,6 +4,8 @@ import airhockeyjava.game.Game;
 import airhockeyjava.game.Constants;
 import airhockeyjava.input.IInputLayer;
 import airhockeyjava.physical.IMovingItem;
+import airhockeyjava.physical.Mallet;
+import airhockeyjava.physical.Puck;
 import airhockeyjava.util.Conversion;
 import airhockeyjava.util.Vector2;
 
@@ -42,15 +44,6 @@ public class SimulatedDetection implements IDetection {
 		updateItemStates(deltaTime);
 	}
 
-	public boolean isColliding(IMovingItem itemA, IMovingItem itemB) {
-		// TODO project out the positions of the items; if paths intersect at any point within deltaT return true
-		// right now just returning whether they are ~ the same position
-		return (Math.abs(itemA.getPosition().x - itemB.getPosition().x) <= (itemA.getRadius() + itemB
-				.getRadius()))
-				&& (Math.abs(itemA.getPosition().y - itemB.getPosition().y) <= (itemA.getRadius() + itemB
-						.getRadius()));
-	}
-
 	@Override
 	public boolean willCollide(IMovingItem itemA, IMovingItem itemB, float deltaT) {
 		return true; // TODO actually implement this
@@ -61,17 +54,18 @@ public class SimulatedDetection implements IDetection {
 	 * @param deltaTime
 	 */
 	private void updateItemStates(float deltaTime) {
-		updatePuckState(deltaTime);
 		updateUserMalletState();
+		updatePuckState(deltaTime);
 	}
 
 	/**
 	 * Internal method to update puck state. Note the assumptions currently in place for the physical model:
 	 * 	1) Collisions are perfectly elastic. That is, momentum is preserved; however, we may want to incorporate
 	 *   some energy loss, based on experimentation or a more sophisticated mechanical model.
-	 *  2) Collision between puck and mallet do not affect the velocity/position of the mallet. That is, all
-	 *   energy is transferred to the puck. This seems reasonable as the mallet is being held in a fixed position
-	 *   but obviously this is not completely accurate.
+	 *  2) Collision between puck and mallet do not affect the velocity/position of the mallet.
+	 * 
+	 * Reference (billiard collisions i.e. 1st year physics):
+	 * http://www.real-world-physics-problems.com/physics-of-billiards.html 
 	 * 
 	 * @param deltaTime
 	 */
@@ -83,44 +77,82 @@ public class SimulatedDetection implements IDetection {
 		if (newPuckPositionX >= maxAllowedPuckX || newPuckPositionX <= minAllowedPuckX) {
 			newPuckPositionX = game.gamePuck.getPosition().x - game.gamePuck.getVelocity().x
 					* deltaTime;
-			game.gamePuck.getVelocity().x = -1f * game.gamePuck.getVelocity().x;
+			game.gamePuck.getVelocity().x *= -1f + Constants.WALL_PUCK_COLLISION_LOSS_COEFFICIENT;
 		}
 		float newPuckPositionY = game.gamePuck.getPosition().y + game.gamePuck.getVelocity().y
 				* deltaTime;
 		if (newPuckPositionY >= maxAllowedPuckY || newPuckPositionY <= minAllowedPuckY) {
-			game.gamePuck.getVelocity().y = -1f * game.gamePuck.getVelocity().y;
+			game.gamePuck.getVelocity().y *= -1f + Constants.WALL_PUCK_COLLISION_LOSS_COEFFICIENT;
 		}
+		// Update puck position, enforcing boundary-based position constraints
+		Vector2 newPuckPosition = new Vector2(Math.min(Math.max(newPuckPositionX, minAllowedPuckX),
+				maxAllowedPuckX), Math.min(Math.max(newPuckPositionY, minAllowedPuckY),
+				maxAllowedPuckY));
+		game.gamePuck.setPosition(newPuckPosition);
 
 		// Now check for puck-mallet collisions over last-to-current interval.
 		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
 		if (isColliding(game.gamePuck, game.userMallet)) {
 			System.out.println(String.format("User hit the puck: %f %f",
 					game.gamePuck.getPosition().x, game.gamePuck.getPosition().y));
-			// TODO implement actual energy transfer based on velocity of items
-			game.gamePuck.getVelocity().x = (game.gamePuck.getPosition().x > game.userMallet
-					.getPosition().x) ? Constants.FAKE_VELOCITY_BURST : -1f
-					* Constants.FAKE_VELOCITY_BURST;
-			game.gamePuck.getVelocity().y = (game.gamePuck.getPosition().y > game.userMallet
-					.getPosition().y) ? Constants.FAKE_VELOCITY_BURST : -1f
-					* Constants.FAKE_VELOCITY_BURST;
+			game.gamePuck.setVelocity(handleCollision(game.gamePuck, game.userMallet));
 		}
 		if (isColliding(game.gamePuck, game.robotMallet)) {
 			System.out.println(String.format("User hit the puck: %f %f",
 					game.gamePuck.getPosition().x, game.gamePuck.getPosition().y));
-			// TODO implement actual energy transfer based on velocity of items
-			game.gamePuck.getVelocity().x = (game.gamePuck.getPosition().x > game.robotMallet
-					.getPosition().x) ? Constants.FAKE_VELOCITY_BURST : -1f
-					* Constants.FAKE_VELOCITY_BURST;
-			game.gamePuck.getVelocity().y = (game.gamePuck.getPosition().y > game.robotMallet
-					.getPosition().y) ? Constants.FAKE_VELOCITY_BURST : -1f
-					* Constants.FAKE_VELOCITY_BURST;
+			game.gamePuck.setVelocity(handleCollision(game.gamePuck, game.robotMallet));
 		}
 
-		// Update positions, enforcing boundary-based position constraints
-		Vector2 newPuckPosition = new Vector2(Math.min(Math.max(newPuckPositionX, minAllowedPuckX),
-				maxAllowedPuckX), Math.min(Math.max(newPuckPositionY, minAllowedPuckY),
-				maxAllowedPuckY));
-		game.gamePuck.setPosition(newPuckPosition);
+		// Model surface friction loss
+		// TODO Incorporate real physics!
+		game.gamePuck.getVelocity().scl(1 - Constants.PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT);
+	}
+
+	/**
+	 * Internal method to check if two moving items are colliding
+	 * @param itemA
+	 * @param itemB
+	 * @return
+	 */
+	private boolean isColliding(IMovingItem itemA, IMovingItem itemB) {
+		return ((itemA != itemB) && new Vector2(itemA.getPosition()).sub(itemB.getPosition()).len() <= itemA
+				.getRadius() + itemB.getRadius());
+	}
+
+	/**
+	 * Internal method to handle collision between puck and mallet.
+	 * TODO Account for mass differences between puck and mallet. Use energy formulation instead.
+	 * @param puck
+	 * @param mallet
+	 * @return Vector2 the new velocity of the puck
+	 */
+	private Vector2 handleCollision(Puck puck, Mallet mallet) {
+		// Correct position of puck to prevent cascading/duplicate collisions
+		Vector2 unitVectorBetween = new Vector2(puck.getPosition()).sub(mallet.getPosition()).nor();
+		puck.setPosition(new Vector2(mallet.getPosition()).add(unitVectorBetween.scl(puck
+				.getRadius() + mallet.getRadius())));
+
+		Vector2 malletToPuck = getTransferredForce(mallet, puck);
+		Vector2 newPuckVelocity = new Vector2(malletToPuck).sub(puck.getVelocity());
+		return newPuckVelocity.scl(1 - Constants.MALLET_PUCK_COLLISION_LOSS_COEFFICIENT).limit(
+				Constants.MAX_PUCK_SPEED_METERS_PER_SECOND);
+
+	}
+
+	private Vector2 getTransferredForce(IMovingItem itemA, IMovingItem itemB) {
+		Vector2 unitVectorBetween = new Vector2(itemA.getPosition()).sub(itemB.getPosition()).nor();
+		Vector2 velocityA = new Vector2(itemA.getVelocity());
+
+		if (!velocityA.equals(Vector2.Zero)) {
+			// Consider angle between two items and velocity
+			float collisionAngle = (float) Vector2.angleBetween(unitVectorBetween, velocityA);
+			if (collisionAngle > 90f) {
+				float impactOther = (collisionAngle - 90f) / 90f;
+				float forceOther = velocityA.len() * impactOther;
+				return unitVectorBetween.scl(forceOther).scl(-1f);
+			}
+		}
+		return new Vector2();
 	}
 
 	/**
@@ -135,11 +167,13 @@ public class SimulatedDetection implements IDetection {
 		int mouseY = inputLayer.getMouseY() - Constants.GUI_TABLE_OFFSET_Y;
 
 		float newPositionX = Math.max(
-				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX) : Math
-						.min(Conversion.pixelToMeter(mouseX),
-								Constants.GAME_TABLE_WIDTH_METERS / 2f)), 0f);
+				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX)
+						- game.userMallet.getRadius() : Math.min(Conversion.pixelToMeter(mouseX),
+						Constants.GAME_TABLE_WIDTH_METERS / 2f - game.userMallet.getRadius())),
+				game.userMallet.getRadius());
 		float newPositionY = Math.max(
-				Math.min(Conversion.pixelToMeter(mouseY), Constants.GAME_TABLE_HEIGHT_METERS), 0f);
+				Math.min(Conversion.pixelToMeter(mouseY), Constants.GAME_TABLE_HEIGHT_METERS
+						- game.userMallet.getRadius()), game.userMallet.getRadius());
 
 		Vector2 newPosition = new Vector2(newPositionX, newPositionY);
 		game.userMallet.updatePositionAndCalculateVelocity(newPosition);

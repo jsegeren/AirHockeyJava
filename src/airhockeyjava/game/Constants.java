@@ -62,7 +62,12 @@ public class Constants {
 	/**
 	 * Simulation Model Constants
 	 */
+	public static final float WALL_PUCK_COLLISION_LOSS_COEFFICIENT = 0.03f;
+	public static final float MALLET_PUCK_COLLISION_LOSS_COEFFICIENT = 0.05f;
+	public static final float PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT = 0.01f;
 	public static final int NUMBER_PREVIOUS_STATES_TRACKED = 2; // Number of previous positions to use in determining velocity
 	public static final int GAME_SIMULATION_TARGET_FPS = 60;
 	public static final float FAKE_VELOCITY_BURST = 0.01f; // TODO Replace. Just using burst of energy upon collisions
+	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 0.1f;
+	public static final float MAX_USER_MALLET_SPEED_METERS_PER_SECOND = 1f;
 }
