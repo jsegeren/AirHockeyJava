@@ -140,6 +140,9 @@ public class Game {
 		int lastKeyPressed = this.inputLayer.handleKeyPress();
 		while (lastKeyPressed != KeyEvent.VK_UNDEFINED) {
 			switch (lastKeyPressed) {
+			case KeyEvent.VK_A:
+				this.settings.enableAI = !this.settings.enableAI;
+				break;
 			case KeyEvent.VK_R:
 				resetPuck();
 				break;

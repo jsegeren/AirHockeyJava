@@ -13,7 +13,7 @@ import airhockeyjava.util.Vector2;
  * Class for the simulated game physics. Mocks out the detection layer for simulating game physics.
  * TODO determine whether detection layer is responsible for choosing which it should update or if
  * this should be specified by the constructing/calling class (i.e. Game class).
- * 
+ *
  * @author Joshua Segeren
  *
  */
@@ -56,6 +56,9 @@ public class SimulatedDetection implements IDetection {
 	private void updateItemStates(float deltaTime) {
 		updateUserMalletState();
 		updatePuckState(deltaTime);
+		if (game.settings.enableAI) {
+			updateRobotMalletState(deltaTime);
+		}
 	}
 
 	/**
@@ -162,10 +165,12 @@ public class SimulatedDetection implements IDetection {
 	 * @param deltaTime
 	 */
 	private void updateUserMalletState() {
-		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
+		//Get the mouse coordinates relative to the table
 		int mouseX = inputLayer.getMouseX() - Constants.GUI_TABLE_OFFSET_X;
 		int mouseY = inputLayer.getMouseY() - Constants.GUI_TABLE_OFFSET_Y;
 
+		// Update the mallet position, restricting it to the bounds of the table
+		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
 		float newPositionX = Math.max(
 				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX)
 						- game.userMallet.getRadius() : Math.min(Conversion.pixelToMeter(mouseX),
@@ -177,5 +182,19 @@ public class SimulatedDetection implements IDetection {
 
 		Vector2 newPosition = new Vector2(newPositionX, newPositionY);
 		game.userMallet.updatePositionAndCalculateVelocity(newPosition);
+	}
+
+	/**
+	 * Move the robot paddle in response to the puck position and velocity
+	 * TODO: Actually implement this properly
+	 * @param deltaTime
+	 */
+	private void updateRobotMalletState(float deltaTime) {
+		float newMallletPositionY = game.robotMallet.getPosition().y + (game.gamePuck.getPosition().y - game.robotMallet.getPosition().y) * 0.05f * deltaTime;
+
+		game.robotMallet.updatePositionAndCalculateVelocity(
+				new Vector2(
+						game.robotMallet.getPosition().x,
+						newMallletPositionY));
 	}
 }

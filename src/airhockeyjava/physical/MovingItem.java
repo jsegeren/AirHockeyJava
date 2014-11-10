@@ -5,7 +5,7 @@ import java.util.Stack;
 import airhockeyjava.game.Constants;
 import airhockeyjava.util.Vector2;
 
-/** 
+/**
  * Superclass to represent moving items.
  * @author Joshua Segeren
  *
