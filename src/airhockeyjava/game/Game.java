@@ -72,8 +72,7 @@ public class Game {
 		game = new Game(gameType);
 
 		JFrame frame = new JFrame("AirHockey");
-		frame.setTitle("AirHockey");
-		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+		frame.setSize(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(game.guiLayer);
@@ -126,14 +125,33 @@ public class Game {
 		// If simulated, we need to use input data to update user mallet state
 		// Also need to use mocked detection layer to update puck position via physics
 		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
-			// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
-			game.userMallet.getPosition().x = Conversion.pixelToMeter(game.inputLayer.getMouseX()
-					- Constants.TABLE_OFFSET_X);
-			System.out.println(String.format("mouseX: %f", game.userMallet.getPosition().x));
-			game.userMallet.getPosition().y = Conversion.pixelToMeter(game.inputLayer.getMouseY()
-					- Constants.TABLE_OFFSET_Y);
-			System.out.println(String.format("mouseY: %f", game.userMallet.getPosition().y));
+			
+			//Get mouse x and y relative to the table
+			int mouseX = game.inputLayer.getMouseX() - Constants.GUI_TABLE_OFFSET_X;
+			int mouseY = game.inputLayer.getMouseY() - Constants.GUI_TABLE_OFFSET_Y;
+			
+			//Update mallet x position if mouse x is within the width of the players half
+			if (mouseX > 0 && mouseX < Conversion.meterToPixel(Constants.GAME_TABLE_WIDTH_METERS / 2)) {
+				game.userMallet.getPosition().x = Conversion.pixelToMeter(mouseX);
+			//Else, the mouse is off the left hand side
+			} else if (mouseX <= 0) {
+				game.userMallet.getPosition().x = 0;
+			//Else, the mouse if off the right hand side
+			} else {
+				game.userMallet.getPosition().x = (Constants.GAME_TABLE_WIDTH_METERS / 2);
+			}
 
+			//Update mallet y position if mouse y is within the height of the players half
+			if (mouseY > 0 && mouseY < Conversion.meterToPixel(Constants.GAME_TABLE_HEIGHT_METERS)) {
+			game.userMallet.getPosition().y = Conversion.pixelToMeter(mouseY);
+			//Else, the mouse is off the top
+			} else if (mouseY <= 0) {
+				game.userMallet.getPosition().y = 0;
+			//Else, the mouse if off the bottom
+			} else {
+				game.userMallet.getPosition().y = (Constants.GAME_TABLE_HEIGHT_METERS);
+			}
+			
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
 		}
 	}

@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 
 import airhockeyjava.game.Game;
 import airhockeyjava.util.*;
-import airhockeyjava.util.Conversion;
 
 /**
  * Class for simulation UI layer.
@@ -28,50 +27,56 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	private Game game; // Reference to the top-level game object itself to have access to global variables
 
+	private BufferedImage imgBuffer;
+	private Graphics bufferContext;
 	private InfoBar infoBar;
 
-	private BufferedImage backBuffer;
+	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FPS;
+	private long currentFps = 0;
 
-	private long frameTime = 1000000000 / Constants.GUI_FPS;
-	private long fps = 0;
-
-	private boolean isRunning = true;
-
-
+	
 	public GuiLayer(Game currentGame) {
 		this.game = currentGame;
 	}
 
-	/* (non-Javadoc)
-	 * @see airhockeyjava.graphics.IGuiLayer#start()
+	/* 
+	 * Run the graphics thread
 	 */
 	public void run() {
-		// Provide loop based on desired refresh rate to render output based on item positions
+
+		long lastLoopTime = System.nanoTime();
+		long lastFpsTime = 0;
+		long fpsCount = 0;
 
 		initialize();
 		setVisible(true);
-		int fpsCounter = 0;
-		long lastFpsTime = 0;
-		long lastLoopTime = System.nanoTime();
 
-		while (isRunning) {
-			long now = System.nanoTime();
-			lastLoopTime = now;
+		// Provide loop based on desired refresh rate to render output based on item positions
+		while (true) {
+			
+			// Determine how long it's been since last update; this will be used to calculate
+			// how far entities should move this loop
+			long currentTime = System.nanoTime();
+			long updateLengthTime = currentTime - lastLoopTime;
+			lastLoopTime = currentTime;
 
+			// Update frame counter
+			lastFpsTime += updateLengthTime;
+			fpsCount++;
+
+			//Repaint the screen (calls paint method)
 			repaint();
 
-			// update our FPS counter if a second has passed since
-			// we last recorded
-			fpsCounter++;
-			lastFpsTime += (System.nanoTime() - lastLoopTime);
-			if (lastFpsTime >= 10000000) {
-				this.fps = fpsCounter;
+			// Update FPS counter and remaining game time if a second has passed since last recorded
+			if (lastFpsTime >= 1000000000) {
+				this.currentFps = fpsCount;
 				lastFpsTime = 0;
-				fpsCounter = 0;
+				fpsCount = 0;
 			}
 
+
 			// Sleep until next frame
-			long sleepTime = (lastLoopTime - System.nanoTime() + frameTime) / 1000000;
+			long sleepTime = (lastLoopTime - System.nanoTime() + GUI_FRAME_TIME) / 1000000;
 			if (sleepTime > 0) {
 				try {
 					Thread.sleep(sleepTime);
@@ -79,10 +84,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 					e.printStackTrace();
 				}
 			}
-
 		}
-
-		setVisible(false);
 
 	}
 
@@ -92,13 +94,20 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	void initialize() {
 
 		// Create a buffered image
-		this.backBuffer = new BufferedImage(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT,
+		this.imgBuffer = new BufferedImage(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT,
 				BufferedImage.TYPE_INT_RGB);
+		
+		// Save the context of the buffered image to draw to
+		this.bufferContext = imgBuffer.getGraphics();
 
 		//Init an info bar
-		this.infoBar = new InfoBar(Constants.WINDOW_WIDTH - Constants.INFO_BAR_WIDTH,
-				Constants.TABLE_OFFSET_Y, Constants.INFO_BAR_WIDTH,
-				scale(this.game.gameTable.getHeight()));
+		this.infoBar = new InfoBar(
+				Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH,
+				Constants.GUI_TABLE_OFFSET_Y, 
+				Constants.GUI_INFO_BAR_WIDTH,
+				Constants.GUI_WINDOW_HEIGHT - Constants.GUI_TABLE_OFFSET_Y,
+				this.bufferContext
+				);
 	}
 
 	/**
@@ -106,38 +115,76 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 */
 	@Override
 	public void paint(Graphics graphicsContext) {
-		Graphics bufferContext = backBuffer.getGraphics();
 
-		bufferContext.setColor(Color.BLACK);
-		bufferContext.fillRect(0, 0, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-
-		drawTable(this.game.gameTable, bufferContext, Color.WHITE);
+		clearScreen();
+		drawTable(this.game.gameTable);
 
 		Iterator<IMovingItem> iter = this.game.movingItems.iterator();
 		while (iter.hasNext()) {
-			drawMovingItem(iter.next(), bufferContext, Color.WHITE);
+			drawMovingItem(iter.next(), Color.WHITE);
 		}
 
-		this.infoBar.setContext(bufferContext);
 		this.infoBar.clear();
 		this.infoBar.writeLine("Welcome to Airhockey");
 		this.infoBar.writeLine("");
-		this.infoBar.writeLine("FPS:" + this.fps);
+		this.infoBar.writeLine("FPS:" + this.currentFps);
 
-		graphicsContext.drawImage(this.backBuffer, 0, 0, this);
+		graphicsContext.drawImage(this.imgBuffer, 0, 0, this);
+	}
+
+	/**
+	 * Clear the entire screen
+	 * 
+	 * @param context
+	 */
+	private void clearScreen() {
+		Graphics context = this.bufferContext;
+		context.setColor(Color.BLACK);
+		context.fillRect(0, 0, Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
 	}
 
 	/**
 	 * Draw a table
 	 * 
-	 * @param item
-	 * @param buffer
+	 * @param table
+	 * @param context
 	 */
-	private void drawTable(Table table, Graphics context, Color color) {
-		context.setColor(Color.WHITE);
-		context.drawRect(Constants.TABLE_OFFSET_X, Constants.TABLE_OFFSET_Y,
-				scale(table.getWidth()), scale(table.getHeight()));
+	private void drawTable(Table table) {
+		Graphics context = this.bufferContext;
+		context.setColor(Color.BLUE);
+		
+		//Draw the table border
+		context.drawRect(
+				Constants.GUI_TABLE_OFFSET_X, 
+				Constants.GUI_TABLE_OFFSET_Y,
+				scale(Constants.GAME_TABLE_WIDTH_METERS), 
+				scale(Constants.GAME_TABLE_HEIGHT_METERS)
+				);
 
+		//Draw the center line
+		context.drawLine(
+				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS/2), 
+				Constants.GUI_TABLE_OFFSET_Y,
+				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS/2), 
+				Constants.GUI_TABLE_OFFSET_Y + scale(Constants.GAME_TABLE_HEIGHT_METERS)
+				);
+
+		context.setColor(Color.RED);
+		//Draw player goal
+		context.fillRect(
+				Constants.GUI_TABLE_OFFSET_X, 
+				Constants.GUI_TABLE_OFFSET_Y + scale(Constants.GAME_TABLE_HEIGHT_METERS - Constants.GAME_GOAL_WIDTH_METERS) / 2,
+				5, 
+				scale(Constants.GAME_GOAL_WIDTH_METERS)
+				);
+
+		//Draw robot goal
+		context.fillRect(
+				Constants.GUI_TABLE_OFFSET_X + scale(Constants.GAME_TABLE_WIDTH_METERS) - 5, 
+				Constants.GUI_TABLE_OFFSET_Y + scale(Constants.GAME_TABLE_HEIGHT_METERS - Constants.GAME_GOAL_WIDTH_METERS) / 2,
+				5, 
+				scale(Constants.GAME_GOAL_WIDTH_METERS)
+				);
 	}
 
 	/**
@@ -147,12 +194,13 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * @param context
 	 * @param color
 	 */
-	private void drawMovingItem(IMovingItem item, Graphics context, Color color) {
+	private void drawMovingItem(IMovingItem item, Color color) {
+		Graphics context = this.bufferContext;
 		context.setColor(color);
 		Vector2 position = item.getPosition();
 		float radius = item.getRadius();
-		context.drawOval(scale(position.x - radius) + Constants.TABLE_OFFSET_X, scale(position.y - radius)
-				+ Constants.TABLE_OFFSET_Y, scale(radius * 2), scale(radius * 2));
+		context.drawOval(scale(position.x - radius) + Constants.GUI_TABLE_OFFSET_X, scale(position.y - radius)
+				+ Constants.GUI_TABLE_OFFSET_Y, scale(radius * 2), scale(radius * 2));
 	}
 
 	/**
@@ -176,17 +224,15 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		private static final int LINE_HEIGHT = 20;
 		private static final int INDENT = 0;
 
-		InfoBar(int x, int y, int width, int height) {
+		InfoBar(int x, int y, int width, int height, Graphics context) {
 			this.x = x;
 			this.y = y;
 			this.width = width;
 			this.height = height;
 			this.cursor = this.y;
-		}
-
-		public void setContext(Graphics context) {
 			this.context = context;
 		}
+
 
 		/**
 		 * Clear the info bar
