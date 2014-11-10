@@ -63,7 +63,7 @@ public class Game {
 	 * Entry-point application method. Starts and runs a game of air hockey. Currently terminates
 	 * when game is finished. Void return.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RuntimeException {
 		long lastLoopTime = System.nanoTime();
 		long lastFpsTime = 0;
 		long fps = 0;
@@ -83,7 +83,8 @@ public class Game {
 		game.guiLayerThread.start();
 		game.inputLayerThread.start();
 
-		// Main loop for game logic. We want to update everything as fast as possible (i.e. no discretization)
+		// Main loop for game logic. Uses variable timestepping.
+		// Reference: http://www.java-gaming.org/index.php?topic=24220.0
 		while (true) {
 			// Determine how long it's been since last update; this will be used to calculate
 			// how far entities should move this loop
@@ -111,12 +112,13 @@ public class Game {
 			// taken to run the loop. Note this is given in ms, but other variables are in
 			// nanoseconds.
 			long sleepTime = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
-			if (sleepTime > 0) {
+			if (sleepTime > 0) { // Only sleep if necessary; avoid negative sleep errors
 				try {
 					Thread.sleep(sleepTime);
 				} catch (InterruptedException e) {
 					// TODO figure out what to do with this exception, e.g. rethrow as RuntimeException?
 					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 		}
@@ -126,15 +128,11 @@ public class Game {
 		// If simulated, we need to use input data to update user mallet state
 		// Also need to use mocked detection layer to update puck position via physics
 		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
-			// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
-			game.userMallet.getPosition().x = Conversion.pixelToMeter(game.inputLayer.getMouseX()
-					- Constants.TABLE_OFFSET_X);
-			System.out.println(String.format("mouseX: %f", game.userMallet.getPosition().x));
-			game.userMallet.getPosition().y = Conversion.pixelToMeter(game.inputLayer.getMouseY()
-					- Constants.TABLE_OFFSET_Y);
-			System.out.println(String.format("mouseY: %f", game.userMallet.getPosition().y));
-
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
+		}
+		// Otherwise we will use the 
+		else if (gameType == GameTypeEnum.REAL_GAME_TYPE) {
+			
 		}
 	}
 
@@ -166,7 +164,7 @@ public class Game {
 			// TODO should the GUI thread and input thread be the same instead of two separate threads?
 			inputLayer = new InputLayer(guiLayer);
 			inputLayerThread = new Thread(inputLayer);
-			detectionLayer = new SimulatedDetection(this);
+			detectionLayer = new SimulatedDetection(this, inputLayer);
 		}
 	}
 }

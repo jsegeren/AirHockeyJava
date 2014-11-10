@@ -2,7 +2,10 @@ package airhockeyjava.simulation;
 
 import airhockeyjava.game.Game;
 import airhockeyjava.game.Constants;
+import airhockeyjava.input.IInputLayer;
 import airhockeyjava.physical.IMovingItem;
+import airhockeyjava.util.Conversion;
+import airhockeyjava.util.Vector2;
 
 /**
  * Class for the simulated game physics. Mocks out the detection layer for simulating game physics.
@@ -14,9 +17,21 @@ import airhockeyjava.physical.IMovingItem;
  */
 public class SimulatedDetection implements IDetection {
 	private Game game;
+	private IInputLayer inputLayer;
 
-	public SimulatedDetection(Game game) {
+	// TODO could make these constants; right now we initialize at construction time with final values
+	private final float minAllowedPuckX;
+	private final float maxAllowedPuckX;
+	private final float minAllowedPuckY;
+	private final float maxAllowedPuckY;
+
+	public SimulatedDetection(Game game, IInputLayer inputLayer) {
 		this.game = game;
+		this.inputLayer = inputLayer;
+		this.minAllowedPuckX = game.gamePuck.getRadius();
+		this.maxAllowedPuckX = game.gameTable.getWidth() - game.gamePuck.getRadius();
+		this.minAllowedPuckY = game.gamePuck.getRadius();
+		this.maxAllowedPuckY = game.gameTable.getHeight() - game.gamePuck.getRadius();
 	}
 
 	/* (non-Javadoc)
@@ -41,21 +56,38 @@ public class SimulatedDetection implements IDetection {
 		return true; // TODO actually implement this
 	}
 
+	/**
+	 * Wrapper for updating states (position, velocity vectors) of individual game items.
+	 * @param deltaTime
+	 */
 	private void updateItemStates(float deltaTime) {
+		updatePuckState(deltaTime);
+		updateUserMalletState();
+	}
+
+	/**
+	 * Internal method to update puck state. Note the assumptions currently in place for the physical model:
+	 * 	1) Collisions are perfectly elastic. That is, momentum is preserved; however, we may want to incorporate
+	 *   some energy loss, based on experimentation or a more sophisticated mechanical model.
+	 *  2) Collision between puck and mallet do not affect the velocity/position of the mallet. That is, all
+	 *   energy is transferred to the puck. This seems reasonable as the mallet is being held in a fixed position
+	 *   but obviously this is not completely accurate.
+	 * 
+	 * @param deltaTime
+	 */
+	private void updatePuckState(float deltaTime) {
 		// First check for puck-wall collisions over last-to-current interval and reflect if necessary
 		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
 		float newPuckPositionX = game.gamePuck.getPosition().x + game.gamePuck.getVelocity().x
 				* deltaTime;
-		if (newPuckPositionX + game.gamePuck.getRadius() >= game.gameTable.getWidth()
-				|| newPuckPositionX - game.gamePuck.getRadius() <= 0) {
+		if (newPuckPositionX >= maxAllowedPuckX || newPuckPositionX <= minAllowedPuckX) {
 			newPuckPositionX = game.gamePuck.getPosition().x - game.gamePuck.getVelocity().x
 					* deltaTime;
 			game.gamePuck.getVelocity().x = -1f * game.gamePuck.getVelocity().x;
 		}
 		float newPuckPositionY = game.gamePuck.getPosition().y + game.gamePuck.getVelocity().y
 				* deltaTime;
-		if (newPuckPositionY + game.gamePuck.getRadius() >= game.gameTable.getHeight()
-				|| newPuckPositionY - game.gamePuck.getRadius() <= 0) {
+		if (newPuckPositionY >= maxAllowedPuckY || newPuckPositionY <= minAllowedPuckY) {
 			game.gamePuck.getVelocity().y = -1f * game.gamePuck.getVelocity().y;
 		}
 
@@ -84,8 +116,27 @@ public class SimulatedDetection implements IDetection {
 					* Constants.FAKE_VELOCITY_BURST;
 		}
 
-		// Update positions
-		game.gamePuck.getPosition().x = newPuckPositionX;
-		game.gamePuck.getPosition().y = newPuckPositionY;
+		// Update positions, enforcing boundary-based position constraints
+		Vector2 newPuckPosition = new Vector2(Math.min(Math.max(newPuckPositionX, minAllowedPuckX),
+				maxAllowedPuckX), Math.min(Math.max(newPuckPositionY, minAllowedPuckY),
+				maxAllowedPuckY));
+		game.gamePuck.setPosition(newPuckPosition);
+	}
+
+	/**
+	 * Internal method to update user mallet based on mouse pointer.
+	 * Note that we must explicitly prevent intersections as the mouse pointer can move instantaneously.
+	 * This method is also responsible for calculating the velocity of the mallet.
+	 * @param deltaTime
+	 */
+	private void updateUserMalletState() {
+		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
+		Vector2 newPosition = new Vector2(Conversion.pixelToMeter(inputLayer.getMouseX()
+				- Constants.TABLE_OFFSET_X), Conversion.pixelToMeter(inputLayer.getMouseY()
+				- Constants.TABLE_OFFSET_Y));
+		game.userMallet.updatePositionAndCalculateVelocity(newPosition);
+
+		//		System.out.println(String.format("mouseX: %f", game.userMallet.getPosition().x));
+		//		System.out.println(String.format("mouseY: %f", game.userMallet.getPosition().y));
 	}
 }

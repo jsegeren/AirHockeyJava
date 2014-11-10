@@ -5,13 +5,14 @@ package airhockeyjava.game;
  * Top-level class for constants. This allows us to cleanly and statically reference constants
  * throughout the project code, and make necessary changes quickly.
  * 
- * @author Joshua Segeren
+ * @author Joshua Segeren, Evan Skeete
  *
  */
 public class Constants {
-	public static final float FAKE_VELOCITY_BURST = 0.01f; // TODO Replace. Just using burst of energy upon collisions
+	/**
+	 * Physical Parameter Constants
+	 */
 	public static final double INTERSECTION_EPSILON_METERS = 0.025; // 2.5 millimetres
-	public static final int GAME_SIMULATION_TARGET_FPS = 60;
 	public static final float GAME_TIME_SECONDS = 5f;
 	public static final float GAME_TABLE_HEIGHT_METERS = 1.3f;
 	public static final float GAME_TABLE_WIDTH_METERS = 2.5f;
@@ -33,16 +34,20 @@ public class Constants {
 	public static final float GAME_PUCK_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float GAME_PUCK_INITIAL_VELOCITY_X = 0f;
 	public static final float GAME_PUCK_INITIAL_VELOCITY_Y = 0f;
+	// User mallet is on the RHS
 	public static final float USER_MALLET_INITIAL_POSITION_X = GAME_TABLE_WIDTH_METERS;
 	public static final float USER_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float USER_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float USER_MALLET_INITIAL_VELOCITY_Y = 0f;
+	// Robot mallet is on the LHS
 	public static final float ROBOT_MALLET_INTIIAL_POSITION_X = 0f;
 	public static final float ROBOT_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_Y = 0f;
 
-	//GUI CONSTANTS
+	/**
+	 * GUI Constants
+	 */
 	public final static int GUI_FPS = 60;
 	public final static int WINDOW_WIDTH = 1024;
 	public final static int WINDOW_HEIGHT = 512;
@@ -52,4 +57,11 @@ public class Constants {
 
 	public final static float SCALE = (Constants.WINDOW_WIDTH - Constants.INFO_BAR_WIDTH - (Constants.TABLE_OFFSET_X * 2))
 			/ Constants.GAME_TABLE_WIDTH_METERS;
+	
+	/**
+	 * Simulation Model Constants
+	 */
+	public static final int NUMBER_PREVIOUS_STATES_TRACKED = 2; // Number of previous positions to use in determining velocity
+	public static final int GAME_SIMULATION_TARGET_FPS = 60;
+	public static final float FAKE_VELOCITY_BURST = 0.01f; // TODO Replace. Just using burst of energy upon collisions
 }
