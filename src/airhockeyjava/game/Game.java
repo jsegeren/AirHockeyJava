@@ -141,6 +141,9 @@ public class Game {
 		while (lastKeyPressed != KeyEvent.VK_UNDEFINED) {
 
 			switch (lastKeyPressed) {
+			case KeyEvent.VK_A:
+				this.settings.enableAI = !this.settings.enableAI;
+				break;
 			case KeyEvent.VK_R:
 				resetPuck();
 				break;

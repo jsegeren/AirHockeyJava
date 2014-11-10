@@ -63,6 +63,7 @@ public class SimulatedDetection implements IDetection {
 	private void updateItemStates(float deltaTime) {
 		updatePuckState(deltaTime);
 		updateUserMalletState();
+		if (game.settings.enableAI) updateRobotMalletState(deltaTime);
 	}
 
 	/**
@@ -147,5 +148,19 @@ public class SimulatedDetection implements IDetection {
 
 		Vector2 newPosition = new Vector2(newPositionX, newPositionY);
 		game.userMallet.updatePositionAndCalculateVelocity(newPosition);
+	}
+
+	/**
+	 * Move the robot paddle in response to the puck position and velocity
+	 * TODO: Actually implement this properly
+	 * @param deltaTime
+	 */
+	private void updateRobotMalletState(float deltaTime) {
+		float newMallletPositionY = game.robotMallet.getPosition().y + (game.gamePuck.getPosition().y - game.robotMallet.getPosition().y) * 0.05f * deltaTime;
+
+		game.robotMallet.updatePositionAndCalculateVelocity(
+				new Vector2(
+						game.robotMallet.getPosition().x,
+						newMallletPositionY));
 	}
 }

@@ -124,6 +124,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		this.infoBar.writeLine("R: Reset puck");
 		this.infoBar.writeLine("M: Toggle mallet movement restriction");
 		this.infoBar.writeLine("G: Toggle goal detection");
+		this.infoBar.writeLine("A: Toggle AI");
 		this.infoBar.writeLine("");
 		this.infoBar.writeLine("FPS:" + this.currentFps);
 
