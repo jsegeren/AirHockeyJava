@@ -1,7 +1,5 @@
 package airhockeyjava.physical;
 
-import java.awt.Color;
-import java.util.Iterator;
 import java.util.Stack;
 
 import airhockeyjava.game.Constants;

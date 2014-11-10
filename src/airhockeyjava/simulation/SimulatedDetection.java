@@ -131,12 +131,17 @@ public class SimulatedDetection implements IDetection {
 	 */
 	private void updateUserMalletState() {
 		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
-		Vector2 newPosition = new Vector2(Conversion.pixelToMeter(inputLayer.getMouseX()
-				- Constants.TABLE_OFFSET_X), Conversion.pixelToMeter(inputLayer.getMouseY()
-				- Constants.TABLE_OFFSET_Y));
-		game.userMallet.updatePositionAndCalculateVelocity(newPosition);
+		int mouseX = inputLayer.getMouseX() - Constants.GUI_TABLE_OFFSET_X;
+		int mouseY = inputLayer.getMouseY() - Constants.GUI_TABLE_OFFSET_Y;
 
-		//		System.out.println(String.format("mouseX: %f", game.userMallet.getPosition().x));
-		//		System.out.println(String.format("mouseY: %f", game.userMallet.getPosition().y));
+		float newPositionX = Math.max(
+				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX) : Math
+						.min(Conversion.pixelToMeter(mouseX),
+								Constants.GAME_TABLE_WIDTH_METERS / 2f)), 0f);
+		float newPositionY = Math.max(
+				Math.min(Conversion.pixelToMeter(mouseY), Constants.GAME_TABLE_HEIGHT_METERS), 0f);
+
+		Vector2 newPosition = new Vector2(newPositionX, newPositionY);
+		game.userMallet.updatePositionAndCalculateVelocity(newPosition);
 	}
 }

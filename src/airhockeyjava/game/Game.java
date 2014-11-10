@@ -10,7 +10,9 @@ import airhockeyjava.graphics.GuiLayer;
 import airhockeyjava.input.IInputLayer;
 import airhockeyjava.input.InputLayer;
 import airhockeyjava.util.Conversion;
+import airhockeyjava.util.Vector2;
 
+import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -19,7 +21,7 @@ import javax.swing.JFrame;
 /**
  * Top-level class for the game. Used for both simulated and actual games. Simulated games will
  * simply need to swap out the detection module with the mocked version.
- * 
+ *
  * @author Joshua Segeren
  *
  */
@@ -34,6 +36,9 @@ public class Game {
 	// Local constants and physical parameters
 	private static final long OPTIMAL_TIME = 1000000000 / Constants.GAME_SIMULATION_TARGET_FPS;
 	private static final GameTypeEnum gameType = GameTypeEnum.SIMULATED_GAME_TYPE;
+
+	// Configurable Game Settings
+	public GameSettings settings = new GameSettings();
 
 	// Game-related global variables
 	public float gameTimeRemainingSeconds;
@@ -72,8 +77,7 @@ public class Game {
 		game = new Game(gameType);
 
 		JFrame frame = new JFrame("AirHockey");
-		frame.setTitle("AirHockey");
-		frame.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+		frame.setSize(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(game.guiLayer);
@@ -107,7 +111,7 @@ public class Game {
 
 			game.updateStates((float) deltaTime);
 
-			// If target FPS = 60 (for example), want each frame to take 10 ms, 
+			// If target FPS = 60 (for example), want each frame to take 10 ms,
 			// we sleep until the next target frame, taking into account the time
 			// taken to run the loop. Note this is given in ms, but other variables are in
 			// nanoseconds.
@@ -124,16 +128,100 @@ public class Game {
 		}
 	}
 
+	/**
+	 * Send game info to the GUI for display
+	 */
+	private void setGameInfoDisplay() {
+		this.guiLayer.setExternalInfoBarData(new String[] { "User Score: " + this.userScore,
+				"Robot Score: " + this.robotScore, });
+	}
+
+	private void handleKeyPresses() {
+		int lastKeyPressed = this.inputLayer.handleKeyPress();
+		while (lastKeyPressed != KeyEvent.VK_UNDEFINED) {
+
+			switch (lastKeyPressed) {
+			case KeyEvent.VK_R:
+				resetPuck();
+				break;
+			case KeyEvent.VK_M:
+				this.settings.restrictUserMalletMovement = !this.settings.restrictUserMalletMovement;
+				break;
+			case KeyEvent.VK_G:
+				this.settings.goalDetectionOn = !this.settings.goalDetectionOn;
+				break;
+			default:
+				break;
+
+			}
+
+			lastKeyPressed = this.inputLayer.handleKeyPress();
+		}
+	}
+
+	/**
+	 * Check if a goal has been scored by the robot or user
+	 * If a goal is scored, update score and reset puck
+	 */
+	private void checkAndUpdateScore() {
+		float goalStartY = Conversion.meterToPixel(Constants.GAME_TABLE_HEIGHT_METERS
+				- Constants.GAME_GOAL_WIDTH_METERS) / 2.0f;
+
+		// Check if the robot scored a goal
+		if (
+		//TODO this can be cleaner
+		gamePuck.getPosition().x - Constants.GAME_PUCK_RADIUS_METERS <= Constants.GAME_GOAL_ALLOWANCE
+				&& Conversion.meterToPixel(gamePuck.getPosition().y) > goalStartY
+				&& Conversion.meterToPixel(gamePuck.getPosition().y) < goalStartY
+						+ Conversion.meterToPixel(Constants.GAME_GOAL_WIDTH_METERS)) {
+			resetPuck();
+			this.robotScore++;
+		}
+
+		// Check if the user scored a goal
+		if (
+		//TODO this can be cleaner
+		gamePuck.getPosition().x + Constants.GAME_PUCK_RADIUS_METERS >= Constants.GAME_TABLE_WIDTH_METERS
+				- Constants.GAME_GOAL_ALLOWANCE
+				&& Conversion.meterToPixel(gamePuck.getPosition().y) > goalStartY
+				&& Conversion.meterToPixel(gamePuck.getPosition().y) < goalStartY
+						+ Conversion.meterToPixel(Constants.GAME_GOAL_WIDTH_METERS)) {
+			resetPuck();
+			this.userScore++;
+		}
+	}
+
+	/**
+	 * Reset the puck to initial position and 0 velocity
+	 */
+	private void resetPuck() {
+		// Reset the puck position and veliocty
+		gamePuck.getPosition().x = Constants.GAME_PUCK_INITIAL_POSITION_X;
+		gamePuck.getPosition().y = Constants.GAME_PUCK_INITIAL_POSITION_Y;
+		gamePuck.setVelocity(new Vector2(0, 0));
+	}
+
+	/**
+	 * Update the game state
+	 */
 	private void updateStates(float deltaTime) {
+
+		handleKeyPresses();
+
+		if (this.settings.goalDetectionOn)
+			checkAndUpdateScore();
+
 		// If simulated, we need to use input data to update user mallet state
 		// Also need to use mocked detection layer to update puck position via physics
 		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
 		}
-		// Otherwise we will use the 
+		// Otherwise we will use the vision system
 		else if (gameType == GameTypeEnum.REAL_GAME_TYPE) {
-			
 		}
+
+		setGameInfoDisplay();
+
 	}
 
 	/**
