@@ -18,9 +18,10 @@ public class Constants {
 	public static final float GAME_TIME_SECONDS = 5f;
 	public static final float GAME_TABLE_HEIGHT_METERS = 1.3f;
 	public static final float GAME_TABLE_WIDTH_METERS = 2.5f;
+	public static final float GAME_TABLE_CORNER_RADIUS_METERS = 0.25f;
 	public static final float GAME_PUCK_RADIUS_METERS = 0.05f; // 2.5 centimetres
 	public static final float GAME_PUCK_MASS_GRAMS = 50f;
-	public static final float GAME_MALLET_RADIUS_METERS = 0.07f; // 3.5 centimetres
+	public static final float GAME_MALLET_RADIUS_METERS = 0.05f; // 3.5 centimetres
 	public static final float GAME_MALLET_MASS_GRAMS = 0f; // Doesn't matter
 	public static final float GAME_GOAL_WIDTH_METERS = 0.3f;
 	// Allowed distance from edge that a goal can be counted, since the puck never actually goes into the goal

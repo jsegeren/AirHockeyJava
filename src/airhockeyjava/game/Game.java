@@ -166,16 +166,16 @@ public class Game {
 	 * If a goal is scored, update score and reset puck
 	 */
 	private void checkAndUpdateScore() {
-		float goalStartY = Conversion.meterToPixel(Constants.GAME_TABLE_HEIGHT_METERS
-				- Constants.GAME_GOAL_WIDTH_METERS) / 2.0f;
+		float goalStartY = Conversion.meterToPixel(gameTable.getHeight()
+				- gameTable.getGoalWidth()) / 2.0f;
 
 		// Check if the robot scored a goal
 		if (
 		//TODO this can be cleaner
-		gamePuck.getPosition().x - Constants.GAME_PUCK_RADIUS_METERS <= Constants.GAME_GOAL_ALLOWANCE
+		gamePuck.getPosition().x - gamePuck.getRadius() <= Constants.GAME_GOAL_ALLOWANCE
 				&& Conversion.meterToPixel(gamePuck.getPosition().y) > goalStartY
 				&& Conversion.meterToPixel(gamePuck.getPosition().y) < goalStartY
-						+ Conversion.meterToPixel(Constants.GAME_GOAL_WIDTH_METERS)) {
+						+ Conversion.meterToPixel(gameTable.getGoalWidth())) {
 			resetPuck();
 			this.robotScore++;
 		}
@@ -183,11 +183,11 @@ public class Game {
 		// Check if the user scored a goal
 		if (
 		//TODO this can be cleaner
-		gamePuck.getPosition().x + Constants.GAME_PUCK_RADIUS_METERS >= Constants.GAME_TABLE_WIDTH_METERS
+		gamePuck.getPosition().x + gamePuck.getRadius() >= gameTable.getWidth()
 				- Constants.GAME_GOAL_ALLOWANCE
 				&& Conversion.meterToPixel(gamePuck.getPosition().y) > goalStartY
 				&& Conversion.meterToPixel(gamePuck.getPosition().y) < goalStartY
-						+ Conversion.meterToPixel(Constants.GAME_GOAL_WIDTH_METERS)) {
+						+ Conversion.meterToPixel(gameTable.getGoalWidth())) {
 			resetPuck();
 			this.userScore++;
 		}
@@ -232,7 +232,9 @@ public class Game {
 		gameTimeRemainingSeconds = Constants.GAME_TIME_SECONDS;
 
 		// Instantiate physical game items with default constants
-		gameTable = new Table(Constants.GAME_TABLE_HEIGHT_METERS, Constants.GAME_TABLE_WIDTH_METERS);
+		gameTable = new Table(Constants.GAME_TABLE_HEIGHT_METERS,
+				Constants.GAME_TABLE_WIDTH_METERS, Constants.GAME_TABLE_CORNER_RADIUS_METERS,
+				Constants.GAME_GOAL_WIDTH_METERS);
 		gamePuck = new Puck();
 		userMallet = new Mallet(true);
 		robotMallet = new Mallet(false);
