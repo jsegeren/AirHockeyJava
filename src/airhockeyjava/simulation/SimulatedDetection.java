@@ -85,8 +85,9 @@ public class SimulatedDetection implements IDetection {
 				maxAllowedPuckX), Math.min(Math.max(newPuckPositionY, minAllowedPuckY),
 				maxAllowedPuckY));
 
-		game.gamePuck.updateTrajectory(newPuckPosition);
 		game.gamePuck.setPosition(newPuckPosition);
+		game.gamePuck.updateTrajectory();
+		game.gamePuck.updatePredictedPath();
 
 		// Check if puck-mallet collision HAS occurred
 		if (Collision.hasCollided(game.gamePuck, game.userMallet)) {

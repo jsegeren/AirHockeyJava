@@ -2,6 +2,9 @@ package airhockeyjava.graphics;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,13 +35,15 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private Game game; // Reference to the top-level game object itself to have access to global variables
 
 	private BufferedImage imgBuffer;
-	private Graphics bufferContext;
+	private Graphics2D bufferContext;
 	private InfoBar infoBar;
 	private String[] externalInfoBarData = new String[] {};
 	private HashMap<Class<?>, Color> colorMap;
 
 	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FPS;
 	private long currentFps = 0;
+
+	AffineTransform coordinateTranslate = new AffineTransform();
 
 	/*
 	 * Constructor
@@ -50,6 +55,8 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		this.colorMap = new HashMap<Class<?>, Color>();
 		this.colorMap.put(Puck.class, Constants.GUI_PUCK_COLOR);
 		this.colorMap.put(Mallet.class, Constants.GUI_MALLET_COLOR);
+		coordinateTranslate.translate(Constants.GUI_TABLE_OFFSET_X, Constants.GUI_TABLE_OFFSET_Y);
+		coordinateTranslate.scale(Constants.GUI_SCALING_FACTOR, Constants.GUI_SCALING_FACTOR);
 	}
 
 	/*
@@ -116,6 +123,13 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 			drawMovingItem(iter.next());
 		}
 
+		// Draw puck trajectory
+		Graphics2D context = this.bufferContext;
+		context.setColor(Constants.GUI_MALLET_COLOR);
+		Path2D scaledPredictedPath = (Path2D) this.game.gamePuck.getPredictedPath()
+				.createTransformedShape(coordinateTranslate);
+		context.draw(scaledPredictedPath);
+
 		this.infoBar.clear();
 		this.infoBar.writeLine("Welcome to Airhockey");
 		this.infoBar.writeLine("");
@@ -151,7 +165,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 				BufferedImage.TYPE_INT_RGB);
 
 		// Save the context of the buffered image to draw to
-		this.bufferContext = imgBuffer.getGraphics();
+		this.bufferContext = (Graphics2D) imgBuffer.getGraphics();
 
 		//Init an info bar
 		this.infoBar = new InfoBar(Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH,
@@ -178,22 +192,20 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		float tableWidth = table.getWidth();
 		float tableHeight = table.getHeight();
 		float tableCornerRadius = table.getCornerRadius();
-		
+
 		Graphics context = this.bufferContext;
 		context.setColor(Constants.GUI_TABLE_COLOR);
 
 		//Draw the table border
-		context.drawRoundRect(
-				Constants.GUI_TABLE_OFFSET_X,
-				Constants.GUI_TABLE_OFFSET_Y,
+		context.drawRoundRect(Constants.GUI_TABLE_OFFSET_X, Constants.GUI_TABLE_OFFSET_Y,
 				scale(tableWidth), scale(tableHeight), scale(tableCornerRadius),
-						scale(tableCornerRadius));
+				scale(tableCornerRadius));
 
 		//Draw the center line
-		context.drawLine(Constants.GUI_TABLE_OFFSET_X
-				+ scale(tableWidth / 2f), Constants.GUI_TABLE_OFFSET_Y,
-				Constants.GUI_TABLE_OFFSET_X + scale(tableWidth / 2f),
-				Constants.GUI_TABLE_OFFSET_Y + scale(tableHeight));
+		context.drawLine(Constants.GUI_TABLE_OFFSET_X + scale(tableWidth / 2f),
+				Constants.GUI_TABLE_OFFSET_Y,
+				Constants.GUI_TABLE_OFFSET_X + scale(tableWidth / 2f), Constants.GUI_TABLE_OFFSET_Y
+						+ scale(tableHeight));
 
 		context.setColor(Constants.GUI_GOAL_COLOR);
 		//Draw player goal
@@ -202,9 +214,9 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 				scale(Constants.GAME_GOAL_ALLOWANCE), scale(Constants.GAME_GOAL_WIDTH_METERS));
 
 		//Draw robot goal
-		context.fillRect(Constants.GUI_TABLE_OFFSET_X + scale(tableWidth)
-				- 5, Constants.GUI_TABLE_OFFSET_Y
-				+ scale(tableHeight - Constants.GAME_GOAL_WIDTH_METERS) / 2,
+		context.fillRect(Constants.GUI_TABLE_OFFSET_X + scale(tableWidth) - 5,
+				Constants.GUI_TABLE_OFFSET_Y
+						+ scale(tableHeight - Constants.GAME_GOAL_WIDTH_METERS) / 2,
 				scale(Constants.GAME_GOAL_ALLOWANCE), scale(Constants.GAME_GOAL_WIDTH_METERS));
 	}
 

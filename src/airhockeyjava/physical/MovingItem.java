@@ -1,6 +1,7 @@
 package airhockeyjava.physical;
 
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.Stack;
 
@@ -54,6 +55,7 @@ public abstract class MovingItem implements IMovingItem {
 
 	private FixedStack<PositionAndDuration> previousStateStack;
 	private Line2D trajectoryLine;
+	private Path2D predictedPath;
 	private Vector2 position;
 	private Vector2 velocity;
 	private final float mass; // Used in simulated friction calculation and energy transfer model
@@ -71,6 +73,7 @@ public abstract class MovingItem implements IMovingItem {
 		this.mass = mass;
 		this.trajectoryLine = new Line2D.Float(new Point2D.Float(position.x, position.y),
 				new Point2D.Float(position.x, position.y));
+		this.predictedPath = new Path2D.Float();
 		this.previousStateStack = new FixedStack<PositionAndDuration>(2);
 	}
 
@@ -112,10 +115,18 @@ public abstract class MovingItem implements IMovingItem {
 		this.trajectoryLine = newTrajectoryLine;
 	}
 
-	public void updateTrajectory(Vector2 newPosition) {
+	public void updateTrajectory() {
 		Point2D oldPosition = trajectoryLine.getP2();
-		trajectoryLine
-				.setLine(oldPosition.getX(), oldPosition.getY(), newPosition.x, newPosition.y);
+		trajectoryLine.setLine(oldPosition.getX(), oldPosition.getY(), this.position.x,
+				this.position.y);
+	}
+
+	public Path2D getPredictedPath() {
+		return predictedPath;
+	}
+
+	public void setPredictedPath(Path2D predictedPath) {
+		this.predictedPath = predictedPath;
 	}
 
 	/**
@@ -126,8 +137,8 @@ public abstract class MovingItem implements IMovingItem {
 	@Override
 	public void updatePositionAndCalculateVelocity(Vector2 newPosition, float deltaTime) {
 		if (previousStateStack.isEmpty()) {
-			updateTrajectory(newPosition);
 			this.position = newPosition;
+			updateTrajectory();
 			previousStateStack.push(new PositionAndDuration(newPosition, System.nanoTime()));
 			return;
 		}
@@ -141,12 +152,19 @@ public abstract class MovingItem implements IMovingItem {
 		newVelocity.sub(oldestState.position).scl(1f / deltaTimeSeconds);
 
 		if (!newPosition.equals(oldestState.position)) {
-			updateTrajectory(newPosition);
 			this.position = newPosition;
+			updateTrajectory();
 		}
 
 		if (!this.velocity.equals(newVelocity)) {
 			this.velocity = newVelocity;
 		}
+	}
+
+	public void updatePredictedPath() {
+		Vector2 futurePosition = new Vector2(this.position).add(new Vector2(this.velocity).scl(1000000000f));
+		predictedPath = new Path2D.Float();
+		predictedPath.moveTo(this.position.x, this.position.y);
+		predictedPath.lineTo(futurePosition.x, futurePosition.y);
 	}
 }
