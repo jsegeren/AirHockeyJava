@@ -4,12 +4,59 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import airhockeyjava.game.Constants;
+
 /**
- * Utlity class providing methods for finding intersections.
+ * Utility class providing methods for finding intersections.
  * @author Joshua Segeren
  *
  */
 public class Intersection {
+
+	/**
+	 * Method to get the line corresponding to the edge on which the input point lies.
+	 * @return Edge line from collision point
+	 */
+	public static Line2D getCollisionEdge(Point2D point, Rectangle2D rectangle) {
+		// Left edge
+		if (Math.abs(rectangle.getMinX() - point.getX()) <= Constants.INTERSECTION_EPSILON_METERS) {
+			//			System.out.println("Left edge");
+			return new Line2D.Float((float) rectangle.getMinX(), (float) rectangle.getMinY(),
+					(float) rectangle.getMinX(), (float) rectangle.getMaxY());
+		}
+		// Top edge
+		if (Math.abs(rectangle.getMinY() - point.getY()) <= Constants.INTERSECTION_EPSILON_METERS) {
+			//			System.out.println("Top edge");
+			return new Line2D.Float((float) rectangle.getMinX(), (float) rectangle.getMinY(),
+					(float) rectangle.getMaxX(), (float) rectangle.getMinY());
+		}
+		// Right edge
+		if (Math.abs(rectangle.getMaxX() - point.getX()) <= Constants.INTERSECTION_EPSILON_METERS) {
+			//			System.out.println("Right edge");
+			return new Line2D.Float((float) rectangle.getMaxX(), (float) rectangle.getMinY(),
+					(float) rectangle.getMaxX(), (float) rectangle.getMaxY());
+		}
+		// Bottom edge
+		if (Math.abs(rectangle.getMaxY() - point.getY()) <= Constants.INTERSECTION_EPSILON_METERS) {
+			//			System.out.println("Bottom edge");
+			return new Line2D.Float((float) rectangle.getMinX(), (float) rectangle.getMaxY(),
+					(float) rectangle.getMaxX(), (float) rectangle.getMaxY());
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the angle between two lines
+	 * @param line1
+	 * @param line2
+	 * @return Angle in radians
+	 */
+	public static float getAngleBetweenLines(Line2D line1, Line2D line2) {
+		double angle1 = Math.atan2(line1.getY1() - line1.getY2(), line1.getX1() - line1.getX2());
+		double angle2 = Math.atan2(line2.getY1() - line2.getY2(), line2.getX1() - line2.getX2());
+		return (float) (angle1 - angle2);
+	}
+
 	public static Point2D[] getIntersectionPoints(Line2D line, Rectangle2D rectangle) {
 		Point2D[] p = new Point2D[4];
 

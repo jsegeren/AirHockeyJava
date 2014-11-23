@@ -166,7 +166,7 @@ public abstract class MovingItem implements IMovingItem {
 		}
 	}
 
-	public void updatePredictedPath(Rectangle2D table) {
+	public void updatePredictedPath(Rectangle2D tableCollisionFrame) {
 		// Vector in forward path. Requires significant scaling otherwise won't project far 
 		// enough "into the future" to actually find the intersection point. Otherwise
 		// we can limit this distance based on an actual amount of time elapsed into the future.
@@ -176,13 +176,37 @@ public abstract class MovingItem implements IMovingItem {
 				futurePosition.y);
 		//		predictedPath = new Path2D.Float(predictedLine);
 
-		Point2D intersectionPoint = Intersection.getIntersectionPoint(predictedLine, table);
+		Point2D intersectionPoint = Intersection.getIntersectionPoint(predictedLine,
+				tableCollisionFrame);
 		if (intersectionPoint != null) {
 			predictedLine.setLine(predictedLine.getX1(), predictedLine.getY1(),
 					intersectionPoint.getX(), intersectionPoint.getY());
-			//			predictedPath.lineTo(intersectionPoint.getX(), intersectionPoint.getY());
 			predictedPath = new Path2D.Float(predictedLine);
 			predictedPathFound = true;
+
+			// Check for which edge collision occurred
+			Line2D collisionEdgeLine = Intersection.getCollisionEdge(intersectionPoint,
+					tableCollisionFrame);
+
+			// Get angle between collision edge and incoming trajectory line
+			float incidentAngleRadians = Intersection.getAngleBetweenLines(predictedLine,
+					collisionEdgeLine);
+			System.out.println(String.format("Incident angle: %f degrees",
+					Math.toDegrees(incidentAngleRadians)));
+
+			AffineTransform rotationTransform = new AffineTransform();
+
+			// Reflect according to angle of incidence
+			rotationTransform.rotate(Math.PI - 2 * incidentAngleRadians,
+					(float) predictedLine.getX2(), (float) predictedLine.getY2());
+
+			Line2D secondPredictedLine = new Line2D.Float((float) predictedLine.getX2(),
+					(float) predictedLine.getY2(), (float) predictedLine.getX1(),
+					(float) predictedLine.getY1());
+			Path2D secondPredictedPath = new Path2D.Float(secondPredictedLine);
+			secondPredictedPath.transform(rotationTransform);
+			predictedPath.append(secondPredictedPath, true);
+
 		} else {
 			// Only output message on first iteration
 			if (predictedPathFound) {
@@ -190,22 +214,5 @@ public abstract class MovingItem implements IMovingItem {
 			}
 			predictedPathFound = false;
 		}
-
-		AffineTransform rotationTransform = new AffineTransform();
-		// Next, want to reflect the predicted line.
-		float predictedLineAngle = (float) Math.toDegrees(Math.atan2(predictedLine.getY2()
-				- predictedLine.getY1(), predictedLine.getX2() - predictedLine.getX1()));
-		System.out.println(String.format("Atan = %f", predictedLineAngle));
-
-//		if (Math.abs(predictedLineAngle) < 45f) {
-			rotationTransform.rotate(45);
-//		}
-
-		Line2D secondPredictedLine = new Line2D.Float((float) predictedLine.getX2(),
-				(float) predictedLine.getY2(), (float) predictedLine.getX1(),
-				(float) predictedLine.getY1());
-		Path2D secondPredictedPath = new Path2D.Float(secondPredictedLine);
-		secondPredictedPath.transform(rotationTransform);
-		predictedPath.append(secondPredictedPath, true);
 	}
 }

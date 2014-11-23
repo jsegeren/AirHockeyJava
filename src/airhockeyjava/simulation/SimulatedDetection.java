@@ -87,7 +87,8 @@ public class SimulatedDetection implements IDetection {
 
 		game.gamePuck.setPosition(newPuckPosition);
 		game.gamePuck.updateTrajectory();
-		game.gamePuck.updatePredictedPath(game.gameTable.getBounds2D());
+		game.gamePuck.updatePredictedPath(game.gameTable.getCollisionFrame(game.gamePuck
+				.getRadius()));
 
 		// Check if puck-mallet collision HAS occurred
 		if (Collision.hasCollided(game.gamePuck, game.userMallet)) {

@@ -2,6 +2,7 @@ package airhockeyjava.physical;
 
 import airhockeyjava.game.Constants;
 
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 /** 
@@ -35,4 +36,19 @@ public class Table extends RoundRectangle2D.Float {
 	public float getGoalWidth() {
 		return this.goalWidth;
 	}
+
+	/**
+	 * Returns the frame, modified to account for radius of round colliding objects. This is the effective
+	 * collision bounding box of the table; we simply reduce all the dimensions by the given radius.
+	 * @param collisionRadius radius of colliding object
+	 * @return Rectangle2D collision frame
+	 */
+	public Rectangle2D getCollisionFrame(float collisionRadius) {
+		Rectangle2D collisionFrame = this.getFrame();
+		collisionFrame.setFrame(collisionFrame.getMinX() + collisionRadius,
+				collisionFrame.getMinY() + collisionRadius, collisionFrame.getMaxX()
+						- 2 * collisionRadius, collisionFrame.getMaxY() - 2 * collisionRadius);
+		return collisionFrame;
+	}
+
 }
