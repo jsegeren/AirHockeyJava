@@ -189,9 +189,9 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 * @param context
 	 */
 	private void drawTable(Table table) {
-		float tableWidth = table.getWidth();
-		float tableHeight = table.getHeight();
-		float tableCornerRadius = table.getCornerRadius();
+		float tableWidth = (float) table.getWidth();
+		float tableHeight = (float) table.getHeight();
+		float tableCornerRadius = (float) table.getArcHeight();
 
 		Graphics context = this.bufferContext;
 		context.setColor(Constants.GUI_TABLE_COLOR);

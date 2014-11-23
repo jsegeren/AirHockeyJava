@@ -233,9 +233,7 @@ public class Game {
 		gameTimeRemainingSeconds = Constants.GAME_TIME_SECONDS;
 
 		// Instantiate physical game items with default constants
-		gameTable = new Table(Constants.GAME_TABLE_HEIGHT_METERS,
-				Constants.GAME_TABLE_WIDTH_METERS, Constants.GAME_TABLE_CORNER_RADIUS_METERS,
-				Constants.GAME_GOAL_WIDTH_METERS);
+		gameTable = new Table();
 		gamePuck = new Puck();
 		userMallet = new Mallet(true);
 		robotMallet = new Mallet(false);

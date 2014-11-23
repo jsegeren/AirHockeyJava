@@ -1,12 +1,15 @@
 package airhockeyjava.physical;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Stack;
 
 import airhockeyjava.game.Constants;
 import airhockeyjava.util.Vector2;
+import airhockeyjava.util.Intersection;
 
 /**
  * Superclass to represent moving items.
@@ -60,6 +63,8 @@ public abstract class MovingItem implements IMovingItem {
 	private Vector2 velocity;
 	private final float mass; // Used in simulated friction calculation and energy transfer model
 	private final float radius;
+
+	boolean predictedPathFound = true;
 
 	/**
 	 * Constructor which sets the starting state of the item.
@@ -161,10 +166,46 @@ public abstract class MovingItem implements IMovingItem {
 		}
 	}
 
-	public void updatePredictedPath() {
-		Vector2 futurePosition = new Vector2(this.position).add(new Vector2(this.velocity).scl(1000000000f));
-		predictedPath = new Path2D.Float();
-		predictedPath.moveTo(this.position.x, this.position.y);
-		predictedPath.lineTo(futurePosition.x, futurePosition.y);
+	public void updatePredictedPath(Rectangle2D table) {
+		// Vector in forward path. Requires significant scaling otherwise won't project far 
+		// enough "into the future" to actually find the intersection point. Otherwise
+		// we can limit this distance based on an actual amount of time elapsed into the future.
+		Vector2 futurePosition = new Vector2(this.position).add(new Vector2(this.velocity)
+				.scl(100000f));
+		Line2D predictedLine = new Line2D.Float(this.position.x, this.position.y, futurePosition.x,
+				futurePosition.y);
+		//		predictedPath = new Path2D.Float(predictedLine);
+
+		Point2D intersectionPoint = Intersection.getIntersectionPoint(predictedLine, table);
+		if (intersectionPoint != null) {
+			predictedLine.setLine(predictedLine.getX1(), predictedLine.getY1(),
+					intersectionPoint.getX(), intersectionPoint.getY());
+			//			predictedPath.lineTo(intersectionPoint.getX(), intersectionPoint.getY());
+			predictedPath = new Path2D.Float(predictedLine);
+			predictedPathFound = true;
+		} else {
+			// Only output message on first iteration
+			if (predictedPathFound) {
+				System.out.println("No intersection point found!");
+			}
+			predictedPathFound = false;
+		}
+
+		AffineTransform rotationTransform = new AffineTransform();
+		// Next, want to reflect the predicted line.
+		float predictedLineAngle = (float) Math.toDegrees(Math.atan2(predictedLine.getY2()
+				- predictedLine.getY1(), predictedLine.getX2() - predictedLine.getX1()));
+		System.out.println(String.format("Atan = %f", predictedLineAngle));
+
+//		if (Math.abs(predictedLineAngle) < 45f) {
+			rotationTransform.rotate(45);
+//		}
+
+		Line2D secondPredictedLine = new Line2D.Float((float) predictedLine.getX2(),
+				(float) predictedLine.getY2(), (float) predictedLine.getX1(),
+				(float) predictedLine.getY1());
+		Path2D secondPredictedPath = new Path2D.Float(secondPredictedLine);
+		secondPredictedPath.transform(rotationTransform);
+		predictedPath.append(secondPredictedPath, true);
 	}
 }

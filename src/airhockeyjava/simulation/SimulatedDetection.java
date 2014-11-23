@@ -29,9 +29,9 @@ public class SimulatedDetection implements IDetection {
 		this.game = game;
 		this.inputLayer = inputLayer;
 		this.minAllowedPuckX = game.gamePuck.getRadius();
-		this.maxAllowedPuckX = game.gameTable.getWidth() - game.gamePuck.getRadius();
+		this.maxAllowedPuckX = (float) (game.gameTable.getWidth() - game.gamePuck.getRadius());
 		this.minAllowedPuckY = game.gamePuck.getRadius();
-		this.maxAllowedPuckY = game.gameTable.getHeight() - game.gamePuck.getRadius();
+		this.maxAllowedPuckY = (float) (game.gameTable.getHeight() - game.gamePuck.getRadius());
 	}
 
 	/* (non-Javadoc)
@@ -87,7 +87,7 @@ public class SimulatedDetection implements IDetection {
 
 		game.gamePuck.setPosition(newPuckPosition);
 		game.gamePuck.updateTrajectory();
-		game.gamePuck.updatePredictedPath();
+		game.gamePuck.updatePredictedPath(game.gameTable.getBounds2D());
 
 		// Check if puck-mallet collision HAS occurred
 		if (Collision.hasCollided(game.gamePuck, game.userMallet)) {
@@ -99,7 +99,8 @@ public class SimulatedDetection implements IDetection {
 
 		// Now check for puck-mallet collisions over last-to-current interval.
 		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
-		if (Collision.isColliding(game.gamePuck, game.userMallet) || Collision.hasCollided(game.gamePuck, game.userMallet)) {
+		if (Collision.isColliding(game.gamePuck, game.userMallet)
+				|| Collision.hasCollided(game.gamePuck, game.userMallet)) {
 			System.out.println(String.format("User mallet velocity before: (%f, %f)",
 					game.userMallet.getVelocity().x, game.userMallet.getVelocity().y));
 			System.out.println(String.format("Puck speed before: (%f, %f)",
@@ -107,7 +108,8 @@ public class SimulatedDetection implements IDetection {
 			game.gamePuck.setVelocity(Collision.handleCollision(game.gamePuck, game.userMallet)
 					.scl(1 - Constants.MALLET_PUCK_COLLISION_LOSS_COEFFICIENT));
 		}
-		if (Collision.isColliding(game.gamePuck, game.robotMallet) || Collision.hasCollided(game.gamePuck, game.robotMallet)) {
+		if (Collision.isColliding(game.gamePuck, game.robotMallet)
+				|| Collision.hasCollided(game.gamePuck, game.robotMallet)) {
 			System.out.println(String.format("Puck speed before: (%f, %f)",
 					game.gamePuck.getVelocity().x, game.gamePuck.getVelocity().y));
 			game.gamePuck.setVelocity(Collision.handleCollision(game.gamePuck, game.robotMallet)
@@ -133,12 +135,12 @@ public class SimulatedDetection implements IDetection {
 
 		// Update the mallet position, restricting it to the bounds of the table
 		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
-		float newPositionX = Math.max(
+		float newPositionX = (float) Math.max(
 				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX)
 						- game.userMallet.getRadius() : Math.min(Conversion.pixelToMeter(mouseX),
 						game.gameTable.getWidth() / 2f - game.userMallet.getRadius())),
 				game.userMallet.getRadius());
-		float newPositionY = Math.max(
+		float newPositionY = (float) Math.max(
 				Math.min(Conversion.pixelToMeter(mouseY), game.gameTable.getHeight()
 						- game.userMallet.getRadius()), game.userMallet.getRadius());
 
