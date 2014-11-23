@@ -1,5 +1,8 @@
 package airhockeyjava.simulation;
 
+import java.awt.geom.Area;
+import java.awt.geom.Line2D;
+
 import airhockeyjava.game.Constants;
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Mallet;
@@ -37,45 +40,82 @@ public class Collision {
 				.getRadius() + itemB.getRadius());
 	}
 
+	public static boolean hasCollided(IMovingItem itemA, IMovingItem itemB) {
+		Line2D trajectoryLineA = itemA.getTrajectoryLine();
+		Line2D trajectoryLineB = itemB.getTrajectoryLine();
+		float squareLengthA = (float) (Math.pow(trajectoryLineA.getX2() - trajectoryLineA.getX1(),
+				2) + Math.pow(trajectoryLineA.getY2() - trajectoryLineA.getY1(), 2));
+		float squareLengthB = (float) (Math.pow(trajectoryLineB.getX2() - trajectoryLineB.getX1(),
+				2) + Math.pow(trajectoryLineB.getY2() - trajectoryLineB.getY1(), 2));
+		return ((squareLengthA != 0f) && (squareLengthB != 0f) && itemA.getTrajectoryLine()
+				.intersectsLine(itemB.getTrajectoryLine()));
+
+//		Area areaA = new Area(itemA.getTrajectoryLine());
+//		Area areaB = new Area(itemB.getTrajectoryLine());
+//		areaB.intersect(areaA);
+//		if (!areaB.isEmpty()) {
+//			System.out.println("Intersection detected!");
+//			return true;
+//		}
+//		return false;
+	}
+
 	/**
 	 * Static method to handle collision between puck and mallet.
-	 * TODO Account for mass differences between puck and mallet. Use energy formulation instead.
+	 * Derivation based on resource: http://www.vobarian.com/collisions/2dcollisions2.pdf
 	 * @param puck
 	 * @param mallet
 	 * @return Vector2 the new velocity of the puck
 	 */
 	public static Vector2 handleCollision(Puck puck, Mallet mallet) {
 		// Correct position of puck to prevent cascading/duplicate collisions
-		Vector2 unitVectorBetween = new Vector2(puck.getPosition()).sub(mallet.getPosition()).nor();
-		puck.setPosition(new Vector2(mallet.getPosition()).add(unitVectorBetween.scl(puck
-				.getRadius() + mallet.getRadius())));
+		Vector2 unitNormalVector = new Vector2(puck.getPosition()).sub(mallet.getPosition()).nor();
+		puck.setPosition(new Vector2(mallet.getPosition()).add(new Vector2(unitNormalVector)
+				.scl(puck.getRadius() + mallet.getRadius())));
 
-		Vector2 malletToPuck = getTransferredForce(mallet, puck);
-		Vector2 newPuckVelocity = new Vector2(malletToPuck).sub(puck.getVelocity());
-		return newPuckVelocity.scl(1 - Constants.MALLET_PUCK_COLLISION_LOSS_COEFFICIENT).limit(
-				Constants.MAX_PUCK_SPEED_METERS_PER_SECOND);
+		// Find the unit tangent vector
+		Vector2 unitTangentVector = new Vector2(unitNormalVector).rotate90(0);
 
-	}
+		// After collision, tangential components of velocities are unchanged.
+		// Normal component of velocities can be found using the one-dimensional collision
+		// formulas. Need to resolve velocity vectors v1, v2 into normal and tangential components.
+		// To do this, project velocity vectors onto unit normal and unit tangent vectors by computing
+		// the dot product.
+		float puckSpeedNormal = unitNormalVector.dot(puck.getVelocity());
+		float malletSpeedNormal = unitNormalVector.dot(mallet.getVelocity());
+		float puckSpeedTangent = unitTangentVector.dot(puck.getVelocity());
+		//		float malletSpeedTangent = unitTangentVector.dot(mallet.getVelocity());
 
-	/**
-	 * Static method to get transferred (expected) force between two moving items.
-	 * @param itemA
-	 * @param itemB
-	 * @return
-	 */
-	private static Vector2 getTransferredForce(IMovingItem itemA, IMovingItem itemB) {
-		Vector2 unitVectorBetween = new Vector2(itemA.getPosition()).sub(itemB.getPosition()).nor();
-		Vector2 velocityA = new Vector2(itemA.getVelocity());
+		float newPuckSpeedNormal;
+		// If mallet is infinite mass, simplify equation and short-circuit
+		if (mallet.getMass() == Float.MAX_VALUE) {
+			newPuckSpeedNormal = 2f * malletSpeedNormal - puckSpeedNormal;
+		} else {
+			// New tangent components = old tangent components!
+			// Find new normal velocities using one-dimensional collision formulas. (Velocities
+			// of two circles along normal direction are perpendicular to surfaces of circles at point
+			// of collision, so it's a one-dimensional collision.)
+			newPuckSpeedNormal = (puckSpeedNormal * (puck.getMass() - mallet.getMass()) + (2f * mallet
+					.getMass() * malletSpeedNormal)) / (puck.getMass() + mallet.getMass());
+			//		float newMalletSpeedNormal = (malletSpeedNormal * (mallet.getMass() - puck.getMass()) + (2f * puck
+			//				.getMass() * puckSpeedNormal)) / (puck.getMass() + mallet.getMass());
 
-		if (!velocityA.equals(Vector2.Zero)) {
-			// Consider angle between two items and velocity
-			float collisionAngle = (float) Vector2.angleBetween(unitVectorBetween, velocityA);
-			if (collisionAngle > 90f) {
-				float impactOther = (collisionAngle - 90f) / 90f;
-				float forceOther = velocityA.len() * impactOther;
-				return unitVectorBetween.scl(forceOther).scl(-1f);
-			}
 		}
-		return new Vector2();
+		// Convert scalar normal and tangential velocities into vectors by multiplying unit normal vector by 
+		// scalar normal velocity; similar for tangential.
+		Vector2 newPuckNormalVelocity = new Vector2(unitNormalVector).scl(newPuckSpeedNormal);
+		Vector2 newPuckTangentVelocity = new Vector2(unitTangentVector).scl(puckSpeedTangent);
+		//		Vector2 newMalletNormalVelocity = new Vector2(unitNormalVector).scl(newMalletSpeedNormal);
+		//		Vector2 newMalletTangentVelocity = new Vector2(unitTangentVector).scl(malletSpeedTangent);
+
+		// Finally, find final velocity vectors by adding normal and tangential components for each object.
+		Vector2 newPuckVelocity = new Vector2(newPuckNormalVelocity).add(newPuckTangentVelocity);
+		//		Vector2 newMalletVelocity = newMalletNormalVelocity.add(newMalletTangentVelocity);
+		//		mallet.setVelocity(newMalletVelocity);
+		System.out.println(String.format("Puck speed after: (%f, %f)", newPuckVelocity.x,
+				newPuckVelocity.y));
+
+		return newPuckVelocity;
+
 	}
 }

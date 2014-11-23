@@ -47,7 +47,7 @@ public class SimulatedDetection implements IDetection {
 	 * @param deltaTime
 	 */
 	private void updateItemStates(float deltaTime) {
-		updateUserMalletState();
+		updateUserMalletState(deltaTime);
 		updatePuckState(deltaTime);
 		if (game.settings.enableAI) {
 			updateRobotMalletState(deltaTime);
@@ -84,24 +84,39 @@ public class SimulatedDetection implements IDetection {
 		Vector2 newPuckPosition = new Vector2(Math.min(Math.max(newPuckPositionX, minAllowedPuckX),
 				maxAllowedPuckX), Math.min(Math.max(newPuckPositionY, minAllowedPuckY),
 				maxAllowedPuckY));
+
+		game.gamePuck.updateTrajectory(newPuckPosition);
 		game.gamePuck.setPosition(newPuckPosition);
+
+		// Check if puck-mallet collision HAS occurred
+		if (Collision.hasCollided(game.gamePuck, game.userMallet)) {
+			System.out.println("HAS COLLIDED!");
+		}
+		if (Collision.hasCollided(game.gamePuck, game.robotMallet)) {
+			System.out.println("Robot HAS COLLIDED!");
+		}
 
 		// Now check for puck-mallet collisions over last-to-current interval.
 		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
-		if (Collision.isColliding(game.gamePuck, game.userMallet)) {
-			System.out.println(String.format("User hit the puck: %f %f",
-					game.gamePuck.getPosition().x, game.gamePuck.getPosition().y));
-			game.gamePuck.setVelocity(Collision.handleCollision(game.gamePuck, game.userMallet));
+		if (Collision.isColliding(game.gamePuck, game.userMallet) || Collision.hasCollided(game.gamePuck, game.userMallet)) {
+			System.out.println(String.format("User mallet velocity before: (%f, %f)",
+					game.userMallet.getVelocity().x, game.userMallet.getVelocity().y));
+			System.out.println(String.format("Puck speed before: (%f, %f)",
+					game.gamePuck.getVelocity().x, game.gamePuck.getVelocity().y));
+			game.gamePuck.setVelocity(Collision.handleCollision(game.gamePuck, game.userMallet)
+					.scl(1 - Constants.MALLET_PUCK_COLLISION_LOSS_COEFFICIENT));
 		}
-		if (Collision.isColliding(game.gamePuck, game.robotMallet)) {
-			System.out.println(String.format("User hit the puck: %f %f",
-					game.gamePuck.getPosition().x, game.gamePuck.getPosition().y));
-			game.gamePuck.setVelocity(Collision.handleCollision(game.gamePuck, game.robotMallet));
+		if (Collision.isColliding(game.gamePuck, game.robotMallet) || Collision.hasCollided(game.gamePuck, game.robotMallet)) {
+			System.out.println(String.format("Puck speed before: (%f, %f)",
+					game.gamePuck.getVelocity().x, game.gamePuck.getVelocity().y));
+			game.gamePuck.setVelocity(Collision.handleCollision(game.gamePuck, game.robotMallet)
+					.scl(1 - Constants.MALLET_PUCK_COLLISION_LOSS_COEFFICIENT));
 		}
 
 		// Model surface friction loss
 		// TODO Incorporate real physics!
-		game.gamePuck.getVelocity().scl(1 - Constants.PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT);
+		game.gamePuck.getVelocity().scl(1 - Constants.PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT)
+				.limit(Constants.MAX_PUCK_SPEED_METERS_PER_SECOND);
 	}
 
 	/**
@@ -110,7 +125,7 @@ public class SimulatedDetection implements IDetection {
 	 * This method is also responsible for calculating the velocity of the mallet.
 	 * @param deltaTime
 	 */
-	private void updateUserMalletState() {
+	private void updateUserMalletState(float deltaTime) {
 		//Get the mouse coordinates relative to the table
 		int mouseX = inputLayer.getMouseX() - Constants.GUI_TABLE_OFFSET_X;
 		int mouseY = inputLayer.getMouseY() - Constants.GUI_TABLE_OFFSET_Y;
@@ -127,7 +142,7 @@ public class SimulatedDetection implements IDetection {
 						- game.userMallet.getRadius()), game.userMallet.getRadius());
 
 		Vector2 newPosition = new Vector2(newPositionX, newPositionY);
-		game.userMallet.updatePositionAndCalculateVelocity(newPosition);
+		game.userMallet.updatePositionAndCalculateVelocity(newPosition, deltaTime);
 	}
 
 	/**
@@ -136,11 +151,11 @@ public class SimulatedDetection implements IDetection {
 	 * @param deltaTime
 	 */
 	private void updateRobotMalletState(float deltaTime) {
-		float newMallletPositionY = game.robotMallet.getPosition().y
+		float newMalletPositionY = game.robotMallet.getPosition().y
 				+ (game.gamePuck.getPosition().y - game.robotMallet.getPosition().y) * 0.05f
 				* deltaTime;
 
-		game.robotMallet.updatePositionAndCalculateVelocity(new Vector2(game.robotMallet
-				.getPosition().x, newMallletPositionY));
+		game.robotMallet.updatePositionAndCalculateVelocity(
+				new Vector2(game.robotMallet.getPosition().x, newMalletPositionY), deltaTime);
 	}
 }

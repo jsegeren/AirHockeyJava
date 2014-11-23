@@ -1,5 +1,7 @@
 package airhockeyjava.physical;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.Stack;
 
 import airhockeyjava.game.Constants;
@@ -51,6 +53,7 @@ public abstract class MovingItem implements IMovingItem {
 	}
 
 	private FixedStack<PositionAndDuration> previousStateStack;
+	private Line2D trajectoryLine;
 	private Vector2 position;
 	private Vector2 velocity;
 	private final float mass; // Used in simulated friction calculation and energy transfer model
@@ -66,8 +69,9 @@ public abstract class MovingItem implements IMovingItem {
 		this.velocity = velocity;
 		this.radius = radius;
 		this.mass = mass;
-		previousStateStack = new FixedStack<PositionAndDuration>(
-				Constants.NUMBER_PREVIOUS_STATES_TRACKED);
+		this.trajectoryLine = new Line2D.Float(new Point2D.Float(position.x, position.y),
+				new Point2D.Float(position.x, position.y));
+		this.previousStateStack = new FixedStack<PositionAndDuration>(2);
 	}
 
 	@Override
@@ -100,40 +104,49 @@ public abstract class MovingItem implements IMovingItem {
 		return this.mass;
 	}
 
+	public Line2D getTrajectoryLine() {
+		return this.trajectoryLine;
+	}
+
+	public void setTrajectoryLine(Line2D newTrajectoryLine) {
+		this.trajectoryLine = newTrajectoryLine;
+	}
+
+	public void updateTrajectory(Vector2 newPosition) {
+		Point2D oldPosition = trajectoryLine.getP2();
+		trajectoryLine
+				.setLine(oldPosition.getX(), oldPosition.getY(), newPosition.x, newPosition.y);
+	}
+
 	/**
 	 * Updates position, velocity based on previous state information. Could use a Kalman filter for smoothing.
 	 * Right now we are using a direct average: v_1 = (p_1 - p_0) / T, where p_1 is the most recent position and
 	 * p_0 is the oldest position available to the state model, and T is the total duration.
 	 */
 	@Override
-	public void updatePositionAndCalculateVelocity(Vector2 newPosition) {
-		PositionAndDuration currentState = new PositionAndDuration(newPosition, System.nanoTime());
-		previousStateStack.push(currentState);
+	public void updatePositionAndCalculateVelocity(Vector2 newPosition, float deltaTime) {
+		if (previousStateStack.isEmpty()) {
+			updateTrajectory(newPosition);
+			this.position = newPosition;
+			previousStateStack.push(new PositionAndDuration(newPosition, System.nanoTime()));
+			return;
+		}
 		PositionAndDuration oldestState = previousStateStack.elementAt(0);
 
 		// Calculate and update the velocity, position if changed
+		PositionAndDuration currentState = new PositionAndDuration(newPosition, System.nanoTime());
+		previousStateStack.push(currentState);
+		Vector2 newVelocity = new Vector2(newPosition);
+		float deltaTimeSeconds = ((float) (currentState.nanoTime - oldestState.nanoTime)) / 1000000000f;
+		newVelocity.sub(oldestState.position).scl(1f / deltaTimeSeconds);
+
 		if (!newPosition.equals(oldestState.position)) {
-			Vector2 newVelocity = new Vector2(newPosition);
-			float deltaTimeSeconds = ((float) (currentState.nanoTime - oldestState.nanoTime)) / 1000000000f;
-			newVelocity.sub(oldestState.position).scl(1f / deltaTimeSeconds);
+			updateTrajectory(newPosition);
+			this.position = newPosition;
+		}
 
-			// Need to enforce maximum speed limit on user paddle; recalculate position if necessary
-			Vector2 newLimitedVelocity = new Vector2(newVelocity)
-					.limit(Constants.MAX_USER_MALLET_SPEED_METERS_PER_SECOND);
-
-			Vector2 distanceDifference = newVelocity.sub(new Vector2(newLimitedVelocity)).scl(
-					deltaTimeSeconds);
-			this.position = newPosition.sub(distanceDifference);
-
-			if (!this.velocity.equals(newLimitedVelocity)) {
-				this.velocity = newLimitedVelocity;
-				if (this.velocity.x - 0 > 0.00001 || this.velocity.y - 0 > 0.00001) {
-					System.out.println(String.format("v_x = %f, v_y = %f", this.velocity.x,
-							this.velocity.y));
-				}
-			} else {
-				previousStateStack.pop();
-			}
+		if (!this.velocity.equals(newVelocity)) {
+			this.velocity = newVelocity;
 		}
 	}
 }

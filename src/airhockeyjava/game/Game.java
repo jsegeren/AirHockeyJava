@@ -13,6 +13,8 @@ import airhockeyjava.util.Conversion;
 import airhockeyjava.util.Vector2;
 
 import java.awt.event.KeyEvent;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -166,8 +168,8 @@ public class Game {
 	 * If a goal is scored, update score and reset puck
 	 */
 	private void checkAndUpdateScore() {
-		float goalStartY = Conversion.meterToPixel(gameTable.getHeight()
-				- gameTable.getGoalWidth()) / 2.0f;
+		float goalStartY = Conversion
+				.meterToPixel(gameTable.getHeight() - gameTable.getGoalWidth()) / 2.0f;
 
 		// Check if the robot scored a goal
 		if (
@@ -194,13 +196,12 @@ public class Game {
 	}
 
 	/**
-	 * Reset the puck to initial position and 0 velocity
+	 * Destroy and reinitialize puck object entirely
 	 */
 	private void resetPuck() {
-		// Reset the puck position and veliocty
-		gamePuck.getPosition().x = Constants.GAME_PUCK_INITIAL_POSITION_X;
-		gamePuck.getPosition().y = Constants.GAME_PUCK_INITIAL_POSITION_Y;
-		gamePuck.setVelocity(new Vector2(0, 0));
+		movingItems.remove(gamePuck);
+		gamePuck = new Puck();
+		movingItems.add(gamePuck);
 	}
 
 	/**

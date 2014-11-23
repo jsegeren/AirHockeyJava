@@ -1,5 +1,7 @@
 package airhockeyjava.physical;
 
+import java.awt.geom.Line2D;
+
 import airhockeyjava.util.Vector2;
 
 /**
@@ -9,6 +11,13 @@ import airhockeyjava.util.Vector2;
  *
  */
 public interface IMovingItem {
+	
+	/**
+	 * Method to retrieve current position trajectory of item over current interval
+	 * @return Line2D line segment of trajectory
+	 */
+	public abstract Line2D getTrajectoryLine();
+	
 	/**
 	 * Method to retrieve position of the item for the current state.
 	 * 
@@ -40,8 +49,10 @@ public interface IMovingItem {
 	/**
 	 * Method to update velocity based on previous (known) position state information.
 	 * Also updates position.
+	 * @param newPosition
+	 * @param deltaTime time elapsed
 	 */
-	public abstract void updatePositionAndCalculateVelocity(Vector2 newPosition);
+	public abstract void updatePositionAndCalculateVelocity(Vector2 newPosition, float deltaTime);
 
 	/**
 	 * Method to retrieve the radius of the item.
