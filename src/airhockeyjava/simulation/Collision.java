@@ -50,14 +50,14 @@ public class Collision {
 		return ((squareLengthA != 0f) && (squareLengthB != 0f) && itemA.getTrajectoryLine()
 				.intersectsLine(itemB.getTrajectoryLine()));
 
-//		Area areaA = new Area(itemA.getTrajectoryLine());
-//		Area areaB = new Area(itemB.getTrajectoryLine());
-//		areaB.intersect(areaA);
-//		if (!areaB.isEmpty()) {
-//			System.out.println("Intersection detected!");
-//			return true;
-//		}
-//		return false;
+		//		Area areaA = new Area(itemA.getTrajectoryLine());
+		//		Area areaB = new Area(itemB.getTrajectoryLine());
+		//		areaB.intersect(areaA);
+		//		if (!areaB.isEmpty()) {
+		//			System.out.println("Intersection detected!");
+		//			return true;
+		//		}
+		//		return false;
 	}
 
 	/**
@@ -112,8 +112,8 @@ public class Collision {
 		Vector2 newPuckVelocity = new Vector2(newPuckNormalVelocity).add(newPuckTangentVelocity);
 		//		Vector2 newMalletVelocity = newMalletNormalVelocity.add(newMalletTangentVelocity);
 		//		mallet.setVelocity(newMalletVelocity);
-		System.out.println(String.format("Puck speed after: (%f, %f)", newPuckVelocity.x,
-				newPuckVelocity.y));
+		//		System.out.println(String.format("Puck speed after: (%f, %f)", newPuckVelocity.x,
+		//				newPuckVelocity.y));
 
 		return newPuckVelocity;
 

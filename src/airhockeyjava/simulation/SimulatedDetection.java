@@ -102,17 +102,17 @@ public class SimulatedDetection implements IDetection {
 		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
 		if (Collision.isColliding(game.gamePuck, game.userMallet)
 				|| Collision.hasCollided(game.gamePuck, game.userMallet)) {
-			System.out.println(String.format("User mallet velocity before: (%f, %f)",
-					game.userMallet.getVelocity().x, game.userMallet.getVelocity().y));
-			System.out.println(String.format("Puck speed before: (%f, %f)",
-					game.gamePuck.getVelocity().x, game.gamePuck.getVelocity().y));
+			//			System.out.println(String.format("User mallet velocity before: (%f, %f)",
+			//					game.userMallet.getVelocity().x, game.userMallet.getVelocity().y));
+			//			System.out.println(String.format("Puck speed before: (%f, %f)",
+			//					game.gamePuck.getVelocity().x, game.gamePuck.getVelocity().y));
 			game.gamePuck.setVelocity(Collision.handleCollision(game.gamePuck, game.userMallet)
 					.scl(1 - Constants.MALLET_PUCK_COLLISION_LOSS_COEFFICIENT));
 		}
 		if (Collision.isColliding(game.gamePuck, game.robotMallet)
 				|| Collision.hasCollided(game.gamePuck, game.robotMallet)) {
-			System.out.println(String.format("Puck speed before: (%f, %f)",
-					game.gamePuck.getVelocity().x, game.gamePuck.getVelocity().y));
+			//			System.out.println(String.format("Puck speed before: (%f, %f)",
+			//					game.gamePuck.getVelocity().x, game.gamePuck.getVelocity().y));
 			game.gamePuck.setVelocity(Collision.handleCollision(game.gamePuck, game.robotMallet)
 					.scl(1 - Constants.MALLET_PUCK_COLLISION_LOSS_COEFFICIENT));
 		}

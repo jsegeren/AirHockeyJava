@@ -191,8 +191,8 @@ public abstract class MovingItem implements IMovingItem {
 			// Get angle between collision edge and incoming trajectory line
 			float incidentAngleRadians = Intersection.getAngleBetweenLines(predictedLine,
 					collisionEdgeLine);
-			System.out.println(String.format("Incident angle: %f degrees",
-					Math.toDegrees(incidentAngleRadians)));
+			//			System.out.println(String.format("Incident angle: %f degrees",
+			//					Math.toDegrees(incidentAngleRadians)));
 
 			AffineTransform rotationTransform = new AffineTransform();
 
