@@ -1,5 +1,7 @@
 package airhockeyjava.simulation;
 
+import java.awt.geom.Rectangle2D;
+
 import airhockeyjava.game.Game;
 import airhockeyjava.game.Constants;
 import airhockeyjava.input.IInputLayer;
@@ -19,19 +21,12 @@ public class SimulatedDetection implements IDetection {
 	private Game game;
 	private IInputLayer inputLayer;
 
-	// TODO could make these constants; right now we initialize at construction time with final values
-	private final float minAllowedPuckX;
-	private final float maxAllowedPuckX;
-	private final float minAllowedPuckY;
-	private final float maxAllowedPuckY;
+	private final Rectangle2D tablePuckCollisionFrame;
 
 	public SimulatedDetection(Game game, IInputLayer inputLayer) {
 		this.game = game;
 		this.inputLayer = inputLayer;
-		this.minAllowedPuckX = game.gamePuck.getRadius();
-		this.maxAllowedPuckX = (float) (game.gameTable.getWidth() - game.gamePuck.getRadius());
-		this.minAllowedPuckY = game.gamePuck.getRadius();
-		this.maxAllowedPuckY = (float) (game.gameTable.getHeight() - game.gamePuck.getRadius());
+		this.tablePuckCollisionFrame = game.gameTable.getCollisionFrame(game.gamePuck.getRadius());
 	}
 
 	/* (non-Javadoc)
@@ -70,25 +65,46 @@ public class SimulatedDetection implements IDetection {
 		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
 		float newPuckPositionX = game.gamePuck.getPosition().x + game.gamePuck.getVelocity().x
 				* deltaTime;
-		if (newPuckPositionX >= maxAllowedPuckX || newPuckPositionX <= minAllowedPuckX) {
+		float newPuckPositionY = game.gamePuck.getPosition().y + game.gamePuck.getVelocity().y
+				* deltaTime;
+
+		// Check if goal scored, reset puck and update scores if necessary
+		if (game.settings.goalDetectionOn) {
+			if (game.gamePuck.isPointIntersectingLeftGoal(newPuckPositionX, newPuckPositionY,
+					tablePuckCollisionFrame, game.gameTable.getGoalWidth())) {
+				game.resetPuck();
+				game.robotScore++;
+				return;
+			} else if (game.gamePuck.isPointIntersectingRightGoal(newPuckPositionX,
+					newPuckPositionY, tablePuckCollisionFrame, game.gameTable.getGoalWidth())) {
+				game.resetPuck();
+				game.userScore++;
+				return;
+			}
+		}
+
+		if (newPuckPositionX >= tablePuckCollisionFrame.getMaxX()
+				|| newPuckPositionX <= tablePuckCollisionFrame.getMinX()) {
 			newPuckPositionX = game.gamePuck.getPosition().x - game.gamePuck.getVelocity().x
 					* deltaTime;
 			game.gamePuck.getVelocity().x *= -1f + Constants.WALL_PUCK_COLLISION_LOSS_COEFFICIENT;
 		}
-		float newPuckPositionY = game.gamePuck.getPosition().y + game.gamePuck.getVelocity().y
-				* deltaTime;
-		if (newPuckPositionY >= maxAllowedPuckY || newPuckPositionY <= minAllowedPuckY) {
+		if (newPuckPositionY >= tablePuckCollisionFrame.getMaxY()
+				|| newPuckPositionY <= tablePuckCollisionFrame.getMinY()) {
 			game.gamePuck.getVelocity().y *= -1f + Constants.WALL_PUCK_COLLISION_LOSS_COEFFICIENT;
 		}
 		// Update puck position, enforcing boundary-based position constraints
-		Vector2 newPuckPosition = new Vector2(Math.min(Math.max(newPuckPositionX, minAllowedPuckX),
-				maxAllowedPuckX), Math.min(Math.max(newPuckPositionY, minAllowedPuckY),
-				maxAllowedPuckY));
+		Vector2 newPuckPosition = new Vector2((float) Math.min(
+				Math.max(newPuckPositionX, tablePuckCollisionFrame.getMinX()),
+				tablePuckCollisionFrame.getMaxX()), (float) Math.min(
+				Math.max(newPuckPositionY, tablePuckCollisionFrame.getMinY()),
+				tablePuckCollisionFrame.getMaxY()));
 
 		game.gamePuck.setPosition(newPuckPosition);
 		game.gamePuck.updateTrajectory();
-		game.gamePuck.updatePredictedPath(game.gameTable.getCollisionFrame(game.gamePuck
-				.getRadius()));
+		game.gamePuck.updatePredictedPath(
+				game.gameTable.getCollisionFrame(game.gamePuck.getRadius()),
+				Constants.NUMBER_PREDICTED_PATH_REFLECTIONS);
 
 		// Check if puck-mallet collision HAS occurred
 		if (Collision.hasCollided(game.gamePuck, game.userMallet)) {

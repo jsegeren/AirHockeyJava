@@ -61,12 +61,15 @@ public class Constants {
 
 	public final static Color GUI_PUCK_COLOR = Color.GRAY;
 	public final static Color GUI_MALLET_COLOR = Color.GREEN;
+	public final static Color GUI_PREDICTED_PATH_COLOR = Color.CYAN;
+	public final static Color GUI_PREDICTED_GOAL_COLOR = Color.RED;
 	public final static Color GUI_TABLE_COLOR = Color.BLUE;
 	public final static Color GUI_GOAL_COLOR = Color.RED;
 	public final static Color GUI_BG_COLOR = Color.BLACK;
 	public final static Color GUI_TEXT_COLOR = Color.WHITE;
 
-	public final static float GUI_SCALING_FACTOR = (Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH - (Constants.GUI_TABLE_OFFSET_X * 2))
+	public final static float GUI_SCALING_FACTOR = (Constants.GUI_WINDOW_WIDTH
+			- Constants.GUI_INFO_BAR_WIDTH - (Constants.GUI_TABLE_OFFSET_X * 2))
 			/ Constants.GAME_TABLE_WIDTH_METERS;
 
 	/**
@@ -78,4 +81,5 @@ public class Constants {
 	public static final int GAME_SIMULATION_TARGET_FPS = 60;
 	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 0.06f;
 	public static final float MAX_USER_MALLET_SPEED_METERS_PER_SECOND = 1f;
+	public static final int NUMBER_PREDICTED_PATH_REFLECTIONS = 3;
 }

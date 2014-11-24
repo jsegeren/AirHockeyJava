@@ -45,6 +45,14 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	AffineTransform coordinateTranslate = new AffineTransform();
 
+	private static final HashMap<Boolean, Color> criticalPathColorMap = new HashMap<Boolean, Color>() {
+		private static final long serialVersionUID = 8650122016462175223L;
+		{
+			put(true, Constants.GUI_PREDICTED_GOAL_COLOR);
+			put(false, Constants.GUI_PREDICTED_PATH_COLOR);
+		}
+	};
+
 	/*
 	 * Constructor
 	 */
@@ -124,11 +132,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		}
 
 		// Draw puck trajectory
-		Graphics2D context = this.bufferContext;
-		context.setColor(Constants.GUI_MALLET_COLOR);
-		Path2D scaledPredictedPath = (Path2D) this.game.gamePuck.getPredictedPath()
-				.createTransformedShape(coordinateTranslate);
-		context.draw(scaledPredictedPath);
+		drawPredictedPath(this.game.gamePuck);
 
 		this.infoBar.clear();
 		this.infoBar.writeLine("Welcome to Airhockey");
@@ -146,6 +150,13 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		}
 
 		graphicsContext.drawImage(this.imgBuffer, 0, 0, this);
+	}
+
+	private void drawPredictedPath(MovingItem item) {
+		Graphics2D context = this.bufferContext;
+		context.setColor(GuiLayer.criticalPathColorMap.get(item.getPathAndFlag().isCriticalFlag));
+		context.draw((Path2D) item.getPathAndFlag().predictedPath
+				.createTransformedShape(coordinateTranslate));
 	}
 
 	/**

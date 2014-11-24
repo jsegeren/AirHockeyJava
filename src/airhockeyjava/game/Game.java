@@ -164,41 +164,9 @@ public class Game {
 	}
 
 	/**
-	 * Check if a goal has been scored by the robot or user
-	 * If a goal is scored, update score and reset puck
-	 */
-	private void checkAndUpdateScore() {
-		float goalStartY = Conversion
-				.meterToPixel(gameTable.getHeight() - gameTable.getGoalWidth()) / 2.0f;
-
-		// Check if the robot scored a goal
-		if (
-		//TODO this can be cleaner
-		gamePuck.getPosition().x - gamePuck.getRadius() <= Constants.GAME_GOAL_ALLOWANCE
-				&& Conversion.meterToPixel(gamePuck.getPosition().y) > goalStartY
-				&& Conversion.meterToPixel(gamePuck.getPosition().y) < goalStartY
-						+ Conversion.meterToPixel(gameTable.getGoalWidth())) {
-			resetPuck();
-			this.robotScore++;
-		}
-
-		// Check if the user scored a goal
-		if (
-		//TODO this can be cleaner
-		gamePuck.getPosition().x + gamePuck.getRadius() >= gameTable.getWidth()
-				- Constants.GAME_GOAL_ALLOWANCE
-				&& Conversion.meterToPixel(gamePuck.getPosition().y) > goalStartY
-				&& Conversion.meterToPixel(gamePuck.getPosition().y) < goalStartY
-						+ Conversion.meterToPixel(gameTable.getGoalWidth())) {
-			resetPuck();
-			this.userScore++;
-		}
-	}
-
-	/**
 	 * Destroy and reinitialize puck object entirely
 	 */
-	private void resetPuck() {
+	public void resetPuck() {
 		movingItems.remove(gamePuck);
 		gamePuck = new Puck();
 		movingItems.add(gamePuck);
@@ -211,9 +179,6 @@ public class Game {
 
 		setGameInfoDisplay();
 		handleKeyPresses();
-
-		if (this.settings.goalDetectionOn)
-			checkAndUpdateScore();
 
 		// If simulated, we need to use input data to update user mallet state
 		// Also need to use mocked detection layer to update puck position via physics

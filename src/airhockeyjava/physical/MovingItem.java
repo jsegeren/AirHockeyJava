@@ -7,6 +7,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Stack;
 
+import airhockeyjava.game.Constants;
+import airhockeyjava.util.Conversion;
 import airhockeyjava.util.Geometry;
 import airhockeyjava.util.LineVectorUtils;
 import airhockeyjava.util.Vector2;
@@ -30,6 +32,16 @@ public abstract class MovingItem implements IMovingItem {
 		PositionAndDuration(Vector2 position, long nanoTime) {
 			this.position = position;
 			this.nanoTime = nanoTime;
+		}
+	}
+
+	public class PathAndFlag {
+		public Path2D predictedPath;
+		public boolean isCriticalFlag;
+
+		PathAndFlag(Path2D predictedPath, boolean isCriticalPath) {
+			this.predictedPath = predictedPath;
+			this.isCriticalFlag = isCriticalPath;
 		}
 	}
 
@@ -59,7 +71,7 @@ public abstract class MovingItem implements IMovingItem {
 
 	private FixedStack<PositionAndDuration> previousStateStack;
 	private Line2D trajectoryLine;
-	private Path2D predictedPath;
+	private PathAndFlag pathAndFlag;
 	private Vector2 position;
 	private Vector2 velocity;
 	private final float mass; // Used in simulated friction calculation and energy transfer model
@@ -79,7 +91,7 @@ public abstract class MovingItem implements IMovingItem {
 		this.mass = mass;
 		this.trajectoryLine = new Line2D.Float(new Point2D.Float(position.x, position.y),
 				new Point2D.Float(position.x, position.y));
-		this.predictedPath = new Path2D.Float();
+		this.pathAndFlag = new PathAndFlag(new Path2D.Float(), false);
 		this.previousStateStack = new FixedStack<PositionAndDuration>(2);
 	}
 
@@ -127,12 +139,17 @@ public abstract class MovingItem implements IMovingItem {
 				this.position.y);
 	}
 
-	public Path2D getPredictedPath() {
-		return predictedPath;
+	public PathAndFlag getPathAndFlag() {
+		return pathAndFlag;
 	}
 
-	public void setPredictedPath(Path2D predictedPath) {
-		this.predictedPath = predictedPath;
+	public void setPathAndFlag(Path2D predictedPath, boolean isCriticalFlag) {
+		this.pathAndFlag.predictedPath = predictedPath;
+		this.pathAndFlag.isCriticalFlag = isCriticalFlag;
+	}
+
+	public void setPathAndFlag(PathAndFlag pathAndFlag) {
+		this.pathAndFlag = pathAndFlag;
 	}
 
 	/**
@@ -167,7 +184,12 @@ public abstract class MovingItem implements IMovingItem {
 		}
 	}
 
-	public void updatePredictedPath(Rectangle2D tableCollisionFrame) {
+	/**
+	 * Public method to updated predicted path and visual projection of the moving item. 
+	 * @param tableCollisionFrame
+	 * @param maximum number of reflections desired in the projection
+	 */
+	public void updatePredictedPath(Rectangle2D tableCollisionFrame, int numberReflections) {
 		// Vector in forward path. Requires significant scaling otherwise won't project far 
 		// enough "into the future" to actually find the intersection point. Otherwise
 		// we can limit this distance based on an actual amount of time elapsed into the future.
@@ -181,10 +203,68 @@ public abstract class MovingItem implements IMovingItem {
 		if (intersectionPoint == null) {
 			return; // Short-circuit return
 		}
-		predictedPath = new Path2D.Float(predictedLine);
 
+		// Set up path; check if critical and update flag if necessary
+		pathAndFlag.predictedPath = new Path2D.Float(predictedLine);
+		pathAndFlag.isCriticalFlag = isPointIntersectingGoal(intersectionPoint,
+				tableCollisionFrame, Constants.GAME_GOAL_WIDTH_METERS);
+
+		// Build and add the remaining reflections to the projected path.
+		// Only build until critical path reached (i.e. a path that leads to a goal!)
+		for (int i = 0; i < numberReflections && !pathAndFlag.isCriticalFlag; i++) {
+			predictedLine = getReflectedPredictedLine(predictedLine, tableCollisionFrame);
+			Path2D reflectedPredictedPath = new Path2D.Float(predictedLine);
+			pathAndFlag.predictedPath.append(reflectedPredictedPath, true);
+			pathAndFlag.isCriticalFlag = isPointIntersectingGoal(predictedLine.getP2(),
+					tableCollisionFrame, Constants.GAME_GOAL_WIDTH_METERS);
+		}
+	}
+
+	/**
+	 * Test whether point intersecting either goal
+	 * @param point
+	 * @param collisionFrame
+	 * @param goalWidth
+	 * @return True if intersection exists
+	 */
+	public final boolean isPointIntersectingGoal(Point2D point, Rectangle2D collisionFrame,
+			float goalWidth) {
+		return isPointIntersectingGoal((float) point.getX(), (float) point.getY(), collisionFrame,
+				goalWidth);
+	}
+	
+	public final boolean isPointIntersectingGoal(float x, float y, Rectangle2D collisionFrame,
+			float goalWidth) {
+		// True if reaching left goal or right goal, accounting for width of item
+		return isPointIntersectingLeftGoal(x, y, collisionFrame, goalWidth)
+				|| isPointIntersectingRightGoal(x, y, collisionFrame, goalWidth);
+	}
+
+	public final boolean isPointIntersectingLeftGoal(float x, float y, Rectangle2D collisionFrame,
+			float goalWidth) {
+		float goalStartY = (float) ((collisionFrame.getHeight() - goalWidth) / 2.0f);
+		return ((x <= collisionFrame.getMinX() + Constants.GAME_GOAL_ALLOWANCE)
+				&& (y >= goalStartY + this.radius - Constants.GAME_GOAL_ALLOWANCE) && (y <= goalStartY
+				+ goalWidth - this.radius + Constants.GAME_GOAL_ALLOWANCE));
+	}
+
+	public final boolean isPointIntersectingRightGoal(float x, float y, Rectangle2D collisionFrame,
+			float goalWidth) {
+		float goalStartY = (float) ((collisionFrame.getHeight() - goalWidth) / 2.0f);
+		return ((x >= collisionFrame.getMaxX() - Constants.GAME_GOAL_ALLOWANCE)
+				&& (y >= goalStartY + this.radius - Constants.GAME_GOAL_ALLOWANCE) && (y <= goalStartY
+				+ goalWidth - this.radius + Constants.GAME_GOAL_ALLOWANCE));
+	}
+
+	/**
+	 * General method to get the next path line, which is a reflection of the current predicted line against
+	 * boundary with which it collides.
+	 * @param predictedLine
+	 * @return reflected path line, or null if there is no intersection/reflection point
+	 */
+	private final Line2D getReflectedPredictedLine(Line2D predictedLine, Rectangle2D collisionFrame) {
 		// Get angle between collision edge and incoming trajectory line
-		float incidentAngleRadians = getCollisionIncidentAngle(predictedLine, tableCollisionFrame);
+		float incidentAngleRadians = getCollisionIncidentAngle(predictedLine, collisionFrame);
 		// Reflect according to angle of incidence
 		float reflectionAngleRadians = (float) (Math.PI - 2 * incidentAngleRadians);
 
@@ -192,7 +272,7 @@ public abstract class MovingItem implements IMovingItem {
 		Line2D secondPredictedLine = new Line2D.Float((float) predictedLine.getX2(),
 				(float) predictedLine.getY2(), (float) predictedLine.getX1(),
 				(float) predictedLine.getY1());
-//		secondPredictedLine = LineVectorUtils.rotateLineAboutStartingPoint(secondPredictedLine, reflectionAngleRadians);
+		//		secondPredictedLine = LineVectorUtils.rotateLineAboutStartingPoint(secondPredictedLine, reflectionAngleRadians);
 		Path2D secondPredictedPath = new Path2D.Float(secondPredictedLine);
 
 		// Set up the rotation transformation based on the reflection, and then rotate the line
@@ -201,14 +281,16 @@ public abstract class MovingItem implements IMovingItem {
 		rotationTransform.rotate(reflectionAngleRadians, (float) predictedLine.getX2(),
 				(float) predictedLine.getY2());
 		secondPredictedPath.transform(rotationTransform);
-		
+
 		// Get the rotated line, then extend it up to the next boundary (i.e. table edge)
 		secondPredictedLine = Geometry.getStartpoints(secondPredictedPath);
 		LineVectorUtils.scaleLine(secondPredictedLine, 100000f);
-		intersectionPoint = getIntersectionPointAndCapLine(secondPredictedLine, tableCollisionFrame);
-		secondPredictedPath = new Path2D.Float(secondPredictedLine);
-		
-		predictedPath.append(secondPredictedPath, true);
+		Point2D intersectionPoint = getIntersectionPointAndCapLine(secondPredictedLine,
+				collisionFrame);
+		//		if (intersectionPoint == null) {
+		//			return null;
+		//		}
+		return secondPredictedLine;
 	}
 
 	/**
@@ -216,7 +298,7 @@ public abstract class MovingItem implements IMovingItem {
 	 * endpoint) to the intersection point.
 	 * @param predictedLine
 	 * @param collisionFrame
-	 * @return intersection point
+	 * @return intersection point, null if not exists. In this case, predicted line is not modified.
 	 */
 	private final Point2D getIntersectionPointAndCapLine(Line2D predictedLine,
 			Rectangle2D collisionFrame) {
