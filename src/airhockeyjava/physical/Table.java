@@ -44,7 +44,8 @@ public class Table extends RoundRectangle2D.Float {
 	 * @return Rectangle2D collision frame
 	 */
 	public Rectangle2D getCollisionFrame(float collisionRadius) {
-		Rectangle2D collisionFrame = this.getFrame();
+		Rectangle2D collisionFrame = this.getFrame(); // Lower precision frame
+		//		Rectangle2D collisionFrame = this.getBounds2D(); // Higher precision frame
 		collisionFrame.setFrame(collisionFrame.getMinX() + collisionRadius,
 				collisionFrame.getMinY() + collisionRadius, collisionFrame.getMaxX() - 2
 						* collisionRadius, collisionFrame.getMaxY() - 2 * collisionRadius);

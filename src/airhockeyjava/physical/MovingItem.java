@@ -8,7 +8,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.Stack;
 
 import airhockeyjava.game.Constants;
-import airhockeyjava.util.Conversion;
 import airhockeyjava.util.Geometry;
 import airhockeyjava.util.LineVectorUtils;
 import airhockeyjava.util.Vector2;
@@ -213,6 +212,10 @@ public abstract class MovingItem implements IMovingItem {
 		// Only build until critical path reached (i.e. a path that leads to a goal!)
 		for (int i = 0; i < numberReflections && !pathAndFlag.isCriticalFlag; i++) {
 			predictedLine = getReflectedPredictedLine(predictedLine, tableCollisionFrame);
+			// Break if predicted line (or intersection point) not found
+			if (predictedLine == null) {
+				break;
+			}
 			Path2D reflectedPredictedPath = new Path2D.Float(predictedLine);
 			pathAndFlag.predictedPath.append(reflectedPredictedPath, true);
 			pathAndFlag.isCriticalFlag = isPointIntersectingGoal(predictedLine.getP2(),
@@ -232,7 +235,7 @@ public abstract class MovingItem implements IMovingItem {
 		return isPointIntersectingGoal((float) point.getX(), (float) point.getY(), collisionFrame,
 				goalWidth);
 	}
-	
+
 	public final boolean isPointIntersectingGoal(float x, float y, Rectangle2D collisionFrame,
 			float goalWidth) {
 		// True if reaching left goal or right goal, accounting for width of item
@@ -287,9 +290,9 @@ public abstract class MovingItem implements IMovingItem {
 		LineVectorUtils.scaleLine(secondPredictedLine, 100000f);
 		Point2D intersectionPoint = getIntersectionPointAndCapLine(secondPredictedLine,
 				collisionFrame);
-		//		if (intersectionPoint == null) {
-		//			return null;
-		//		}
+		if (intersectionPoint == null) {
+			return null;
+		}
 		return secondPredictedLine;
 	}
 

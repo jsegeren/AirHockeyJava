@@ -1,6 +1,7 @@
 package airhockeyjava.game;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 
 /**
  *
@@ -82,4 +83,16 @@ public class Constants {
 	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 0.06f;
 	public static final float MAX_USER_MALLET_SPEED_METERS_PER_SECOND = 1f;
 	public static final int NUMBER_PREDICTED_PATH_REFLECTIONS = 3;
+	
+	/**
+	 * Input Constants
+	 */
+	public static final int INPUT_TOGGLE_AI_KEY = KeyEvent.VK_A;
+	public static final String INPUT_TOGGLE_AI_NAME = "toggleAI";
+	public static final int INPUT_RESET_PUCK_KEY = KeyEvent.VK_R;
+	public static final String INPUT_RESET_PUCK_NAME = "resetPuck";
+	public static final int INPUT_TOGGLE_RESTRICT_USER_MALLET_KEY = KeyEvent.VK_M;
+	public static final String INPUT_TOGGLE_RESTRICT_USER_MALLET_NAME = "toggleRestrictUserMalletMovement";
+	public static final int INPUT_TOGGLE_GOAL_DETECTION_KEY = KeyEvent.VK_G;
+	public static final String INPUT_TOGGLE_GOAL_DETECTION_NAME = "toggleGoalDetection";
 }

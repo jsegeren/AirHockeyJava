@@ -9,16 +9,19 @@ import airhockeyjava.physical.Table;
 import airhockeyjava.graphics.GuiLayer;
 import airhockeyjava.input.IInputLayer;
 import airhockeyjava.input.InputLayer;
-import airhockeyjava.util.Conversion;
-import airhockeyjava.util.Vector2;
 
-import java.awt.event.KeyEvent;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
+import java.awt.event.ActionEvent;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
 /**
  * Top-level class for the game. Used for both simulated and actual games. Simulated games will
@@ -34,6 +37,61 @@ public class Game {
 	public enum GameTypeEnum {
 		REAL_GAME_TYPE, SIMULATED_GAME_TYPE
 	}
+
+	/**
+	 * Set up maps for key bindings. Key -> action name, then action name -> action handler.
+	 * This is considered the preferred mechanism for handling key inputs versus the KeyListener. 
+	 * Works equally on all platforms: Windows, Mac, Linux.
+	 */
+	private static final Map<Integer, String> keyToActionNameMap = new HashMap<Integer, String>() {
+		private static final long serialVersionUID = -8148003520786913073L;
+		{
+			put(Constants.INPUT_TOGGLE_AI_KEY, Constants.INPUT_TOGGLE_AI_NAME);
+			put(Constants.INPUT_RESET_PUCK_KEY, Constants.INPUT_RESET_PUCK_NAME);
+			put(Constants.INPUT_TOGGLE_RESTRICT_USER_MALLET_KEY,
+					Constants.INPUT_TOGGLE_RESTRICT_USER_MALLET_NAME);
+			put(Constants.INPUT_TOGGLE_GOAL_DETECTION_KEY,
+					Constants.INPUT_TOGGLE_GOAL_DETECTION_NAME);
+		}
+	};
+
+	private final Map<String, AbstractAction> actionNameToActionMap = new HashMap<String, AbstractAction>() {
+		private static final long serialVersionUID = -4097174533995138895L;
+		{
+			put(Constants.INPUT_TOGGLE_AI_NAME, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					settings.enableAI = !settings.enableAI;
+				}
+			});
+			put(Constants.INPUT_RESET_PUCK_NAME, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					resetPuck();
+				}
+			});
+			put(Constants.INPUT_TOGGLE_RESTRICT_USER_MALLET_NAME, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					settings.restrictUserMalletMovement = !settings.restrictUserMalletMovement;
+				}
+			});
+			put(Constants.INPUT_TOGGLE_GOAL_DETECTION_NAME, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					settings.goalDetectionOn = !settings.goalDetectionOn;
+				}
+			});
+		}
+	};
 
 	// Local constants and physical parameters
 	private static final long OPTIMAL_TIME = 1000000000 / Constants.GAME_SIMULATION_TARGET_FPS;
@@ -61,7 +119,6 @@ public class Game {
 
 	// Threads
 	private Thread guiLayerThread;
-	private Thread inputLayerThread;
 
 	// Game object itself!
 	private static Game game;
@@ -87,7 +144,6 @@ public class Game {
 
 		// Start the threads
 		game.guiLayerThread.start();
-		game.inputLayerThread.start();
 
 		// Main loop for game logic. Uses variable timestepping.
 		// Reference: http://www.java-gaming.org/index.php?topic=24220.0
@@ -138,31 +194,6 @@ public class Game {
 				"Robot Score: " + this.robotScore, });
 	}
 
-	private void handleKeyPresses() {
-		int lastKeyPressed = this.inputLayer.handleKeyPress();
-		while (lastKeyPressed != KeyEvent.VK_UNDEFINED) {
-			switch (lastKeyPressed) {
-			case KeyEvent.VK_A:
-				this.settings.enableAI = !this.settings.enableAI;
-				break;
-			case KeyEvent.VK_R:
-				resetPuck();
-				break;
-			case KeyEvent.VK_M:
-				this.settings.restrictUserMalletMovement = !this.settings.restrictUserMalletMovement;
-				break;
-			case KeyEvent.VK_G:
-				this.settings.goalDetectionOn = !this.settings.goalDetectionOn;
-				break;
-			default:
-				break;
-
-			}
-
-			lastKeyPressed = this.inputLayer.handleKeyPress();
-		}
-	}
-
 	/**
 	 * Destroy and reinitialize puck object entirely
 	 */
@@ -178,15 +209,14 @@ public class Game {
 	private void updateStates(float deltaTime) {
 
 		setGameInfoDisplay();
-		handleKeyPresses();
 
 		// If simulated, we need to use input data to update user mallet state
 		// Also need to use mocked detection layer to update puck position via physics
-		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
+		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
 		}
 		// Otherwise we will use the vision system
-		else if (gameType == GameTypeEnum.REAL_GAME_TYPE) {
+		else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
 		}
 	}
 
@@ -214,11 +244,25 @@ public class Game {
 
 		// For simulated game, instantiate the simulated detection/prediction layer thread
 		// and the input layer thread which is responsible for the user position.
-		if (gameType == GameTypeEnum.SIMULATED_GAME_TYPE) {
-			// TODO should the GUI thread and input thread be the same instead of two separate threads?
-			inputLayer = new InputLayer(guiLayer);
-			inputLayerThread = new Thread(inputLayer);
-			detectionLayer = new SimulatedDetection(this, inputLayer);
+		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
+			setKeyBindings();
 		}
+	}
+
+	private void setKeyBindings() {
+		InputMap inputMap = guiLayer.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
+		ActionMap actionMap = guiLayer.getActionMap();
+
+		for (Map.Entry<Integer, String> keyToActionNameEntry : keyToActionNameMap.entrySet()) {
+			inputMap.put(KeyStroke.getKeyStroke(keyToActionNameEntry.getKey(), 0),
+					keyToActionNameEntry.getValue());
+		}
+		for (Map.Entry<String, AbstractAction> actionNameToActionEntry : actionNameToActionMap
+				.entrySet()) {
+			actionMap.put(actionNameToActionEntry.getKey(), actionNameToActionEntry.getValue());
+		}
+
+		inputLayer = new InputLayer(guiLayer);
+		detectionLayer = new SimulatedDetection(this, inputLayer);
 	}
 }

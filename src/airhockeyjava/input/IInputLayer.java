@@ -1,6 +1,5 @@
 package airhockeyjava.input;
 
-import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
@@ -10,7 +9,7 @@ import java.awt.event.MouseMotionListener;
  * @author Joshua Segeren
  *
  */
-public interface IInputLayer extends Runnable, MouseMotionListener, MouseListener, KeyListener {
+public interface IInputLayer extends MouseMotionListener, MouseListener {
 
 	/**
 	 * Retrieve mouse position x-coordinate
@@ -25,11 +24,4 @@ public interface IInputLayer extends Runnable, MouseMotionListener, MouseListene
 	 * @return int y-pixel value
 	 */
 	public int getMouseY();
-
-	/**
-	 * Retrieve the last key pressed or VK_UNDEFINED if all keypresses have been handled
-	 *
-	 * @return int key code of last key pressed
-	 */
-	public int handleKeyPress();
 }

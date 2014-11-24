@@ -8,6 +8,7 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import airhockeyjava.game.Constants;
 import airhockeyjava.physical.IMovingItem;
@@ -45,7 +46,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	AffineTransform coordinateTranslate = new AffineTransform();
 
-	private static final HashMap<Boolean, Color> criticalPathColorMap = new HashMap<Boolean, Color>() {
+	private static final Map<Boolean, Color> criticalPathColorMap = new HashMap<Boolean, Color>() {
 		private static final long serialVersionUID = 8650122016462175223L;
 		{
 			put(true, Constants.GUI_PREDICTED_GOAL_COLOR);
@@ -154,7 +155,9 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	private void drawPredictedPath(MovingItem item) {
 		Graphics2D context = this.bufferContext;
-		context.setColor(GuiLayer.criticalPathColorMap.get(item.getPathAndFlag().isCriticalFlag));
+		// Use critical path color only if goal detection enabled
+		context.setColor(GuiLayer.criticalPathColorMap.get(game.settings.goalDetectionOn
+				&& item.getPathAndFlag().isCriticalFlag));
 		context.draw((Path2D) item.getPathAndFlag().predictedPath
 				.createTransformedShape(coordinateTranslate));
 	}

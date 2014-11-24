@@ -83,16 +83,23 @@ public class SimulatedDetection implements IDetection {
 			}
 		}
 
+		// Check for puck-wall collisions over last-to-current interval and modify (reflect) velocities
+		// accordingly. TODO implement some energy loss into collision; right now assuming elastic and frictionless
 		if (newPuckPositionX >= tablePuckCollisionFrame.getMaxX()
 				|| newPuckPositionX <= tablePuckCollisionFrame.getMinX()) {
-			newPuckPositionX = game.gamePuck.getPosition().x - game.gamePuck.getVelocity().x
-					* deltaTime;
 			game.gamePuck.getVelocity().x *= -1f + Constants.WALL_PUCK_COLLISION_LOSS_COEFFICIENT;
+			// Revise position projections
+			newPuckPositionX = game.gamePuck.getPosition().x + game.gamePuck.getVelocity().x
+					* deltaTime;
 		}
 		if (newPuckPositionY >= tablePuckCollisionFrame.getMaxY()
 				|| newPuckPositionY <= tablePuckCollisionFrame.getMinY()) {
 			game.gamePuck.getVelocity().y *= -1f + Constants.WALL_PUCK_COLLISION_LOSS_COEFFICIENT;
+			// Revise position projections
+			newPuckPositionY = game.gamePuck.getPosition().y + game.gamePuck.getVelocity().y
+					* deltaTime;
 		}
+
 		// Update puck position, enforcing boundary-based position constraints
 		Vector2 newPuckPosition = new Vector2((float) Math.min(
 				Math.max(newPuckPositionX, tablePuckCollisionFrame.getMinX()),
@@ -102,8 +109,7 @@ public class SimulatedDetection implements IDetection {
 
 		game.gamePuck.setPosition(newPuckPosition);
 		game.gamePuck.updateTrajectory();
-		game.gamePuck.updatePredictedPath(
-				game.gameTable.getCollisionFrame(game.gamePuck.getRadius()),
+		game.gamePuck.updatePredictedPath(this.tablePuckCollisionFrame,
 				Constants.NUMBER_PREDICTED_PATH_REFLECTIONS);
 
 		// Check if puck-mallet collision HAS occurred

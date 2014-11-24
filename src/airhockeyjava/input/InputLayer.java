@@ -1,10 +1,7 @@
 package airhockeyjava.input;
 
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.EmptyStackException;
-import java.util.Stack;
 
 import airhockeyjava.graphics.GuiLayer;
 
@@ -15,12 +12,11 @@ public class InputLayer implements IInputLayer {
 	Point p;
 	private int mouseX;
 	private int mouseY;
-	private Stack<Integer> unhandledKeyPresses = new Stack<Integer>();
 
 	public InputLayer(GuiLayer guiLayer) {
+		super();
 		guiLayer.addMouseListener(this);
 		guiLayer.addMouseMotionListener(this);
-		guiLayer.addKeyListener(this);
 	}
 
 	@Override
@@ -65,35 +61,4 @@ public class InputLayer implements IInputLayer {
 		mouseX = me.getX();
 		mouseY = me.getY();
 	}
-
-	@Override
-	public void run() {
-	}
-
-	@Override
-	public void keyTyped(KeyEvent ke) {
-	}
-
-	@Override
-	public void keyPressed(KeyEvent ke) {
-		System.out.println(ke.toString());
-		this.unhandledKeyPresses.push(ke.getKeyCode());
-	}
-
-	@Override
-	public void keyReleased(KeyEvent ke) {
-	}
-
-	/**
-	 * Returns the last key pressed or VK_UNDEFINED if all keypresses have been handled
-	 */
-	@Override
-	public int handleKeyPress() {
-		try {
-			return this.unhandledKeyPresses.pop();
-		} catch (EmptyStackException e) {
-			return KeyEvent.VK_UNDEFINED;
-		}
-	}
-
 }
