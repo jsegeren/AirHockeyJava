@@ -13,36 +13,40 @@ import airhockeyjava.game.Constants;
  */
 public class Intersection {
 
-	/**
-	 * Method to get the line corresponding to the edge on which the input point lies.
-	 * @return Edge line from collision point
-	 */
-	public static Line2D getCollisionEdge(Point2D point, Rectangle2D rectangle) {
+	public static Line2D getCollisionEdge(float x1, float y1, Rectangle2D rectangle) {
 		// Left edge
-		if (Math.abs(rectangle.getMinX() - point.getX()) <= Constants.INTERSECTION_EPSILON_METERS) {
+		if (Math.abs(rectangle.getMinX() - x1) <= Constants.INTERSECTION_EPSILON_METERS) {
 			//			System.out.println("Left edge");
 			return new Line2D.Float((float) rectangle.getMinX(), (float) rectangle.getMinY(),
 					(float) rectangle.getMinX(), (float) rectangle.getMaxY());
 		}
 		// Top edge
-		if (Math.abs(rectangle.getMinY() - point.getY()) <= Constants.INTERSECTION_EPSILON_METERS) {
+		if (Math.abs(rectangle.getMinY() - y1) <= Constants.INTERSECTION_EPSILON_METERS) {
 			//			System.out.println("Top edge");
 			return new Line2D.Float((float) rectangle.getMinX(), (float) rectangle.getMinY(),
 					(float) rectangle.getMaxX(), (float) rectangle.getMinY());
 		}
 		// Right edge
-		if (Math.abs(rectangle.getMaxX() - point.getX()) <= Constants.INTERSECTION_EPSILON_METERS) {
+		if (Math.abs(rectangle.getMaxX() - x1) <= Constants.INTERSECTION_EPSILON_METERS) {
 			//			System.out.println("Right edge");
 			return new Line2D.Float((float) rectangle.getMaxX(), (float) rectangle.getMinY(),
 					(float) rectangle.getMaxX(), (float) rectangle.getMaxY());
 		}
 		// Bottom edge
-		if (Math.abs(rectangle.getMaxY() - point.getY()) <= Constants.INTERSECTION_EPSILON_METERS) {
+		if (Math.abs(rectangle.getMaxY() - y1) <= Constants.INTERSECTION_EPSILON_METERS) {
 			//			System.out.println("Bottom edge");
 			return new Line2D.Float((float) rectangle.getMinX(), (float) rectangle.getMaxY(),
 					(float) rectangle.getMaxX(), (float) rectangle.getMaxY());
 		}
 		return null;
+	}
+
+	/**
+	 * Method to get the line corresponding to the edge on which the input point lies.
+	 * @return Edge line from collision point
+	 */
+	public static Line2D getCollisionEdge(Point2D point, Rectangle2D rectangle) {
+		return getCollisionEdge((float) point.getX(), (float) point.getY(), rectangle);
 	}
 
 	/**
@@ -52,6 +56,9 @@ public class Intersection {
 	 * @return Angle in radians
 	 */
 	public static float getAngleBetweenLines(Line2D line1, Line2D line2) {
+		if (line1 == null || line2 == null) {
+			return 0f;
+		}
 		double angle1 = Math.atan2(line1.getY1() - line1.getY2(), line1.getX1() - line1.getX2());
 		double angle2 = Math.atan2(line2.getY1() - line2.getY2(), line2.getX1() - line2.getX2());
 		return (float) (angle1 - angle2);
@@ -109,6 +116,24 @@ public class Intersection {
 				intersectionPoint = getTopIntersectionPoint(line, rectangle);
 			}
 		}
+		//		
+		// Return first non-null point. Is this less efficient?
+		//		intersectionPoint = getLeftIntersectionPoint(line, rectangle);
+		//		if (intersectionPoint != null) {
+		//			return intersectionPoint;
+		//		}
+		//		intersectionPoint = getTopIntersectionPoint(line, rectangle);
+		//		if (intersectionPoint != null) {
+		//			return intersectionPoint;
+		//		}
+		//		intersectionPoint = getRightIntersectionPoint(line, rectangle);
+		//		if (intersectionPoint != null) {
+		//			return intersectionPoint;
+		//		}
+		//		intersectionPoint = getBottomIntersectionPoint(line, rectangle);
+		//		if (intersectionPoint != null) {
+		//			return intersectionPoint;
+		//		}
 
 		return intersectionPoint;
 	}

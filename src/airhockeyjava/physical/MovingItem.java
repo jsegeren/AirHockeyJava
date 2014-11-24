@@ -7,7 +7,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Stack;
 
-import airhockeyjava.game.Constants;
+import airhockeyjava.util.Geometry;
+import airhockeyjava.util.LineVectorUtils;
 import airhockeyjava.util.Vector2;
 import airhockeyjava.util.Intersection;
 
@@ -174,45 +175,79 @@ public abstract class MovingItem implements IMovingItem {
 				.scl(100000f));
 		Line2D predictedLine = new Line2D.Float(this.position.x, this.position.y, futurePosition.x,
 				futurePosition.y);
-		//		predictedPath = new Path2D.Float(predictedLine);
 
-		Point2D intersectionPoint = Intersection.getIntersectionPoint(predictedLine,
+		Point2D intersectionPoint = getIntersectionPointAndCapLine(predictedLine,
 				tableCollisionFrame);
-		if (intersectionPoint != null) {
-			predictedLine.setLine(predictedLine.getX1(), predictedLine.getY1(),
-					intersectionPoint.getX(), intersectionPoint.getY());
-			predictedPath = new Path2D.Float(predictedLine);
-			predictedPathFound = true;
+		if (intersectionPoint == null) {
+			return; // Short-circuit return
+		}
+		predictedPath = new Path2D.Float(predictedLine);
 
-			// Check for which edge collision occurred
-			Line2D collisionEdgeLine = Intersection.getCollisionEdge(intersectionPoint,
-					tableCollisionFrame);
+		// Get angle between collision edge and incoming trajectory line
+		float incidentAngleRadians = getCollisionIncidentAngle(predictedLine, tableCollisionFrame);
+		// Reflect according to angle of incidence
+		float reflectionAngleRadians = (float) (Math.PI - 2 * incidentAngleRadians);
 
-			// Get angle between collision edge and incoming trajectory line
-			float incidentAngleRadians = Intersection.getAngleBetweenLines(predictedLine,
-					collisionEdgeLine);
-			//			System.out.println(String.format("Incident angle: %f degrees",
-			//					Math.toDegrees(incidentAngleRadians)));
+		// Set up the reflected path
+		Line2D secondPredictedLine = new Line2D.Float((float) predictedLine.getX2(),
+				(float) predictedLine.getY2(), (float) predictedLine.getX1(),
+				(float) predictedLine.getY1());
+//		secondPredictedLine = LineVectorUtils.rotateLineAboutStartingPoint(secondPredictedLine, reflectionAngleRadians);
+		Path2D secondPredictedPath = new Path2D.Float(secondPredictedLine);
 
-			AffineTransform rotationTransform = new AffineTransform();
+		// Set up the rotation transformation based on the reflection, and then rotate the line
+		// NOTE that this is just a graphical reflection. The reflected line is not rotated geometrically.
+		AffineTransform rotationTransform = new AffineTransform();
+		rotationTransform.rotate(reflectionAngleRadians, (float) predictedLine.getX2(),
+				(float) predictedLine.getY2());
+		secondPredictedPath.transform(rotationTransform);
+		
+		// Get the rotated line, then extend it up to the next boundary (i.e. table edge)
+		secondPredictedLine = Geometry.getStartpoints(secondPredictedPath);
+		LineVectorUtils.scaleLine(secondPredictedLine, 100000f);
+		intersectionPoint = getIntersectionPointAndCapLine(secondPredictedLine, tableCollisionFrame);
+		secondPredictedPath = new Path2D.Float(secondPredictedLine);
+		
+		predictedPath.append(secondPredictedPath, true);
+	}
 
-			// Reflect according to angle of incidence
-			rotationTransform.rotate(Math.PI - 2 * incidentAngleRadians,
-					(float) predictedLine.getX2(), (float) predictedLine.getY2());
-
-			Line2D secondPredictedLine = new Line2D.Float((float) predictedLine.getX2(),
-					(float) predictedLine.getY2(), (float) predictedLine.getX1(),
-					(float) predictedLine.getY1());
-			Path2D secondPredictedPath = new Path2D.Float(secondPredictedLine);
-			secondPredictedPath.transform(rotationTransform);
-			predictedPath.append(secondPredictedPath, true);
-
-		} else {
+	/**
+	 * Internal method to retrieve intersection point of predicted line and frame. Caps the line (i.e. sets
+	 * endpoint) to the intersection point.
+	 * @param predictedLine
+	 * @param collisionFrame
+	 * @return intersection point
+	 */
+	private final Point2D getIntersectionPointAndCapLine(Line2D predictedLine,
+			Rectangle2D collisionFrame) {
+		Point2D intersectionPoint = Intersection
+				.getIntersectionPoint(predictedLine, collisionFrame);
+		if (intersectionPoint == null) {
 			// Only output message on first iteration
 			if (predictedPathFound) {
 				System.out.println("No intersection point found!");
 			}
 			predictedPathFound = false;
+		} else {
+			predictedPathFound = true;
+			predictedLine.setLine(predictedLine.getX1(), predictedLine.getY1(),
+					intersectionPoint.getX(), intersectionPoint.getY());
 		}
+		return intersectionPoint;
+	}
+
+	/**
+	 * Gets angle between predicted path and the edge with which it collides.
+	 * Expects the final endpoint of the predicted line to be the intersection point between the lines.
+	 * @param predictedLine
+	 * @param collisionFrame
+	 * @return
+	 */
+	private final static float getCollisionIncidentAngle(Line2D predictedLine,
+			Rectangle2D collisionFrame) {
+		return Intersection.getAngleBetweenLines(
+				predictedLine,
+				Intersection.getCollisionEdge((float) predictedLine.getX2(),
+						(float) predictedLine.getY2(), collisionFrame));
 	}
 }
