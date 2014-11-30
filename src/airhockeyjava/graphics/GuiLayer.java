@@ -43,6 +43,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FPS;
 	private long currentFps = 0;
+	private boolean isInitialized = false;
 
 	AffineTransform coordinateTranslate = new AffineTransform();
 
@@ -185,6 +186,8 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		this.infoBar = new InfoBar(Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH,
 				Constants.GUI_TABLE_OFFSET_Y, Constants.GUI_INFO_BAR_WIDTH,
 				Constants.GUI_WINDOW_HEIGHT - Constants.GUI_TABLE_OFFSET_Y, this.bufferContext);
+
+		isInitialized = true;
 	}
 
 	/**
@@ -192,6 +195,9 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 */
 	private void clearScreen() {
 		Graphics context = this.bufferContext;
+		// Spin out until initialized
+		while (!isInitialized) {
+		}
 		context.setColor(Constants.GUI_BG_COLOR);
 		context.fillRect(0, 0, Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
 	}
@@ -208,6 +214,10 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		float tableCornerRadius = (float) table.getArcHeight();
 
 		Graphics context = this.bufferContext;
+		// Spin out until initialized
+		while(!isInitialized) {
+		}
+		
 		context.setColor(Constants.GUI_TABLE_COLOR);
 
 		//Draw the table border
