@@ -54,10 +54,10 @@ public class SimulatedDetection implements IDetection {
 	 * 	1) Collisions are perfectly elastic. That is, momentum is preserved; however, we may want to incorporate
 	 *   some energy loss, based on experimentation or a more sophisticated mechanical model.
 	 *  2) Collision between puck and mallet do not affect the velocity/position of the mallet.
-	 * 
+	 *
 	 * Reference (billiard collisions i.e. 1st year physics):
-	 * http://www.real-world-physics-problems.com/physics-of-billiards.html 
-	 * 
+	 * http://www.real-world-physics-problems.com/physics-of-billiards.html
+	 *
 	 * @param deltaTime
 	 */
 	private void updatePuckState(float deltaTime) {
@@ -156,19 +156,38 @@ public class SimulatedDetection implements IDetection {
 		int mouseX = inputLayer.getMouseX() - Constants.GUI_TABLE_OFFSET_X;
 		int mouseY = inputLayer.getMouseY() - Constants.GUI_TABLE_OFFSET_Y;
 
-		// Update the mallet position, restricting it to the bounds of the table
-		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
-		float newPositionX = (float) Math.max(
-				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX)
-						- game.userMallet.getRadius() : Math.min(Conversion.pixelToMeter(mouseX),
-						game.gameTable.getWidth() / 2f - game.userMallet.getRadius())),
-				game.userMallet.getRadius());
-		float newPositionY = (float) Math.max(
+		float targetPositionX = (float) Math.max(
+		((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX)
+				- game.userMallet.getRadius() : Math.min(Conversion.pixelToMeter(mouseX),
+				game.gameTable.getWidth() / 2f - game.userMallet.getRadius())),
+		game.userMallet.getRadius());
+
+		float targetPositionY = (float) Math.max(
 				Math.min(Conversion.pixelToMeter(mouseY), game.gameTable.getHeight()
 						- game.userMallet.getRadius()), game.userMallet.getRadius());
 
-		Vector2 newPosition = new Vector2(newPositionX, newPositionY);
-		game.userMallet.updatePositionAndCalculateVelocity(newPosition, deltaTime);
+		float diffX = targetPositionX - game.userMallet.getPosition().x;
+		float diffY = targetPositionY - game.userMallet.getPosition().y;
+
+		Vector2 force1 = new Vector2(diffX, diffY).scl(0.9f);
+		Vector2 force2 = game.userMallet.getVelocity();
+
+		game.userMallet.setAcceleration(force1.sub(force2));
+		game.userMallet.updatePosition(deltaTime);
+
+////		 Update the mallet position, restricting it to the bounds of the table
+////		 Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
+//		float newPositionX = (float) Math.max(
+//				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX)
+//						- game.userMallet.getRadius() : Math.min(Conversion.pixelToMeter(mouseX),
+//						game.gameTable.getWidth() / 2f - game.userMallet.getRadius())),
+//				game.userMallet.getRadius());
+//		float newPositionY = (float) Math.max(
+//				Math.min(Conversion.pixelToMeter(mouseY), game.gameTable.getHeight()
+//						- game.userMallet.getRadius()), game.userMallet.getRadius());
+//
+//		Vector2 newPosition = new Vector2(newPositionX, newPositionY);
+//		game.userMallet.updatePositionAndCalculateVelocity(newPosition, deltaTime);
 	}
 
 	/**
@@ -177,11 +196,16 @@ public class SimulatedDetection implements IDetection {
 	 * @param deltaTime
 	 */
 	private void updateRobotMalletState(float deltaTime) {
-		float newMalletPositionY = game.robotMallet.getPosition().y
-				+ (game.gamePuck.getPosition().y - game.robotMallet.getPosition().y) * 0.05f
-				* deltaTime;
 
-		game.robotMallet.updatePositionAndCalculateVelocity(
-				new Vector2(game.robotMallet.getPosition().x, newMalletPositionY), deltaTime);
+
+		float diffX = 0;
+		float diffY = game.gamePuck.getPosition().y - game.robotMallet.getPosition().y;
+
+		Vector2 force1 = new Vector2(diffX, diffY).scl(0.1f);
+		Vector2 force2 = game.robotMallet.getVelocity();
+
+		game.robotMallet.setAcceleration(force1.sub(force2));
+		game.robotMallet.updatePosition(deltaTime);
+
 	}
 }

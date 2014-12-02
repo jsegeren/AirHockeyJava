@@ -73,6 +73,7 @@ public abstract class MovingItem implements IMovingItem {
 	private PathAndFlag pathAndFlag;
 	private Vector2 position;
 	private Vector2 velocity;
+	private Vector2 acceleration = new Vector2(0,0);
 	private final float mass; // Used in simulated friction calculation and energy transfer model
 	private final float radius;
 
@@ -114,6 +115,16 @@ public abstract class MovingItem implements IMovingItem {
 		this.velocity = newVelocity;
 	}
 
+	public Vector2 getAcceleration() {
+		return acceleration;
+	}
+
+
+	public void setAcceleration(Vector2 acceleration) {
+		this.acceleration = acceleration;
+	}
+
+
 	@Override
 	public float getRadius() {
 		return this.radius;
@@ -124,6 +135,7 @@ public abstract class MovingItem implements IMovingItem {
 		return this.mass;
 	}
 
+	@Override
 	public Line2D getTrajectoryLine() {
 		return this.trajectoryLine;
 	}
@@ -183,13 +195,21 @@ public abstract class MovingItem implements IMovingItem {
 		}
 	}
 
+	/* Updates position based on velocity */
+	public void updatePosition (float deltaTime) {
+		this.velocity.add(new Vector2(this.acceleration).scl(deltaTime));
+		this.position.add(new Vector2(this.velocity).scl(deltaTime));
+	}
+
+	/*
+
 	/**
-	 * Public method to updated predicted path and visual projection of the moving item. 
+	 * Public method to updated predicted path and visual projection of the moving item.
 	 * @param tableCollisionFrame
 	 * @param maximum number of reflections desired in the projection
 	 */
 	public void updatePredictedPath(Rectangle2D tableCollisionFrame, int numberReflections) {
-		// Vector in forward path. Requires significant scaling otherwise won't project far 
+		// Vector in forward path. Requires significant scaling otherwise won't project far
 		// enough "into the future" to actually find the intersection point. Otherwise
 		// we can limit this distance based on an actual amount of time elapsed into the future.
 		Vector2 futurePosition = new Vector2(this.position).add(new Vector2(this.velocity)
