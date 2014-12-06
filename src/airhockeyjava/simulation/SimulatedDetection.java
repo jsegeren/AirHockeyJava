@@ -43,8 +43,6 @@ public class SimulatedDetection implements IDetection {
 	 * @param deltaTime
 	 */
 	private void updateItemStates(float deltaTime) {
-		updateUserMalletState(deltaTime);
-
 		// Check for and update goals scored
 		if (game.settings.goalDetectionOn) {
 			PuckSimulation.GoalScoredEnum goalScoredEnum = PuckSimulation.checkAndUpdateGoalScored(
@@ -52,25 +50,16 @@ public class SimulatedDetection implements IDetection {
 			if (goalScoredEnum.equals(PuckSimulation.GoalScoredEnum.GOAL_SCORED_FOR_ROBOT)) {
 				game.robotScore++;
 				game.resetPuck();
+				return;
 			} else if (goalScoredEnum.equals(PuckSimulation.GoalScoredEnum.GOAL_SCORED_FOR_USER)) {
 				game.userScore++;
 				game.resetPuck();
+				return;
 			}
 		}
-		game.gamePuck.updatePredictedPath(
-				game.gameTable.getCollisionFrame(game.gamePuck.getRadius()),
-				Constants.NUMBER_PREDICTED_PATH_REFLECTIONS);
-		// Update puck position, velocity based on wall collisions
-		PuckSimulation.updatePuckFromWallCollisions(game.gamePuck, tablePuckCollisionFrame,
-				deltaTime);
-		// Update puck position, velocity based on mallet collision
-		PuckSimulation.updatePuckFromMalletCollisions(game.gamePuck, game.userMallet,
-				game.robotMallet, deltaTime);
-		// Apply air friction. Surface is assumed frictionless // TODO is this reasonable?
-		PuckSimulation.applyAirFrictionToPuckVelocity(game.gamePuck,
-				Constants.PUCK_AIR_FRICTION_COEFFICIENT, deltaTime);
-		// Cap out the maximum puck speed
-		game.gamePuck.getVelocity().limit(Constants.MAX_PUCK_SPEED_METERS_PER_SECOND);
+
+		// Update position, velocity, and projection if necessary
+		updatePuckState(deltaTime);
 
 		// Update robot mallet via simulated AI 
 		// TODO move this call to top level game logic. Simulated detection layer should only worry about
@@ -78,6 +67,35 @@ public class SimulatedDetection implements IDetection {
 		if (game.settings.enableAI) {
 			updateRobotMalletState(deltaTime);
 		}
+
+		// Update user-controlled mallet
+		updateUserMalletState(deltaTime);
+	}
+
+	/**
+	 * Internal method to update puck state!
+	 * @param deltaTime
+	 */
+	private void updatePuckState(float deltaTime) {
+		boolean isPuckCollision = false; // Flag to check whether puck collision occurred
+		// Update puck position, velocity based on wall collisions
+		isPuckCollision |= PuckSimulation.updatePuckFromWallCollisions(game.gamePuck,
+				tablePuckCollisionFrame, deltaTime);
+		// Update puck position, velocity based on mallet collision
+		isPuckCollision |= PuckSimulation.updatePuckFromMalletCollisions(game.gamePuck,
+				game.userMallet, game.robotMallet, deltaTime);
+		
+		// Apply air friction. Surface is assumed frictionless // TODO is this reasonable?
+		PuckSimulation.applyAirFrictionToPuckVelocity(game.gamePuck,
+				Constants.PUCK_AIR_FRICTION_COEFFICIENT, deltaTime);
+		
+		// Cap out the maximum puck speed
+		game.gamePuck.getVelocity().limit(Constants.MAX_PUCK_SPEED_METERS_PER_SECOND);
+		
+		// Update predicted path
+		game.gamePuck.updatePredictedPath(
+				game.gameTable.getCollisionFrame(game.gamePuck.getRadius()),
+				Constants.NUMBER_PREDICTED_PATH_REFLECTIONS, isPuckCollision);
 	}
 
 	/**
@@ -87,10 +105,12 @@ public class SimulatedDetection implements IDetection {
 	 * @param deltaTime
 	 */
 	private void updateUserMalletState(float deltaTime) {
-		//Get the mouse coordinates relative to the table
+		// Get the mouse coordinates relative to the table
 		int mouseX = inputLayer.getMouseX() - Constants.GUI_TABLE_OFFSET_X;
 		int mouseY = inputLayer.getMouseY() - Constants.GUI_TABLE_OFFSET_Y;
 
+		// Update the mallet position, restricting it to the bounds of the table
+		// Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
 		float targetPositionX = (float) Math.max(
 				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX)
 						- game.userMallet.getRadius() : Math.min(Conversion.pixelToMeter(mouseX),
@@ -109,20 +129,6 @@ public class SimulatedDetection implements IDetection {
 
 		game.userMallet.setAcceleration(force1.sub(force2));
 		game.userMallet.updatePositionAndVelocity(deltaTime);
-
-		////		 Update the mallet position, restricting it to the bounds of the table
-		////		 Must convert from the UI layer x-coordinate (raw pixel value) to the physical dimension
-		//		float newPositionX = (float) Math.max(
-		//				((!game.settings.restrictUserMalletMovement) ? Conversion.pixelToMeter(mouseX)
-		//						- game.userMallet.getRadius() : Math.min(Conversion.pixelToMeter(mouseX),
-		//						game.gameTable.getWidth() / 2f - game.userMallet.getRadius())),
-		//				game.userMallet.getRadius());
-		//		float newPositionY = (float) Math.max(
-		//				Math.min(Conversion.pixelToMeter(mouseY), game.gameTable.getHeight()
-		//						- game.userMallet.getRadius()), game.userMallet.getRadius());
-		//
-		//		Vector2 newPosition = new Vector2(newPositionX, newPositionY);
-		//		game.userMallet.updatePositionAndCalculateVelocity(newPosition, deltaTime);
 	}
 
 	/**

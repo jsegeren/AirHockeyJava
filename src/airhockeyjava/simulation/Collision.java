@@ -1,9 +1,7 @@
 package airhockeyjava.simulation;
 
-import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 
-import airhockeyjava.game.Constants;
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Mallet;
 import airhockeyjava.physical.Puck;
@@ -15,19 +13,6 @@ import airhockeyjava.util.Vector2;
  *
  */
 public class Collision {
-
-	/**
-	 * Static method to check whether two moving items will collide, given their current trajectories, and
-	 * expected friction.
-	 *
-	 * @param itemA
-	 * @param itemB
-	 * @param deltaT relative time over which collision may occur
-	 * @return true if collision imminent
-	 */
-	public static boolean willCollide(IMovingItem itemA, IMovingItem itemB, float deltaT) {
-		return true; // TODO actually implement this
-	}
 
 	/**
 	 * Static method to check if two moving items are colliding
@@ -49,15 +34,6 @@ public class Collision {
 				2) + Math.pow(trajectoryLineB.getY2() - trajectoryLineB.getY1(), 2));
 		return ((squareLengthA != 0f) && (squareLengthB != 0f) && itemA.getTrajectoryLine()
 				.intersectsLine(itemB.getTrajectoryLine()));
-
-		//		Area areaA = new Area(itemA.getTrajectoryLine());
-		//		Area areaB = new Area(itemB.getTrajectoryLine());
-		//		areaB.intersect(areaA);
-		//		if (!areaB.isEmpty()) {
-		//			System.out.println("Intersection detected!");
-		//			return true;
-		//		}
-		//		return false;
 	}
 
 	/**
@@ -97,25 +73,15 @@ public class Collision {
 			// of collision, so it's a one-dimensional collision.)
 			newPuckSpeedNormal = (puckSpeedNormal * (puck.getMass() - mallet.getMass()) + (2f * mallet
 					.getMass() * malletSpeedNormal)) / (puck.getMass() + mallet.getMass());
-			//		float newMalletSpeedNormal = (malletSpeedNormal * (mallet.getMass() - puck.getMass()) + (2f * puck
-			//				.getMass() * puckSpeedNormal)) / (puck.getMass() + mallet.getMass());
 
 		}
 		// Convert scalar normal and tangential velocities into vectors by multiplying unit normal vector by
 		// scalar normal velocity; similar for tangential.
 		Vector2 newPuckNormalVelocity = new Vector2(unitNormalVector).scl(newPuckSpeedNormal);
 		Vector2 newPuckTangentVelocity = new Vector2(unitTangentVector).scl(puckSpeedTangent);
-		//		Vector2 newMalletNormalVelocity = new Vector2(unitNormalVector).scl(newMalletSpeedNormal);
-		//		Vector2 newMalletTangentVelocity = new Vector2(unitTangentVector).scl(malletSpeedTangent);
 
 		// Finally, find final velocity vectors by adding normal and tangential components for each object.
-		Vector2 newPuckVelocity = new Vector2(newPuckNormalVelocity).add(newPuckTangentVelocity);
-		//		Vector2 newMalletVelocity = newMalletNormalVelocity.add(newMalletTangentVelocity);
-		//		mallet.setVelocity(newMalletVelocity);
-		//		System.out.println(String.format("Puck speed after: (%f, %f)", newPuckVelocity.x,
-		//				newPuckVelocity.y));
-
-		return newPuckVelocity;
+		return new Vector2(newPuckNormalVelocity).add(newPuckTangentVelocity);
 
 	}
 }

@@ -48,10 +48,15 @@ public class PuckSimulation {
 	 * http://www.real-world-physics-problems.com/physics-of-billiards.html
 	 *
 	 * Note that this method DOES modify the passed puck object velocity and position based on wall reflections.
+	 * @param puck
+	 * @param tablePuckCollisionFrame
 	 * @param deltaTime
+	 * @return true iff collision handled
+	 * 
 	 */
-	public static void updatePuckFromWallCollisions(Puck puck, Rectangle2D tablePuckCollisionFrame,
+	public static boolean updatePuckFromWallCollisions(Puck puck, Rectangle2D tablePuckCollisionFrame,
 			float deltaTime) {
+		boolean isCollision = false;
 		// First check for puck-wall collisions over last-to-current interval and reflect if necessary
 		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
 		float newPuckPositionX = puck.getPosition().x + puck.getVelocity().x * deltaTime;
@@ -61,6 +66,7 @@ public class PuckSimulation {
 		// accordingly. TODO implement some energy loss into collision; right now assuming elastic and frictionless
 		if (newPuckPositionX >= tablePuckCollisionFrame.getMaxX()
 				|| newPuckPositionX <= tablePuckCollisionFrame.getMinX()) {
+			isCollision = true;
 			puck.getVelocity().x *= -1f;
 			// Apply restitution (i.e. not perfectly elastic collision)
 			applyRestitutionToPuckVelocity(puck, Constants.WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT);
@@ -69,6 +75,7 @@ public class PuckSimulation {
 		}
 		if (newPuckPositionY >= tablePuckCollisionFrame.getMaxY()
 				|| newPuckPositionY <= tablePuckCollisionFrame.getMinY()) {
+			isCollision = true;
 			puck.getVelocity().y *= -1f;
 			// Apply restitution (i.e. not perfectly elastic collision)
 			applyRestitutionToPuckVelocity(puck, Constants.WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT);
@@ -82,6 +89,8 @@ public class PuckSimulation {
 				tablePuckCollisionFrame.getMaxX()), (float) Math.min(
 				Math.max(newPuckPositionY, tablePuckCollisionFrame.getMinY()),
 				tablePuckCollisionFrame.getMaxY())));
+		
+		return isCollision;
 	}
 
 	/**
@@ -91,25 +100,22 @@ public class PuckSimulation {
 	 * @param malletA
 	 * @param malletB
 	 * @param deltaTime
+	 * @return true iff collision handled
 	 */
-	public static void updatePuckFromMalletCollisions(Puck puck, Mallet malletA, Mallet malletB,
+	public static boolean updatePuckFromMalletCollisions(Puck puck, Mallet malletA, Mallet malletB,
 			float deltaTime) {
-		// Check if puck-mallet collision have occurred
-		//		if (Collision.hasCollided(puck, malletA)) {
-		//			System.out.println("HAS COLLIDED!");
-		//		}
-		//		if (Collision.hasCollided(puck, malletB)) {
-		//			System.out.println("Robot HAS COLLIDED!");
-		//		}
-
+		boolean isCollision = false;
 		if (Collision.isColliding(puck, malletA) || Collision.hasCollided(puck, malletA)) {
+			isCollision = true;
 			puck.setVelocity(Collision.handleCollision(puck, malletA).scl(
 					Constants.MALLET_PUCK_COLLISION_RESTITUTION_COEFFICIENT));
 		}
 		if (Collision.isColliding(puck, malletB) || Collision.hasCollided(puck, malletB)) {
+			isCollision = true;
 			puck.setVelocity(Collision.handleCollision(puck, malletB).scl(
 					Constants.MALLET_PUCK_COLLISION_RESTITUTION_COEFFICIENT));
 		}
+		return isCollision;
 	}
 
 	/**

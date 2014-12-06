@@ -5,7 +5,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
 import airhockeyjava.game.Constants;
 import airhockeyjava.util.Geometry;
@@ -29,7 +30,8 @@ public abstract class MovingItem implements IMovingItem {
 			this.isCriticalFlag = isCriticalPath;
 		}
 	}
-	
+
+	private List<Point2D> predictedPathPoints;
 	private Line2D trajectoryLine;
 	private PathAndFlag pathAndFlag;
 	private Vector2 position;
@@ -51,6 +53,7 @@ public abstract class MovingItem implements IMovingItem {
 		this.acceleration = new Vector2();
 		this.radius = radius;
 		this.mass = mass;
+		this.predictedPathPoints = new ArrayList<Point2D>();
 		this.trajectoryLine = new Line2D.Float(new Point2D.Float(position.x, position.y),
 				new Point2D.Float(position.x, position.y));
 		this.pathAndFlag = new PathAndFlag(new Path2D.Float(), false);
@@ -139,39 +142,68 @@ public abstract class MovingItem implements IMovingItem {
 	 * Public method to updated predicted path and visual projection of the moving item.
 	 * @param tableCollisionFrame
 	 * @param maximum number of reflections desired in the projection
+	 * @param whether or not to recalculate entire path or just update beginning point
 	 */
-	public void updatePredictedPath(Rectangle2D tableCollisionFrame, int numberReflections) {
-		// Vector in forward path. Requires significant scaling otherwise won't project far
-		// enough "into the future" to actually find the intersection point. Otherwise
-		// we can limit this distance based on an actual amount of time elapsed into the future.
-		Vector2 futurePosition = new Vector2(this.position).add(new Vector2(this.velocity)
-				.scl(100000f));
-		Line2D predictedLine = new Line2D.Float(this.position.x, this.position.y, futurePosition.x,
-				futurePosition.y);
-
-		Point2D intersectionPoint = getIntersectionPointAndCapLine(predictedLine,
-				tableCollisionFrame);
-		if (intersectionPoint == null) {
-			return; // Short-circuit return
+	public void updatePredictedPath(Rectangle2D tableCollisionFrame, int numberReflections,
+			boolean isFullRefresh) {
+		// If not full refresh, just update the initial point (where object currently is)
+		// Otherwise, have to recalculate entire projection
+		Point2D currentPoint = new Point2D.Float(this.position.x, this.position.y);
+		if (!isFullRefresh) {
+			if (predictedPathPoints.isEmpty()) {
+				predictedPathPoints.add(currentPoint);
+			} else {
+				predictedPathPoints.set(0, currentPoint);
+			}
 		}
 
-		// Set up path; check if critical and update flag if necessary
-		pathAndFlag.predictedPath = new Path2D.Float(predictedLine);
-		pathAndFlag.isCriticalFlag = isPointIntersectingGoal(intersectionPoint,
-				tableCollisionFrame, Constants.GAME_GOAL_WIDTH_METERS);
+		else {
+			pathAndFlag.isCriticalFlag = false;
+			System.out.println("Updating predicted path!");
+			predictedPathPoints.clear();
+			predictedPathPoints.add(currentPoint);
 
-		// Build and add the remaining reflections to the projected path.
-		// Only build until critical path reached (i.e. a path that leads to a goal!)
-		for (int i = 0; i < numberReflections && !pathAndFlag.isCriticalFlag; i++) {
-			predictedLine = getReflectedPredictedLine(predictedLine, tableCollisionFrame);
-			// Break if predicted line (or intersection point) not found
-			if (predictedLine == null) {
-				break;
+			// Vector in forward path. Requires significant scaling otherwise won't project far
+			// enough "into the future" to actually find the intersection point. Otherwise
+			// we can limit this distance based on an actual amount of time elapsed into the future.
+			Vector2 futurePosition = new Vector2(this.position).add(new Vector2(this.velocity)
+					.scl(100000f));
+			Line2D predictedLine = new Line2D.Float(this.position.x, this.position.y,
+					futurePosition.x, futurePosition.y);
+
+			Point2D intersectionPoint = getIntersectionPointAndCapLine(predictedLine,
+					tableCollisionFrame);
+			if (intersectionPoint == null) {
+				return; // Short-circuit return
 			}
-			Path2D reflectedPredictedPath = new Path2D.Float(predictedLine);
-			pathAndFlag.predictedPath.append(reflectedPredictedPath, true);
-			pathAndFlag.isCriticalFlag = isPointIntersectingGoal(predictedLine.getP2(),
-					tableCollisionFrame, Constants.GAME_GOAL_WIDTH_METERS);
+			predictedPathPoints.add(intersectionPoint);
+			// Build and add the remaining reflections to the projected path.
+			// Only build until critical path reached (i.e. a path that leads to a goal!)
+			for (int i = 0; i < numberReflections && !pathAndFlag.isCriticalFlag; i++) {
+				predictedLine = getReflectedPredictedLine(predictedLine, tableCollisionFrame);
+				// Break if predicted line (or intersection point) not found
+				if (predictedLine == null) {
+					break;
+				}
+
+				Point2D endPoint = predictedLine.getP2();
+				predictedPathPoints.add(endPoint);
+				pathAndFlag.isCriticalFlag = isPointIntersectingGoal(endPoint, tableCollisionFrame,
+						Constants.GAME_GOAL_WIDTH_METERS);
+			}
+			System.out.println(predictedPathPoints.size());
+		}
+
+		// Build path with saved points
+		for (int i = 0; i < predictedPathPoints.size() - 1; i++) {
+			Point2D firstPoint = predictedPathPoints.get(i);
+			Point2D secondPoint = predictedPathPoints.get(i + 1);
+			Path2D path = new Path2D.Float(new Line2D.Float(firstPoint, secondPoint));
+			if (i == 0) {
+				pathAndFlag.predictedPath = path;
+			} else {
+				pathAndFlag.predictedPath.append(path, true);
+			}
 		}
 	}
 
