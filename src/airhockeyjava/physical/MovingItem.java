@@ -20,20 +20,6 @@ import airhockeyjava.util.Intersection;
  */
 public abstract class MovingItem implements IMovingItem {
 
-	/**
-	 * Internal class used for elements of state history structure
-	 *
-	 */
-	private class PositionAndDuration {
-		private Vector2 position;
-		private long nanoTime;
-
-		PositionAndDuration(Vector2 position, long nanoTime) {
-			this.position = position;
-			this.nanoTime = nanoTime;
-		}
-	}
-
 	public class PathAndFlag {
 		public Path2D predictedPath;
 		public boolean isCriticalFlag;
@@ -43,37 +29,12 @@ public abstract class MovingItem implements IMovingItem {
 			this.isCriticalFlag = isCriticalPath;
 		}
 	}
-
-	/**
-	 * Class for implementing fixed-size stack. Used for maintaining previous
-	 * state history and allowing most recent items to be easily accessible.
-	 * @author Josh
-	 *
-	 * @param <T>
-	 */
-	public class FixedStack<T> extends Stack<T> {
-		private static final long serialVersionUID = 1L;
-		private final int fixedMaximumSize;
-
-		FixedStack(int fixedMaximumSize) {
-			this.fixedMaximumSize = fixedMaximumSize;
-		}
-
-		@Override
-		public T push(T item) {
-			if (this.size() == this.fixedMaximumSize) {
-				this.removeElementAt(0);
-			}
-			return super.push(item);
-		}
-	}
-
-	private FixedStack<PositionAndDuration> previousStateStack;
+	
 	private Line2D trajectoryLine;
 	private PathAndFlag pathAndFlag;
 	private Vector2 position;
 	private Vector2 velocity;
-	private Vector2 acceleration = new Vector2(0,0);
+	private Vector2 acceleration;
 	private final float mass; // Used in simulated friction calculation and energy transfer model
 	private final float radius;
 
@@ -87,12 +48,12 @@ public abstract class MovingItem implements IMovingItem {
 	protected MovingItem(Vector2 position, Vector2 velocity, float radius, float mass) {
 		this.position = position;
 		this.velocity = velocity;
+		this.acceleration = new Vector2();
 		this.radius = radius;
 		this.mass = mass;
 		this.trajectoryLine = new Line2D.Float(new Point2D.Float(position.x, position.y),
 				new Point2D.Float(position.x, position.y));
 		this.pathAndFlag = new PathAndFlag(new Path2D.Float(), false);
-		this.previousStateStack = new FixedStack<PositionAndDuration>(2);
 	}
 
 	@Override
@@ -115,15 +76,15 @@ public abstract class MovingItem implements IMovingItem {
 		this.velocity = newVelocity;
 	}
 
+	@Override
 	public Vector2 getAcceleration() {
 		return acceleration;
 	}
 
-
+	@Override
 	public void setAcceleration(Vector2 acceleration) {
 		this.acceleration = acceleration;
 	}
-
 
 	@Override
 	public float getRadius() {
@@ -164,39 +125,10 @@ public abstract class MovingItem implements IMovingItem {
 	}
 
 	/**
-	 * Updates position, velocity based on previous state information. Could use a Kalman filter for smoothing.
-	 * Right now we are using a direct average: v_1 = (p_1 - p_0) / T, where p_1 is the most recent position and
-	 * p_0 is the oldest position available to the state model, and T is the total duration.
+	 * Update position and velocity based on acceleration.
+	 * @param deltaTime
 	 */
-	@Override
-	public void updatePositionAndCalculateVelocity(Vector2 newPosition, float deltaTime) {
-		if (previousStateStack.isEmpty()) {
-			this.position = newPosition;
-			updateTrajectory();
-			previousStateStack.push(new PositionAndDuration(newPosition, System.nanoTime()));
-			return;
-		}
-		PositionAndDuration oldestState = previousStateStack.elementAt(0);
-
-		// Calculate and update the velocity, position if changed
-		PositionAndDuration currentState = new PositionAndDuration(newPosition, System.nanoTime());
-		previousStateStack.push(currentState);
-		Vector2 newVelocity = new Vector2(newPosition);
-		float deltaTimeSeconds = ((float) (currentState.nanoTime - oldestState.nanoTime)) / 1000000000f;
-		newVelocity.sub(oldestState.position).scl(1f / deltaTimeSeconds);
-
-		if (!newPosition.equals(oldestState.position)) {
-			this.position = newPosition;
-			updateTrajectory();
-		}
-
-		if (!this.velocity.equals(newVelocity)) {
-			this.velocity = newVelocity;
-		}
-	}
-
-	/* Updates position based on velocity */
-	public void updatePosition (float deltaTime) {
+	public void updatePositionAndVelocity(float deltaTime) {
 		this.velocity.add(new Vector2(this.acceleration).scl(deltaTime));
 		this.position.add(new Vector2(this.velocity).scl(deltaTime));
 	}

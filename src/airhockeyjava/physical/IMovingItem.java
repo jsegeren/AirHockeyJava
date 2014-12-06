@@ -11,13 +11,13 @@ import airhockeyjava.util.Vector2;
  *
  */
 public interface IMovingItem {
-	
+
 	/**
 	 * Method to retrieve current position trajectory of item over current interval
 	 * @return Line2D line segment of trajectory
 	 */
 	public abstract Line2D getTrajectoryLine();
-	
+
 	/**
 	 * Method to retrieve position of the item for the current state.
 	 * 
@@ -47,12 +47,24 @@ public interface IMovingItem {
 	public abstract void setVelocity(Vector2 newVelocity);
 
 	/**
-	 * Method to update velocity based on previous (known) position state information.
-	 * Also updates position.
-	 * @param newPosition
+	 * Method to retrieve the acceleration of the item (if available) for the current state.
+	 * 
+	 * @return Vector2 the acceleration
+	 */
+	public abstract Vector2 getAcceleration();
+
+	/**
+	 * Explicit setter for acceleration
+	 * 
+	 * @param newAcceleration
+	 */
+	public abstract void setAcceleration(Vector2 newAcceleration);
+
+	/**
+	 * Method to update position, velocity based on previous (known) state information and acceleration.
 	 * @param deltaTime time elapsed
 	 */
-	public abstract void updatePositionAndCalculateVelocity(Vector2 newPosition, float deltaTime);
+	public abstract void updatePositionAndVelocity(float deltaTime);
 
 	/**
 	 * Method to retrieve the radius of the item.

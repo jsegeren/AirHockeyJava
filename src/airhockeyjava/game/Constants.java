@@ -76,13 +76,23 @@ public class Constants {
 	/**
 	 * Simulation Model Constants
 	 */
-	public static final float WALL_PUCK_COLLISION_LOSS_COEFFICIENT = 0.1f;
-	public static final float MALLET_PUCK_COLLISION_LOSS_COEFFICIENT = 0.01f;
-	public static final float PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT = 0.005f;
+	public static final float MALLET_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.95f;
+	public static final float WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.93f;
+	public static final float PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT = 0.001f;
+	public static final float PUCK_AIR_FRICTION_COEFFICIENT = 0.005f;
 	public static final int GAME_SIMULATION_TARGET_FPS = 60;
-	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 0.06f;
+	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 0.08f;
 	public static final float MAX_USER_MALLET_SPEED_METERS_PER_SECOND = 1f;
 	public static final int NUMBER_PREDICTED_PATH_REFLECTIONS = 3;
+	
+	/**
+	 * Strategy Constants
+	 */
+	// Fixed step distance interval for checking all possible attacks
+	public static final float STRATEGY_PROJECTED_STEP_DISTANCE_METERS = 0.005f;
+	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 2f;
+	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
+	public static final int STRATEGY_MAX_LOOKAHEAD_BOUNCES = 3;
 
 	/**
 	 * Input Constants

@@ -102,8 +102,8 @@ public class Game {
 
 	// Game-related global variables
 	public float gameTimeRemainingSeconds;
-	public int userScore = 0;
-	public int robotScore = 0;
+	public Integer userScore = 0;
+	public Integer robotScore = 0;
 
 	public Set<IMovingItem> movingItems;
 	public Table gameTable;
