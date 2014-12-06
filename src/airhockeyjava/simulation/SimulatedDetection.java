@@ -84,14 +84,14 @@ public class SimulatedDetection implements IDetection {
 		// Update puck position, velocity based on mallet collision
 		isPuckCollision |= PuckSimulation.updatePuckFromMalletCollisions(game.gamePuck,
 				game.userMallet, game.robotMallet, deltaTime);
-		
+
 		// Apply air friction. Surface is assumed frictionless // TODO is this reasonable?
 		PuckSimulation.applyAirFrictionToPuckVelocity(game.gamePuck,
 				Constants.PUCK_AIR_FRICTION_COEFFICIENT, deltaTime);
-		
+
 		// Cap out the maximum puck speed
 		game.gamePuck.getVelocity().limit(Constants.MAX_PUCK_SPEED_METERS_PER_SECOND);
-		
+
 		// Update predicted path
 		game.gamePuck.updatePredictedPath(
 				game.gameTable.getCollisionFrame(game.gamePuck.getRadius()),
@@ -124,10 +124,8 @@ public class SimulatedDetection implements IDetection {
 		float diffX = targetPositionX - game.userMallet.getPosition().x;
 		float diffY = targetPositionY - game.userMallet.getPosition().y;
 
-		Vector2 force1 = new Vector2(diffX, diffY).scl(0.9f).scl(1000f);
-		Vector2 force2 = new Vector2(game.userMallet.getVelocity()).scl(50f);
-
-		game.userMallet.setAcceleration(force1.sub(force2));
+		game.userMallet.setAcceleration(getRequiredAcceleration(diffX, diffY,
+				game.userMallet.getVelocity()));
 		game.userMallet.updatePositionAndVelocity(deltaTime);
 	}
 

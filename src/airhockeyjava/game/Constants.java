@@ -81,15 +81,15 @@ public class Constants {
 	/**
 	 * Simulation Model Constants
 	 */
-	public static final float MALLET_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.95f;
-	public static final float WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.90f;
+	public static final float MALLET_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.7f;
+	public static final float WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.80f;
 	public static final float PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT = 0.001f;
 	public static final float PUCK_AIR_FRICTION_COEFFICIENT = 0.3f;
 	public static final int GAME_SIMULATION_TARGET_FRAMES_PER_SECOND = 120;
-	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 5f;
+	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 15f;
 	public static final int NUMBER_PREDICTED_PATH_REFLECTIONS = 3;
-	public static final float DIRECTIONAL_FORCE_SCALE_FACTOR = 1000f;
-	public static final float DAMPENING_FORCE_SCALE_FACTOR = 40f;
+	public static final float DIRECTIONAL_FORCE_SCALE_FACTOR = 10000f;
+	public static final float DAMPENING_FORCE_SCALE_FACTOR = 100f;
 
 	/**
 	 * Strategy Constants
