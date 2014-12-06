@@ -23,8 +23,6 @@ public class FrictionGrid {
 	 */
 	public FrictionGrid(int rows, int columns) {
 		this(rows, columns, Constants.PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT);
-//		frictionGrid = new float[rows][columns];
-//		Arrays.fill(frictionGrid, Constants.PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT);
 	}
 
 	public FrictionGrid(int rows, int columns, float initialFrictionCoefficient) {

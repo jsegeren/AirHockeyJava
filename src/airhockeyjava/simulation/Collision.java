@@ -19,7 +19,7 @@ public class Collision {
 	/**
 	 * Static method to check whether two moving items will collide, given their current trajectories, and
 	 * expected friction.
-	 * 
+	 *
 	 * @param itemA
 	 * @param itemB
 	 * @param deltaT relative time over which collision may occur
@@ -101,7 +101,7 @@ public class Collision {
 			//				.getMass() * puckSpeedNormal)) / (puck.getMass() + mallet.getMass());
 
 		}
-		// Convert scalar normal and tangential velocities into vectors by multiplying unit normal vector by 
+		// Convert scalar normal and tangential velocities into vectors by multiplying unit normal vector by
 		// scalar normal velocity; similar for tangential.
 		Vector2 newPuckNormalVelocity = new Vector2(unitNormalVector).scl(newPuckSpeedNormal);
 		Vector2 newPuckTangentVelocity = new Vector2(unitTangentVector).scl(puckSpeedTangent);
