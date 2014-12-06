@@ -2,11 +2,16 @@ package airhockeyjava.game;
 
 import airhockeyjava.simulation.IDetection;
 import airhockeyjava.simulation.SimulatedDetection;
+import airhockeyjava.strategy.IStrategy;
+import airhockeyjava.strategy.NaiveDefenseStrategy;
+import airhockeyjava.strategy.UserInputStrategy;
 import airhockeyjava.util.Conversion;
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Mallet;
 import airhockeyjava.physical.Puck;
 import airhockeyjava.physical.Table;
+import airhockeyjava.control.IController;
+import airhockeyjava.control.UserController;
 import airhockeyjava.graphics.GuiLayer;
 import airhockeyjava.input.IInputLayer;
 import airhockeyjava.input.InputLayer;
@@ -116,14 +121,56 @@ public class Game {
 
 	// Application layer interfaces
 	private IDetection detectionLayer;
+	private IStrategy userStrategy;
+	private IStrategy robotStrategy;
+	private IController userController;
+	private IController robotController;
 	private GuiLayer guiLayer;
-	private IInputLayer inputLayer;
+	public IInputLayer inputLayer;
 
 	// Threads
 	private Thread guiLayerThread;
 
 	// Game object itself!
 	private static Game game;
+
+	/**
+	 * Top-level constructor
+	 */
+	public Game(GameTypeEnum gameType) {
+		// Initialize member variables
+		gameTimeRemainingSeconds = Constants.GAME_TIME_SECONDS;
+
+		// Instantiate physical game items with default constants
+		gameTable = new Table();
+		gamePuck = new Puck();
+		userMallet = new Mallet(true);
+		robotMallet = new Mallet(false);
+
+		// Initialize items set which is accessible to other layers
+		movingItems = new HashSet<IMovingItem>();
+		movingItems.add(gamePuck);
+		movingItems.add(userMallet);
+		movingItems.add(robotMallet);
+
+		guiLayer = new GuiLayer(this);
+		guiLayerThread = new Thread(guiLayer);
+
+		inputLayer = new InputLayer(guiLayer);
+		detectionLayer = new SimulatedDetection(this, inputLayer);
+
+		userStrategy = new UserInputStrategy(this);
+		userController = new UserController(this.userMallet);
+
+		robotStrategy = new NaiveDefenseStrategy(this);
+		robotController = new UserController(this.robotMallet);
+
+		// For simulated game, instantiate the simulated detection/prediction layer thread
+		// and the input layer thread which is responsible for the user position.
+		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
+			setKeyBindings();
+		}
+	}
 
 	/**
 	 * Entry-point application method. Starts and runs a game of air hockey. Currently terminates
@@ -168,7 +215,7 @@ public class Game {
 				fps = 0;
 				game.gameTimeRemainingSeconds -= 1; // Decrement the game time by 1 second
 			}
-			
+
 			game.updateStates(Conversion.nanosecondsToSeconds(updateLengthTime));
 
 			// If target FPS = 60 (for example), want each frame to take 10 ms,
@@ -220,35 +267,13 @@ public class Game {
 		// Otherwise we will use the vision system
 		else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
 		}
-	}
 
-	/**
-	 * Top-level constructor
-	 */
-	public Game(GameTypeEnum gameType) {
-		// Initialize member variables
-		gameTimeRemainingSeconds = Constants.GAME_TIME_SECONDS;
-
-		// Instantiate physical game items with default constants
-		gameTable = new Table();
-		gamePuck = new Puck();
-		userMallet = new Mallet(true);
-		robotMallet = new Mallet(false);
-
-		// Initialize items set which is accessible to other layers
-		movingItems = new HashSet<IMovingItem>();
-		movingItems.add(gamePuck);
-		movingItems.add(userMallet);
-		movingItems.add(robotMallet);
-
-		guiLayer = new GuiLayer(this);
-		guiLayerThread = new Thread(guiLayer);
-
-		// For simulated game, instantiate the simulated detection/prediction layer thread
-		// and the input layer thread which is responsible for the user position.
-		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
-			setKeyBindings();
+		// Check if should control robot mallet
+		if (game.settings.enableAI) {
+			robotController.controlMallet(robotStrategy.getTargetPosition(deltaTime), deltaTime);
 		}
+
+		userController.controlMallet(userStrategy.getTargetPosition(deltaTime), deltaTime);
 	}
 
 	private void setKeyBindings() {
@@ -263,8 +288,5 @@ public class Game {
 				.entrySet()) {
 			actionMap.put(actionNameToActionEntry.getKey(), actionNameToActionEntry.getValue());
 		}
-
-		inputLayer = new InputLayer(guiLayer);
-		detectionLayer = new SimulatedDetection(this, inputLayer);
 	}
 }

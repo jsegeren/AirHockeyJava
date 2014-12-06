@@ -40,9 +40,7 @@ public class PuckSimulation {
 
 	/**
 	 * Static method to update puck state. Note the assumptions currently in place for the physical model:
-	 * 	1) Collisions are perfectly elastic. That is, momentum is preserved; however, we may want to incorporate
-	 *   some energy loss, based on experimentation or a more sophisticated mechanical model.
-	 *  2) Collision between puck and mallet do not affect the velocity/position of the mallet.
+	 * - Collision between puck and mallet do not affect the velocity/position of the mallet.
 	 *
 	 * Reference (billiard collisions i.e. 1st year physics):
 	 * http://www.real-world-physics-problems.com/physics-of-billiards.html
