@@ -41,7 +41,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private String[] externalInfoBarData = new String[] {};
 	private HashMap<Class<?>, Color> colorMap;
 
-	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FPS;
+	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FRAMES_PER_SECOND;
 	private long currentFps = 0;
 	private boolean isInitialized = false;
 

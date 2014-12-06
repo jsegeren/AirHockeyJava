@@ -13,6 +13,11 @@ import java.awt.event.KeyEvent;
  */
 public class Constants {
 	/**
+	 * General Constants
+	 */
+	public static final float NANOSECONDS_IN_SECOND = 1000000000f;
+
+	/**
 	 * Physical Parameter Constants
 	 */
 	public static final double INTERSECTION_EPSILON_METERS = 0.025; // 2.5 millimetres
@@ -53,7 +58,7 @@ public class Constants {
 	/**
 	 * GUI Constants
 	 */
-	public final static int GUI_FPS = 120;
+	public final static int GUI_FRAMES_PER_SECOND = 240;
 	public final static int GUI_WINDOW_WIDTH = 1280;
 	public final static int GUI_WINDOW_HEIGHT = 600;
 	public final static int GUI_TABLE_OFFSET_X = 64;
@@ -77,14 +82,15 @@ public class Constants {
 	 * Simulation Model Constants
 	 */
 	public static final float MALLET_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.95f;
-	public static final float WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.93f;
+	public static final float WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.90f;
 	public static final float PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT = 0.001f;
-	public static final float PUCK_AIR_FRICTION_COEFFICIENT = 0.005f;
-	public static final int GAME_SIMULATION_TARGET_FPS = 60;
-	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 0.08f;
-	public static final float MAX_USER_MALLET_SPEED_METERS_PER_SECOND = 1f;
+	public static final float PUCK_AIR_FRICTION_COEFFICIENT = 0.3f;
+	public static final int GAME_SIMULATION_TARGET_FRAMES_PER_SECOND = 120;
+	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 7f;
 	public static final int NUMBER_PREDICTED_PATH_REFLECTIONS = 3;
-	
+	public static final float DIRECTIONAL_FORCE_SCALE_FACTOR = 1000f;
+	public static final float DAMPENING_FORCE_SCALE_FACTOR = 40f;
+
 	/**
 	 * Strategy Constants
 	 */

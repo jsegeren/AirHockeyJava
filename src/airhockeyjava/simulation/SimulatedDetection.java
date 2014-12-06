@@ -57,16 +57,21 @@ public class SimulatedDetection implements IDetection {
 				game.resetPuck();
 			}
 		}
-		game.gamePuck.updatePredictedPath(game.gameTable.getCollisionFrame(game.gamePuck.getRadius()), Constants.NUMBER_PREDICTED_PATH_REFLECTIONS);
+		game.gamePuck.updatePredictedPath(
+				game.gameTable.getCollisionFrame(game.gamePuck.getRadius()),
+				Constants.NUMBER_PREDICTED_PATH_REFLECTIONS);
 		// Update puck position, velocity based on wall collisions
-		PuckSimulation.updatePuckFromWallCollisions(game.gamePuck, tablePuckCollisionFrame, deltaTime);
+		PuckSimulation.updatePuckFromWallCollisions(game.gamePuck, tablePuckCollisionFrame,
+				deltaTime);
 		// Update puck position, velocity based on mallet collision
-		PuckSimulation.updatePuckFromMalletCollisions(game.gamePuck, game.userMallet, game.robotMallet, deltaTime);
+		PuckSimulation.updatePuckFromMalletCollisions(game.gamePuck, game.userMallet,
+				game.robotMallet, deltaTime);
 		// Apply air friction. Surface is assumed frictionless // TODO is this reasonable?
-		PuckSimulation.applyAirFrictionToPuckVelocity(game.gamePuck, Constants.PUCK_AIR_FRICTION_COEFFICIENT, deltaTime);
+		PuckSimulation.applyAirFrictionToPuckVelocity(game.gamePuck,
+				Constants.PUCK_AIR_FRICTION_COEFFICIENT, deltaTime);
 		// Cap out the maximum puck speed
 		game.gamePuck.getVelocity().limit(Constants.MAX_PUCK_SPEED_METERS_PER_SECOND);
-		
+
 		// Update robot mallet via simulated AI 
 		// TODO move this call to top level game logic. Simulated detection layer should only worry about
 		// the puck state.
@@ -99,8 +104,8 @@ public class SimulatedDetection implements IDetection {
 		float diffX = targetPositionX - game.userMallet.getPosition().x;
 		float diffY = targetPositionY - game.userMallet.getPosition().y;
 
-		Vector2 force1 = new Vector2(diffX, diffY).scl(0.9f);
-		Vector2 force2 = game.userMallet.getVelocity();
+		Vector2 force1 = new Vector2(diffX, diffY).scl(0.9f).scl(1000f);
+		Vector2 force2 = new Vector2(game.userMallet.getVelocity()).scl(50f);
 
 		game.userMallet.setAcceleration(force1.sub(force2));
 		game.userMallet.updatePositionAndVelocity(deltaTime);
@@ -130,11 +135,22 @@ public class SimulatedDetection implements IDetection {
 		float diffX = 0;
 		float diffY = game.gamePuck.getPosition().y - game.robotMallet.getPosition().y;
 
-		Vector2 force1 = new Vector2(diffX, diffY).scl(0.1f);
-		Vector2 force2 = game.robotMallet.getVelocity();
-
-		game.robotMallet.setAcceleration(force1.sub(force2));
+		game.robotMallet.setAcceleration(getRequiredAcceleration(diffX, diffY,
+				game.robotMallet.getVelocity()));
 		game.robotMallet.updatePositionAndVelocity(deltaTime);
+
+	}
+
+	/**
+	 * Gets the appropriate current smoothing acceleration (limiting overshoot) based on position difference.
+	 * @param diffX
+	 * @param diffY
+	 * @param velocity
+	 * @return acceleration vector
+	 */
+	private static Vector2 getRequiredAcceleration(float diffX, float diffY, Vector2 velocity) {
+		return new Vector2(diffX, diffY).scl(Constants.DIRECTIONAL_FORCE_SCALE_FACTOR).sub(
+				new Vector2(velocity).scl(Constants.DAMPENING_FORCE_SCALE_FACTOR));
 
 	}
 }

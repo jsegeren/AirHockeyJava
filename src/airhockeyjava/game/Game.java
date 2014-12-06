@@ -2,6 +2,7 @@ package airhockeyjava.game;
 
 import airhockeyjava.simulation.IDetection;
 import airhockeyjava.simulation.SimulatedDetection;
+import airhockeyjava.util.Conversion;
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Mallet;
 import airhockeyjava.physical.Puck;
@@ -94,7 +95,8 @@ public class Game {
 	};
 
 	// Local constants and physical parameters
-	private static final long OPTIMAL_TIME = 1000000000 / Constants.GAME_SIMULATION_TARGET_FPS;
+	private static final long OPTIMAL_TIME = Conversion
+			.secondsToNanoseconds(1f / Constants.GAME_SIMULATION_TARGET_FRAMES_PER_SECOND);
 	private static final GameTypeEnum gameType = GameTypeEnum.SIMULATED_GAME_TYPE;
 
 	// Configurable Game Settings
@@ -153,21 +155,21 @@ public class Game {
 			long currentTime = System.nanoTime();
 			long updateLengthTime = currentTime - lastLoopTime;
 			lastLoopTime = currentTime;
-			double deltaTime = updateLengthTime / ((double) OPTIMAL_TIME); // nanoseconds
+			//			double deltaTime = updateLengthTime / ((double) OPTIMAL_TIME); // nanoseconds
 
 			// Update frame counter
 			lastFpsTime += updateLengthTime;
 			fps++;
 
 			// Update FPS counter and remaining game time if a second has passed since last recorded
-			if (lastFpsTime >= 1000000000) {
+			if (lastFpsTime >= Conversion.secondsToNanoseconds(1f)) {
 				System.out.println(String.format("FPS: %d", fps));
 				lastFpsTime = 0;
 				fps = 0;
 				game.gameTimeRemainingSeconds -= 1; // Decrement the game time by 1 second
 			}
-
-			game.updateStates((float) deltaTime);
+			
+			game.updateStates(Conversion.nanosecondsToSeconds(updateLengthTime));
 
 			// If target FPS = 60 (for example), want each frame to take 10 ms,
 			// we sleep until the next target frame, taking into account the time
