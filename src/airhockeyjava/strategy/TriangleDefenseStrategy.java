@@ -16,12 +16,14 @@ import airhockeyjava.util.Vector2;
  */
 public class TriangleDefenseStrategy implements IStrategy {
 
+	final private static String strategyLabelString = Constants.STRATEGY_TRIANGLE_DEFENSE_STRING;
 	final private List<Vector2> availablePositions;
 
 	final private Game game;
 
 	public TriangleDefenseStrategy(Game game) {
 		this.game = game;
+		// TODO choose any position along the triangle instead of defining only three or four
 		availablePositions = new ArrayList<Vector2>();
 		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
 				- game.robotMallet.getRadius()
@@ -31,8 +33,8 @@ public class TriangleDefenseStrategy implements IStrategy {
 				- game.robotMallet.getRadius(), game.gameTable.getGoalStartY()));
 		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
 				- game.robotMallet.getRadius(), game.gameTable.getGoalEndY()));
-		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
-				- game.robotMallet.getRadius(), (float) game.gameTable.getHeight() / 2));
+		//		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
+		//				- game.robotMallet.getRadius(), (float) game.gameTable.getHeight() / 2));
 
 	}
 
@@ -63,5 +65,10 @@ public class TriangleDefenseStrategy implements IStrategy {
 		return (float) (1 / (game.gamePuck
 				.getExpectedPosition(Constants.STRATEGY_TRIANGLE_LOOKAHEAD_TIME_SECONDS)
 				.dst(position)));
+	}
+
+	@Override
+	public String toString() {
+		return strategyLabelString;
 	}
 }

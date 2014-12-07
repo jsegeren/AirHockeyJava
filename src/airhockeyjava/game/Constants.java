@@ -50,7 +50,7 @@ public class Constants {
 	public static final float USER_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float USER_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float USER_MALLET_INITIAL_VELOCITY_Y = 0f;
-	public static final float ROBOT_MALLET_INTIIAL_POSITION_X = 0.8f * GAME_TABLE_WIDTH_METERS;
+	public static final float ROBOT_MALLET_INTIIAL_POSITION_X = 0.85f * GAME_TABLE_WIDTH_METERS;
 	public static final float ROBOT_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_Y = 0f;
@@ -104,9 +104,14 @@ public class Constants {
 	// Fixed step distance interval for checking all possible attacks
 	public static final float STRATEGY_PROJECTED_STEP_DISTANCE_METERS = 0.005f;
 	public static final int STRATEGY_MAX_LOOKAHEAD_BOUNCES = 3;
-	public static final float STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS = 0.2f;
+	public static final float STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS = 0.15f;
 	public static final float STRATEGY_TRIANGLE_LOOKAHEAD_TIME_SECONDS = 0.1f;
+	public static final float STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE = 1.5f;
+	public static final float MIN_TIME_BETWEEN_STRATEGY_TRANSITION_SECONDS = 0.01f;
 	
+	public static final String STRATEGY_NAIVE_DEFENSE_STRING = "Naive defense strategy";
+	public static final String STRATEGY_TRIANGLE_DEFENSE_STRING = "Triangle defense strategy";
+	public static final String STRATEGY_NAIVE_OFFENSE_STRING = "Naive offense strategy";
 
 	/**
 	 * Input Constants

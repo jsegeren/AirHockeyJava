@@ -14,6 +14,7 @@ import airhockeyjava.util.Vector2;
  */
 public class NaiveDefenseStrategy implements IStrategy {
 
+	final private static String strategyLabelString = Constants.STRATEGY_NAIVE_DEFENSE_STRING;
 	final private Game game;
 
 	public NaiveDefenseStrategy(Game game) {
@@ -23,6 +24,11 @@ public class NaiveDefenseStrategy implements IStrategy {
 	@Override
 	public Vector2 getTargetPosition(float deltaTime) {
 		return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, game.gamePuck.getPosition().y);
+	}
+
+	@Override
+	public String toString() {
+		return strategyLabelString;
 	}
 
 }
