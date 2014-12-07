@@ -7,6 +7,7 @@ import airhockeyjava.game.Constants;
 import airhockeyjava.input.IInputLayer;
 import airhockeyjava.util.Conversion;
 import airhockeyjava.util.Vector2;
+import airhockeyjava.physical.Table.GoalScoredEnum;
 import airhockeyjava.simulation.Collision;
 import airhockeyjava.simulation.PuckSimulation;
 
@@ -50,13 +51,14 @@ public class SimulatedDetection implements IDetection {
 	private void updateItemStates(float deltaTime) {
 		// Check for and update goals scored
 		if (game.settings.goalDetectionOn) {
-			PuckSimulation.GoalScoredEnum goalScoredEnum = PuckSimulation.checkAndUpdateGoalScored(
-					game.gamePuck, game.gameTable, deltaTime);
-			if (goalScoredEnum.equals(PuckSimulation.GoalScoredEnum.GOAL_SCORED_FOR_ROBOT)) {
+			Vector2 expectedPuckPosition = game.gamePuck.getExpectedPosition(deltaTime);
+			GoalScoredEnum goalScoredEnum = game.gameTable.checkForIntersectionGoal(
+					expectedPuckPosition, game.gamePuck.getRadius());
+			if (goalScoredEnum.equals(GoalScoredEnum.GOAL_SCORED_FOR_ROBOT)) {
 				game.robotScore++;
 				game.resetPuck();
 				return;
-			} else if (goalScoredEnum.equals(PuckSimulation.GoalScoredEnum.GOAL_SCORED_FOR_USER)) {
+			} else if (goalScoredEnum.equals(GoalScoredEnum.GOAL_SCORED_FOR_USER)) {
 				game.userScore++;
 				game.resetPuck();
 				return;
@@ -88,8 +90,7 @@ public class SimulatedDetection implements IDetection {
 		game.gamePuck.getVelocity().limit(Constants.MAX_PUCK_SPEED_METERS_PER_SECOND);
 
 		// Update predicted path
-		game.gamePuck.updatePredictedPath(
-				game.gameTable.getCollisionFrame(game.gamePuck.getRadius()),
-				Constants.NUMBER_PREDICTED_PATH_REFLECTIONS, isPuckCollision);
+		game.gamePuck.updatePredictedPath(Constants.NUMBER_PREDICTED_PATH_REFLECTIONS,
+				isPuckCollision);
 	}
 }

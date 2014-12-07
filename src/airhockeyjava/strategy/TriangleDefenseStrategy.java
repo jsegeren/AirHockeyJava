@@ -4,18 +4,18 @@ import airhockeyjava.game.Game;
 import airhockeyjava.util.Vector2;
 
 /**
- * Strategy layer. Naive implementation which considers all feasible combinations of moves, and chooses
- * move most likely to result in a goal.
- * NAIVE DEFENSE simply follows the side-to-side path of the puck.
+ * Strategy layer. Naive triangle defense, which sets up a triangle in front of the goal to
+ * deflect all possible incoming shots (straight, under, over).
  * 
  * @author Joshua Segeren
  *
  */
-public class NaiveDefenseStrategy implements IStrategy {
+public class TriangleDefenseStrategy implements IStrategy {
 	
 	final private Game game;
 	
-	public NaiveDefenseStrategy(Game game) {
+
+	public TriangleDefenseStrategy(Game game) {
 		this.game = game;
 	}
 

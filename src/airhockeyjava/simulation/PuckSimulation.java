@@ -3,6 +3,7 @@ package airhockeyjava.simulation;
 import java.awt.geom.Rectangle2D;
 
 import airhockeyjava.game.Constants;
+import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Mallet;
 import airhockeyjava.physical.Puck;
 import airhockeyjava.physical.Table;
@@ -15,28 +16,6 @@ import airhockeyjava.util.Vector2;
  *
  */
 public class PuckSimulation {
-	public enum GoalScoredEnum {
-		GOAL_SCORED_FOR_USER, GOAL_SCORED_FOR_ROBOT, NO_GOAL_SCORED
-	}
-
-	public static GoalScoredEnum checkAndUpdateGoalScored(Puck puck, Table table, float deltaTime) {
-		// First check for puck-wall collisions over last-to-current interval and reflect if necessary
-		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
-		float newPuckPositionX = puck.getPosition().x + puck.getVelocity().x * deltaTime;
-		float newPuckPositionY = puck.getPosition().y + puck.getVelocity().y * deltaTime;
-
-		// Check if goal scored and return back appropriate enum
-		Rectangle2D tablePuckCollisionFrame = table.getCollisionFrame(puck.getRadius());
-		if (puck.isPointIntersectingLeftGoal(newPuckPositionX, newPuckPositionY,
-				table.getCollisionFrame(puck.getRadius()), table.getGoalWidth())) {
-			return GoalScoredEnum.GOAL_SCORED_FOR_ROBOT;
-
-		} else if (puck.isPointIntersectingRightGoal(newPuckPositionX, newPuckPositionY,
-				tablePuckCollisionFrame, table.getGoalWidth())) {
-			return GoalScoredEnum.GOAL_SCORED_FOR_USER;
-		}
-		return GoalScoredEnum.NO_GOAL_SCORED;
-	}
 
 	/**
 	 * Static method to update puck state. Note the assumptions currently in place for the physical model:
@@ -55,10 +34,11 @@ public class PuckSimulation {
 	public static boolean updatePuckFromWallCollisions(Puck puck, Rectangle2D tablePuckCollisionFrame,
 			float deltaTime) {
 		boolean isCollision = false;
+		Vector2 expectedPosition = puck.getExpectedPosition(deltaTime);
 		// First check for puck-wall collisions over last-to-current interval and reflect if necessary
 		// TODO implement some energy loss into collision; right now assuming elastic and frictionless
-		float newPuckPositionX = puck.getPosition().x + puck.getVelocity().x * deltaTime;
-		float newPuckPositionY = puck.getPosition().y + puck.getVelocity().y * deltaTime;
+		float newPuckPositionX = expectedPosition.x;
+		float newPuckPositionY = expectedPosition.y;
 
 		// Check for puck-wall collisions over last-to-current interval and modify (reflect) velocities
 		// accordingly. TODO implement some energy loss into collision; right now assuming elastic and frictionless

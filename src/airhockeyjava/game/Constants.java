@@ -29,7 +29,7 @@ public class Constants {
 	public static final float GAME_PUCK_MASS_GRAMS = 1f;
 	public static final float GAME_MALLET_RADIUS_METERS = 0.05f; // 3.5 centimetres
 	public static final float GAME_MALLET_MASS_GRAMS = Float.MAX_VALUE; // Effectively infinite
-	public static final float GAME_GOAL_WIDTH_METERS = 0.3f;
+	public static final float GAME_GOAL_WIDTH_METERS = 0.4f;
 	// Allowed distance from edge that a goal can be counted, since the puck never actually goes into the goal
 	public static final float GAME_GOAL_ALLOWANCE = 0.015f;
 
@@ -58,7 +58,7 @@ public class Constants {
 	/**
 	 * GUI Constants
 	 */
-	public final static int GUI_FRAMES_PER_SECOND = 240;
+	public final static int GUI_FRAMES_PER_SECOND = 120;
 	public final static int GUI_WINDOW_WIDTH = 1280;
 	public final static int GUI_WINDOW_HEIGHT = 600;
 	public final static int GUI_TABLE_OFFSET_X = 64;
@@ -92,13 +92,20 @@ public class Constants {
 	public static final float DAMPENING_FORCE_SCALE_FACTOR = 100f;
 
 	/**
+	 * Mechanical Constants
+	 */
+	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 3f;
+	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
+	public static final float MECHANICAL_MAX_POSITION_RESOLUTION_METERS = 0.005f;
+	
+	/**
 	 * Strategy Constants
 	 */
 	// Fixed step distance interval for checking all possible attacks
 	public static final float STRATEGY_PROJECTED_STEP_DISTANCE_METERS = 0.005f;
-	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 2f;
-	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
 	public static final int STRATEGY_MAX_LOOKAHEAD_BOUNCES = 3;
+	public static final float STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS = 0.2f;
+	
 
 	/**
 	 * Input Constants

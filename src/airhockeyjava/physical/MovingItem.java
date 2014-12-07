@@ -31,6 +31,7 @@ public abstract class MovingItem implements IMovingItem {
 		}
 	}
 
+	private Table table;
 	private List<Point2D> predictedPathPoints;
 	private Line2D trajectoryLine;
 	private PathAndFlag pathAndFlag;
@@ -47,7 +48,7 @@ public abstract class MovingItem implements IMovingItem {
 	 * @param position
 	 * @param velocity
 	 */
-	protected MovingItem(Vector2 position, Vector2 velocity, float radius, float mass) {
+	protected MovingItem(Vector2 position, Vector2 velocity, float radius, float mass, Table table) {
 		this.position = position;
 		this.velocity = velocity;
 		this.acceleration = new Vector2();
@@ -57,6 +58,7 @@ public abstract class MovingItem implements IMovingItem {
 		this.trajectoryLine = new Line2D.Float(new Point2D.Float(position.x, position.y),
 				new Point2D.Float(position.x, position.y));
 		this.pathAndFlag = new PathAndFlag(new Path2D.Float(), false);
+		this.table = table;
 	}
 
 	@Override
@@ -133,7 +135,24 @@ public abstract class MovingItem implements IMovingItem {
 	 */
 	public void updatePositionAndVelocity(float deltaTime) {
 		this.velocity.add(new Vector2(this.acceleration).scl(deltaTime));
+		updatePosition(deltaTime);
+	}
+
+	/**
+	 * Update position based on velocity
+	 * @param deltaTime
+	 */
+	public void updatePosition(float deltaTime) {
 		this.position.add(new Vector2(this.velocity).scl(deltaTime));
+	}
+
+	/**
+	 * Get expected position of item (i.e. no external forces)
+	 * @param deltaTime
+	 * @return Vector2 expected future position
+	 */
+	public Vector2 getExpectedPosition(float deltaTime) {
+		return new Vector2(this.getPosition()).add(new Vector2(this.velocity).scl(deltaTime));
 	}
 
 	/*
@@ -144,8 +163,9 @@ public abstract class MovingItem implements IMovingItem {
 	 * @param maximum number of reflections desired in the projection
 	 * @param whether or not to recalculate entire path or just update beginning point
 	 */
-	public void updatePredictedPath(Rectangle2D tableCollisionFrame, int numberReflections,
-			boolean isFullRefresh) {
+	public void updatePredictedPath(int numberReflections, boolean isFullRefresh) {
+		Rectangle2D tableCollisionFrame = this.table.getCollisionFrame(this);
+
 		// If not full refresh, just update the initial point (where object currently is)
 		// Otherwise, have to recalculate entire projection
 		Point2D currentPoint = new Point2D.Float(this.position.x, this.position.y);
@@ -179,7 +199,7 @@ public abstract class MovingItem implements IMovingItem {
 			predictedPathPoints.add(intersectionPoint);
 			// Build and add the remaining reflections to the projected path.
 			// Only build until critical path reached (i.e. a path that leads to a goal!)
-			for (int i = 0; i < numberReflections && !pathAndFlag.isCriticalFlag; i++) {
+			for (int i = 0; i < numberReflections; i++) {
 				predictedLine = getReflectedPredictedLine(predictedLine, tableCollisionFrame);
 				// Break if predicted line (or intersection point) not found
 				if (predictedLine == null) {
@@ -188,8 +208,10 @@ public abstract class MovingItem implements IMovingItem {
 
 				Point2D endPoint = predictedLine.getP2();
 				predictedPathPoints.add(endPoint);
-				pathAndFlag.isCriticalFlag = isPointIntersectingGoal(endPoint, tableCollisionFrame,
-						Constants.GAME_GOAL_WIDTH_METERS);
+				if (this.table.isIntersectingGoal(new Vector2(endPoint), this.getRadius())) {
+					pathAndFlag.isCriticalFlag = true;
+					break;
+				}
 			}
 			System.out.println(predictedPathPoints.size());
 		}
@@ -205,42 +227,6 @@ public abstract class MovingItem implements IMovingItem {
 				pathAndFlag.predictedPath.append(path, true);
 			}
 		}
-	}
-
-	/**
-	 * Test whether point intersecting either goal
-	 * @param point
-	 * @param collisionFrame
-	 * @param goalWidth
-	 * @return True if intersection exists
-	 */
-	public final boolean isPointIntersectingGoal(Point2D point, Rectangle2D collisionFrame,
-			float goalWidth) {
-		return isPointIntersectingGoal((float) point.getX(), (float) point.getY(), collisionFrame,
-				goalWidth);
-	}
-
-	public final boolean isPointIntersectingGoal(float x, float y, Rectangle2D collisionFrame,
-			float goalWidth) {
-		// True if reaching left goal or right goal, accounting for width of item
-		return isPointIntersectingLeftGoal(x, y, collisionFrame, goalWidth)
-				|| isPointIntersectingRightGoal(x, y, collisionFrame, goalWidth);
-	}
-
-	public final boolean isPointIntersectingLeftGoal(float x, float y, Rectangle2D collisionFrame,
-			float goalWidth) {
-		float goalStartY = (float) ((collisionFrame.getHeight() - goalWidth) / 2.0f);
-		return ((x <= collisionFrame.getMinX() + Constants.GAME_GOAL_ALLOWANCE)
-				&& (y >= goalStartY + this.radius - Constants.GAME_GOAL_ALLOWANCE) && (y <= goalStartY
-				+ goalWidth - this.radius + Constants.GAME_GOAL_ALLOWANCE));
-	}
-
-	public final boolean isPointIntersectingRightGoal(float x, float y, Rectangle2D collisionFrame,
-			float goalWidth) {
-		float goalStartY = (float) ((collisionFrame.getHeight() - goalWidth) / 2.0f);
-		return ((x >= collisionFrame.getMaxX() - Constants.GAME_GOAL_ALLOWANCE)
-				&& (y >= goalStartY + this.radius - Constants.GAME_GOAL_ALLOWANCE) && (y <= goalStartY
-				+ goalWidth - this.radius + Constants.GAME_GOAL_ALLOWANCE));
 	}
 
 	/**

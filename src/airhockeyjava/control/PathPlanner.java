@@ -19,17 +19,28 @@ public class PathPlanner implements IPathPlanner {
 		this.mallet = mallet;
 	}
 
+	/**
+	 * Maximizes velocity in intended direction of movement
+	 */
 	@Override
 	public Vector2 targetPositionToVelocity(Vector2 targetPosition) {
-		// TODO Auto-generated method stub
-		return null;
+		Vector2 positionDeltaVector = getPositionDeltaVector(targetPosition);
+		if (positionDeltaVector.len() < Constants.MECHANICAL_MAX_POSITION_RESOLUTION_METERS) {
+			return new Vector2();
+		}
+		else {
+			return positionDeltaVector.nor().scl(Constants.MECHANICAL_MAX_SPEED_METERS_PER_SECOND);
+		}
 	}
 
 	@Override
 	// Gets the appropriate current smoothing acceleration (limiting overshoot) based on position difference.
 	public Vector2 targetPositionToAcceleration(Vector2 targetPosition) {
-		Vector2 positionDelta = new Vector2(targetPosition).sub(mallet.getPosition());
-		return positionDelta.scl(Constants.DIRECTIONAL_FORCE_SCALE_FACTOR).sub(
-				new Vector2(mallet.getVelocity()).scl(Constants.DAMPENING_FORCE_SCALE_FACTOR));
+		return getPositionDeltaVector(targetPosition).scl(Constants.DIRECTIONAL_FORCE_SCALE_FACTOR)
+				.sub(new Vector2(mallet.getVelocity()).scl(Constants.DAMPENING_FORCE_SCALE_FACTOR));
+	}
+
+	private Vector2 getPositionDeltaVector(Vector2 targetPosition) {
+		return new Vector2(targetPosition).sub(mallet.getPosition());
 	}
 }

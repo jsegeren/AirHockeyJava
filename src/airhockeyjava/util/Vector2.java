@@ -16,6 +16,7 @@
 
 package airhockeyjava.util;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 /** Encapsulates a 2D vector. Allows chaining methods by returning a reference to itself
@@ -52,6 +53,11 @@ public class Vector2 implements Serializable, IVector<Vector2> {
 	 * @param v The vector */
 	public Vector2(Vector2 v) {
 		set(v);
+	}
+	
+	public Vector2(Point2D position) {
+		this.x = (float) position.getX();
+		this.y = (float) position.getY();
 	}
 
 	@Override

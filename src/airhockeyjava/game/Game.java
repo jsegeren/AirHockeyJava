@@ -11,6 +11,7 @@ import airhockeyjava.physical.Mallet;
 import airhockeyjava.physical.Puck;
 import airhockeyjava.physical.Table;
 import airhockeyjava.control.IController;
+import airhockeyjava.control.RobotController;
 import airhockeyjava.control.UserController;
 import airhockeyjava.graphics.GuiLayer;
 import airhockeyjava.input.IInputLayer;
@@ -143,9 +144,9 @@ public class Game {
 
 		// Instantiate physical game items with default constants
 		gameTable = new Table();
-		gamePuck = new Puck();
-		userMallet = new Mallet(true);
-		robotMallet = new Mallet(false);
+		gamePuck = new Puck(this.gameTable);
+		userMallet = new Mallet(true, this.gameTable);
+		robotMallet = new Mallet(false, this.gameTable);
 
 		// Initialize items set which is accessible to other layers
 		movingItems = new HashSet<IMovingItem>();
@@ -163,7 +164,7 @@ public class Game {
 		userController = new UserController(this.userMallet);
 
 		robotStrategy = new NaiveDefenseStrategy(this);
-		robotController = new UserController(this.robotMallet);
+		robotController = new RobotController(this.robotMallet);
 
 		// For simulated game, instantiate the simulated detection/prediction layer thread
 		// and the input layer thread which is responsible for the user position.
@@ -248,7 +249,7 @@ public class Game {
 	 */
 	public void resetPuck() {
 		movingItems.remove(gamePuck);
-		gamePuck = new Puck();
+		gamePuck = new Puck(this.gameTable);
 		movingItems.add(gamePuck);
 	}
 

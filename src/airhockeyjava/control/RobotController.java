@@ -12,17 +12,23 @@ import airhockeyjava.util.Vector2;
  */
 public class RobotController implements IController {
 
-	private final PathPlanner pathPlanner;
+	private final IPathPlanner pathPlanner;
 	private final Mallet mallet;
 
-	RobotController(Mallet mallet) {
+	public RobotController(Mallet mallet) {
 		this.mallet = mallet;
 		pathPlanner = new PathPlanner(mallet);
 	}
 
+	/**
+	 * Set instantaneous mallet velocity and acceleration
+	 */
 	@Override
 	public void controlMallet(Vector2 targetPosition, float deltaTime) {
-		// TODO Auto-generated method stub
+		//		mallet.setAcceleration(pathPlanner.targetPositionToAcceleration(targetPosition));
+		mallet.setVelocity(pathPlanner.targetPositionToVelocity(targetPosition));
 
+		// Update internal tracking variables for rendering
+		mallet.updatePosition(deltaTime);
 	}
 }
