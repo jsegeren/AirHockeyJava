@@ -4,6 +4,8 @@ import airhockeyjava.simulation.IDetection;
 import airhockeyjava.simulation.SimulatedDetection;
 import airhockeyjava.strategy.IStrategy;
 import airhockeyjava.strategy.NaiveDefenseStrategy;
+import airhockeyjava.strategy.StrategySelector;
+import airhockeyjava.strategy.TriangleDefenseStrategy;
 import airhockeyjava.strategy.UserInputStrategy;
 import airhockeyjava.util.Conversion;
 import airhockeyjava.physical.IMovingItem;
@@ -123,7 +125,7 @@ public class Game {
 	// Application layer interfaces
 	private IDetection detectionLayer;
 	private IStrategy userStrategy;
-	private IStrategy robotStrategy;
+	private StrategySelector robotStrategy;
 	private IController userController;
 	private IController robotController;
 	private GuiLayer guiLayer;
@@ -163,7 +165,8 @@ public class Game {
 		userStrategy = new UserInputStrategy(this);
 		userController = new UserController(this.userMallet);
 
-		robotStrategy = new NaiveDefenseStrategy(this);
+		//		robotStrategy = new NaiveDefenseStrategy(this);
+		robotStrategy = new StrategySelector(this);
 		robotController = new RobotController(this.robotMallet);
 
 		// For simulated game, instantiate the simulated detection/prediction layer thread
@@ -271,7 +274,8 @@ public class Game {
 
 		// Check if should control robot mallet
 		if (game.settings.enableAI) {
-			robotController.controlMallet(robotStrategy.getTargetPosition(deltaTime), deltaTime);
+			robotController.controlMallet(
+					robotStrategy.getBestStrategy().getTargetPosition(deltaTime), deltaTime);
 		}
 
 		userController.controlMallet(userStrategy.getTargetPosition(deltaTime), deltaTime);

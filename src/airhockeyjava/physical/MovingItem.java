@@ -116,6 +116,18 @@ public abstract class MovingItem implements IMovingItem {
 				this.position.y);
 	}
 
+	/**
+	 * Gets the latest  projected point available
+	 */
+	public Vector2 getLastExpectedPointVector() {
+		if (!predictedPathPoints.isEmpty()) {
+			return new Vector2(predictedPathPoints.get(predictedPathPoints.size() - 1));
+		}
+		else {
+			return new Vector2(this.getPosition());
+		}
+	}
+
 	public PathAndFlag getPathAndFlag() {
 		return pathAndFlag;
 	}

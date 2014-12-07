@@ -134,4 +134,18 @@ public class Table extends RoundRectangle2D.Float {
 				&& (position.y <= goalStartY + goalWidth - radius + Constants.GAME_GOAL_ALLOWANCE);
 	}
 
+	/**
+	 * Get the top y-bound of the goal
+	 * @return
+	 */
+	public final float getGoalStartY() {
+		return (float) ((height - goalWidth) / 2.0);
+	}
+
+	/**
+	 * Get the bottom y-bound of the goal
+	 */
+	public final float getGoalEndY() {
+		return (float) (((height - goalWidth) / 2.0) + goalWidth);
+	}
 }

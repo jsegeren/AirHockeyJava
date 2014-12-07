@@ -1,5 +1,6 @@
 package airhockeyjava.strategy;
 
+import airhockeyjava.game.Constants;
 import airhockeyjava.game.Game;
 import airhockeyjava.util.Vector2;
 
@@ -12,17 +13,16 @@ import airhockeyjava.util.Vector2;
  *
  */
 public class NaiveDefenseStrategy implements IStrategy {
-	
+
 	final private Game game;
-	
+
 	public NaiveDefenseStrategy(Game game) {
 		this.game = game;
 	}
 
-
 	@Override
 	public Vector2 getTargetPosition(float deltaTime) {
-		return new Vector2(game.robotMallet.getPosition().x, game.gamePuck.getPosition().y);
+		return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, game.gamePuck.getPosition().y);
 	}
-	
+
 }

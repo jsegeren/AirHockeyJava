@@ -50,7 +50,7 @@ public class Constants {
 	public static final float USER_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float USER_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float USER_MALLET_INITIAL_VELOCITY_Y = 0f;
-	public static final float ROBOT_MALLET_INTIIAL_POSITION_X = 0.9f * GAME_TABLE_WIDTH_METERS;
+	public static final float ROBOT_MALLET_INTIIAL_POSITION_X = 0.8f * GAME_TABLE_WIDTH_METERS;
 	public static final float ROBOT_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_Y = 0f;
@@ -94,7 +94,7 @@ public class Constants {
 	/**
 	 * Mechanical Constants
 	 */
-	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 3f;
+	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 1.5f;
 	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
 	public static final float MECHANICAL_MAX_POSITION_RESOLUTION_METERS = 0.005f;
 	
@@ -105,6 +105,7 @@ public class Constants {
 	public static final float STRATEGY_PROJECTED_STEP_DISTANCE_METERS = 0.005f;
 	public static final int STRATEGY_MAX_LOOKAHEAD_BOUNCES = 3;
 	public static final float STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS = 0.2f;
+	public static final float STRATEGY_TRIANGLE_LOOKAHEAD_TIME_SECONDS = 0.1f;
 	
 
 	/**
