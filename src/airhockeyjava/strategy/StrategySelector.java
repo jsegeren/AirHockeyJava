@@ -3,6 +3,7 @@ package airhockeyjava.strategy;
 import airhockeyjava.game.Constants;
 import airhockeyjava.game.Game;
 import airhockeyjava.util.Conversion;
+import airhockeyjava.util.Vector2;
 
 /**
  * Strategy selector. Transitions into the most appropriate strategy based on game conditions.
@@ -30,16 +31,19 @@ public class StrategySelector {
 	}
 
 	public IStrategy getBestStrategy() {
-		float puckPositionX = game.gamePuck.getPosition().x;
-		if (puckPositionX > game.gameTable.getWidth() / 2) {
-			if (puckPositionX <= (float) game.gameTable.getWidth() - game.robotMallet.getRadius()
+		Vector2 puckPosition = game.gamePuck.getPosition();
+		Vector2 puckVelocity = game.gamePuck.getVelocity();
+		if (puckPosition.x > game.gameTable.getWidth() / 2) {
+			if (puckPosition.x <= (float) game.gameTable.getWidth() - game.robotMallet.getRadius()
 					* 2 - Constants.STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS) {
 				if (game.gamePuck.getVelocity().len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE) {
 					updateStrategy(naiveOffenseStrategy);
 				} else {
 					updateStrategy(naiveDefenseStrategy);
 				}
-			} else if (game.gamePuck.getVelocity().len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE) {
+				// Check if puck moving slowly, and in the positive x direction
+			} else if (puckVelocity.len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE
+					&& puckVelocity.x > 0) {
 				updateStrategy(naiveOffenseStrategy);
 			} else {
 				updateStrategy(triangleDefenseStrategy);

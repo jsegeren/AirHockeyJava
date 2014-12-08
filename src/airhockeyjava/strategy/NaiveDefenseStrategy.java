@@ -30,5 +30,4 @@ public class NaiveDefenseStrategy implements IStrategy {
 	public String toString() {
 		return strategyLabelString;
 	}
-
 }
