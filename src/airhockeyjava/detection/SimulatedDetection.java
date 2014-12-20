@@ -1,4 +1,4 @@
-package airhockeyjava.simulation;
+package airhockeyjava.detection;
 
 import java.awt.geom.Rectangle2D;
 
@@ -21,7 +21,6 @@ import airhockeyjava.simulation.PuckSimulation;
  */
 public class SimulatedDetection implements IDetection {
 	private Game game;
-	private IInputLayer inputLayer;
 
 	private final Rectangle2D tablePuckCollisionFrame;
 
@@ -32,7 +31,6 @@ public class SimulatedDetection implements IDetection {
 	 */
 	public SimulatedDetection(Game game, IInputLayer inputLayer) {
 		this.game = game;
-		this.inputLayer = inputLayer;
 		this.tablePuckCollisionFrame = game.gameTable.getCollisionFrame(game.gamePuck.getRadius());
 	}
 

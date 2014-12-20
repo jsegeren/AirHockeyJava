@@ -1,4 +1,4 @@
-package airhockeyjava.simulation;
+package airhockeyjava.detection;
 
 /**
  * Interface for the detection layer which determines and updates states of moving items.

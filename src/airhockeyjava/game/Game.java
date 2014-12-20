@@ -1,29 +1,12 @@
 package airhockeyjava.game;
 
-import airhockeyjava.simulation.IDetection;
-import airhockeyjava.simulation.SimulatedDetection;
-import airhockeyjava.strategy.IStrategy;
-import airhockeyjava.strategy.NaiveDefenseStrategy;
-import airhockeyjava.strategy.StrategySelector;
-import airhockeyjava.strategy.TriangleDefenseStrategy;
-import airhockeyjava.strategy.UserInputStrategy;
-import airhockeyjava.util.Conversion;
-import airhockeyjava.physical.IMovingItem;
-import airhockeyjava.physical.Mallet;
-import airhockeyjava.physical.Puck;
-import airhockeyjava.physical.Table;
-import airhockeyjava.control.IController;
-import airhockeyjava.control.RobotController;
-import airhockeyjava.control.UserController;
-import airhockeyjava.graphics.GuiLayer;
-import airhockeyjava.input.IInputLayer;
-import airhockeyjava.input.InputLayer;
-
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -31,6 +14,28 @@ import javax.swing.InputMap;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+
+import org.opencv.core.Core;
+import org.opencv.highgui.VideoCapture;
+
+import airhockeyjava.control.IController;
+import airhockeyjava.control.RobotController;
+import airhockeyjava.control.UserController;
+import airhockeyjava.detection.IDetection;
+import airhockeyjava.detection.ITrackingObject;
+import airhockeyjava.detection.SimulatedDetection;
+import airhockeyjava.detection.Tracking;
+import airhockeyjava.graphics.GuiLayer;
+import airhockeyjava.input.IInputLayer;
+import airhockeyjava.input.InputLayer;
+import airhockeyjava.physical.IMovingItem;
+import airhockeyjava.physical.Mallet;
+import airhockeyjava.physical.Puck;
+import airhockeyjava.physical.Table;
+import airhockeyjava.strategy.IStrategy;
+import airhockeyjava.strategy.StrategySelector;
+import airhockeyjava.strategy.UserInputStrategy;
+import airhockeyjava.util.Conversion;
 
 /**
  * Top-level class for the game. Used for both simulated and actual games. Simulated games will
@@ -44,8 +49,23 @@ public class Game {
 	 * Enumeration type to distinguish simulated and real-world games.
 	 */
 	public enum GameTypeEnum {
-		REAL_GAME_TYPE, SIMULATED_GAME_TYPE
+		REAL_GAME_TYPE(Constants.REAL_GAME_TYPE_ARG), SIMULATED_GAME_TYPE(
+				Constants.SIMULATED_GAME_TYPE_ARG);
+
+		private final String typeString;
+
+		private GameTypeEnum(String typeString) {
+			this.typeString = typeString;
+		}
 	}
+
+	private static final Map<String, GameTypeEnum> stringArgToGameTypeMap = new HashMap<String, GameTypeEnum>() {
+		private static final long serialVersionUID = 1L;
+		{
+			put(Constants.REAL_GAME_TYPE_ARG, GameTypeEnum.REAL_GAME_TYPE);
+			put(Constants.SIMULATED_GAME_TYPE_ARG, GameTypeEnum.SIMULATED_GAME_TYPE);
+		}
+	};
 
 	/**
 	 * Set up maps for key bindings. Key -> action name, then action name -> action handler.
@@ -105,7 +125,7 @@ public class Game {
 	// Local constants and physical parameters
 	private static final long OPTIMAL_TIME = Conversion
 			.secondsToNanoseconds(1f / Constants.GAME_SIMULATION_TARGET_FRAMES_PER_SECOND);
-	private static final GameTypeEnum gameType = GameTypeEnum.SIMULATED_GAME_TYPE;
+	private static GameTypeEnum gameType;
 
 	// Configurable Game Settings
 	public GameSettings settings = new GameSettings();
@@ -123,6 +143,7 @@ public class Game {
 	public Mallet robotMallet;
 
 	// Application layer interfaces
+	private Tracking realDetectionLayer; // TODO integrate this more cleanly
 	private IDetection detectionLayer;
 	private IStrategy userStrategy;
 	private StrategySelector robotStrategy;
@@ -133,6 +154,7 @@ public class Game {
 
 	// Threads
 	private Thread guiLayerThread;
+	private Thread detectionLayerThread;
 
 	// Game object itself!
 	private static Game game;
@@ -156,12 +178,6 @@ public class Game {
 		movingItems.add(userMallet);
 		movingItems.add(robotMallet);
 
-		guiLayer = new GuiLayer(this);
-		guiLayerThread = new Thread(guiLayer);
-
-		inputLayer = new InputLayer(guiLayer);
-		detectionLayer = new SimulatedDetection(this, inputLayer);
-
 		userStrategy = new UserInputStrategy(this);
 		userController = new UserController(this.userMallet);
 
@@ -172,7 +188,36 @@ public class Game {
 		// For simulated game, instantiate the simulated detection/prediction layer thread
 		// and the input layer thread which is responsible for the user position.
 		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
+			guiLayer = new GuiLayer(this);
+			guiLayerThread = new Thread(guiLayer);
+			inputLayer = new InputLayer(guiLayer);
+			detectionLayer = new SimulatedDetection(this, inputLayer);
 			setKeyBindings();
+
+			JFrame frame = new JFrame("AirHockey");
+			frame.setSize(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
+			frame.setResizable(false);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.add(guiLayer);
+			frame.setVisible(true);
+
+			// Start the threads
+			guiLayerThread.start();
+		} else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
+			System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Load openCV 
+
+			List<ITrackingObject> trackingObjectsList = new ArrayList<ITrackingObject>();
+			trackingObjectsList.add(this.gamePuck);
+			Set<List<ITrackingObject>> objectsToTrack = new HashSet<List<ITrackingObject>>();
+			objectsToTrack.add(trackingObjectsList);
+
+			// Set up video feed; get device, then open capture stream
+			VideoCapture videoCapture = new VideoCapture(0);
+			videoCapture.open(0);
+
+			realDetectionLayer = new Tracking(objectsToTrack, videoCapture);
+			detectionLayerThread = new Thread(realDetectionLayer);
+			detectionLayerThread.start();
 		}
 	}
 
@@ -185,18 +230,14 @@ public class Game {
 		long lastFpsTime = 0;
 		long fps = 0;
 
+		// Set the game type based on command-line argument, or use default
+		gameType = (args != null && args.length > 0 && stringArgToGameTypeMap
+				.containsKey(args[Constants.GAME_TYPE_ARG_INDEX])) ? stringArgToGameTypeMap
+				.get(args[Constants.GAME_TYPE_ARG_INDEX]) : stringArgToGameTypeMap
+				.get(Constants.DEFAULT_GAME_TYPE_ARG);
+
 		// Initialize the game object and game layers
 		game = new Game(gameType);
-
-		JFrame frame = new JFrame("AirHockey");
-		frame.setSize(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
-		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(game.guiLayer);
-		frame.setVisible(true);
-
-		// Start the threads
-		game.guiLayerThread.start();
 
 		// Main loop for game logic. Uses variable timestepping.
 		// Reference: http://www.java-gaming.org/index.php?topic=24220.0
@@ -260,13 +301,12 @@ public class Game {
 	 * Update the game state
 	 */
 	private void updateStates(float deltaTime) {
-
-		setGameInfoDisplay();
-
 		// If simulated, we need to use input data to update user mallet state
 		// Also need to use mocked detection layer to update puck position via physics
 		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
+			setGameInfoDisplay();
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
+			userController.controlMallet(userStrategy.getTargetPosition(deltaTime), deltaTime);
 		}
 		// Otherwise we will use the vision system
 		else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
@@ -277,8 +317,6 @@ public class Game {
 			robotController.controlMallet(
 					robotStrategy.getBestStrategy().getTargetPosition(deltaTime), deltaTime);
 		}
-
-		userController.controlMallet(userStrategy.getTargetPosition(deltaTime), deltaTime);
 	}
 
 	private void setKeyBindings() {

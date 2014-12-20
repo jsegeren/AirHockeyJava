@@ -3,6 +3,8 @@ package airhockeyjava.game;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
+import org.opencv.core.Scalar;
+
 /**
  *
  * Top-level class for constants. This allows us to cleanly and statically reference constants
@@ -16,6 +18,10 @@ public class Constants {
 	 * General Constants
 	 */
 	public static final float NANOSECONDS_IN_SECOND = 1000000000f;
+	public static final String REAL_GAME_TYPE_ARG = "real";
+	public static final String SIMULATED_GAME_TYPE_ARG = "sim";
+	public static final int GAME_TYPE_ARG_INDEX = 0;
+	public static final String DEFAULT_GAME_TYPE_ARG = SIMULATED_GAME_TYPE_ARG;
 
 	/**
 	 * Physical Parameter Constants
@@ -79,6 +85,12 @@ public class Constants {
 			/ Constants.GAME_TABLE_WIDTH_METERS;
 
 	/**
+	 * Detection/Vision System Constants
+	 */
+	public static final Scalar PUCK_HSV_MIN = new Scalar(20, 65, 160);
+	public static final Scalar PUCK_HSV_MAX = new Scalar(45, 208, 196);
+
+	/**
 	 * Simulation Model Constants
 	 */
 	public static final float MALLET_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.7f;
@@ -97,7 +109,7 @@ public class Constants {
 	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 1.5f;
 	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
 	public static final float MECHANICAL_MAX_POSITION_RESOLUTION_METERS = 0.005f;
-	
+
 	/**
 	 * Strategy Constants
 	 */
@@ -108,7 +120,7 @@ public class Constants {
 	public static final float STRATEGY_TRIANGLE_LOOKAHEAD_TIME_SECONDS = 0.1f;
 	public static final float STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE = 1.5f;
 	public static final float MIN_TIME_BETWEEN_STRATEGY_TRANSITION_SECONDS = 0.01f;
-	
+
 	public static final String STRATEGY_NAIVE_DEFENSE_STRING = "Naive defense strategy";
 	public static final String STRATEGY_TRIANGLE_DEFENSE_STRING = "Triangle defense strategy";
 	public static final String STRATEGY_NAIVE_OFFENSE_STRING = "Naive offense strategy";

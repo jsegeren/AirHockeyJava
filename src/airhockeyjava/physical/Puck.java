@@ -1,5 +1,8 @@
 package airhockeyjava.physical;
 
+import org.opencv.core.Scalar;
+
+import airhockeyjava.detection.ITrackingObject;
 import airhockeyjava.game.Constants;
 import airhockeyjava.util.Vector2;
 
@@ -9,7 +12,10 @@ import airhockeyjava.util.Vector2;
  * @author Joshua Segeren
  *
  */
-public class Puck extends MovingItem {
+public class Puck extends MovingItem implements ITrackingObject {
+	// TODO set constants
+	private static final Scalar HSVmin = Constants.PUCK_HSV_MIN;
+	private static final Scalar HSVmax = Constants.PUCK_HSV_MAX;
 
 	/**
 	 * Expected constructor.
@@ -32,5 +38,15 @@ public class Puck extends MovingItem {
 				Constants.GAME_PUCK_INITIAL_POSITION_Y), new Vector2(
 				Constants.GAME_PUCK_INITIAL_VELOCITY_X, Constants.GAME_PUCK_INITIAL_VELOCITY_Y),
 				Constants.GAME_PUCK_RADIUS_METERS, Constants.GAME_PUCK_MASS_GRAMS, table);
+	}
+
+	@Override
+	public Scalar getHSVMin() {
+		return HSVmin;
+	}
+
+	@Override
+	public Scalar getHSVMax() {
+		return HSVmax;
 	}
 }
