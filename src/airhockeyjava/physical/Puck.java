@@ -10,12 +10,14 @@ import airhockeyjava.util.Vector2;
  * Class to represent the puck.
  * 
  * @author Joshua Segeren
- *
+ * 
  */
 public class Puck extends MovingItem implements ITrackingObject {
 	// TODO set constants
 	private static final Scalar HSVmin = Constants.PUCK_HSV_MIN;
 	private static final Scalar HSVmax = Constants.PUCK_HSV_MAX;
+	private static final int minObjectArea = Constants.MIN_PUCK_AREA;
+	private static final int maxObjectArea = Constants.MAX_PUCK_AREA;
 
 	/**
 	 * Expected constructor.
@@ -36,8 +38,10 @@ public class Puck extends MovingItem implements ITrackingObject {
 	public Puck(Table table) {
 		super(new Vector2(Constants.GAME_PUCK_INITIAL_POSITION_X,
 				Constants.GAME_PUCK_INITIAL_POSITION_Y), new Vector2(
-				Constants.GAME_PUCK_INITIAL_VELOCITY_X, Constants.GAME_PUCK_INITIAL_VELOCITY_Y),
-				Constants.GAME_PUCK_RADIUS_METERS, Constants.GAME_PUCK_MASS_GRAMS, table);
+				Constants.GAME_PUCK_INITIAL_VELOCITY_X,
+				Constants.GAME_PUCK_INITIAL_VELOCITY_Y),
+				Constants.GAME_PUCK_RADIUS_METERS,
+				Constants.GAME_PUCK_MASS_GRAMS, table);
 	}
 
 	@Override
@@ -48,5 +52,15 @@ public class Puck extends MovingItem implements ITrackingObject {
 	@Override
 	public Scalar getHSVMax() {
 		return HSVmax;
+	}
+
+	@Override
+	public int getMaxObjectArea() {
+		return maxObjectArea;
+	}
+
+	@Override
+	public int getMinObjectArea() {
+		return minObjectArea;
 	}
 }

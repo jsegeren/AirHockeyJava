@@ -5,8 +5,9 @@ import org.opencv.core.Scalar;
 
 /**
  * Interface for trackable object, for use by vision/detection subsystem.
- * @author Nima
- *
+ * 
+ * @author Nima Akhbari
+ * 
  */
 public interface ITrackingObject {
 	public Vector2 getPosition();
@@ -16,4 +17,8 @@ public interface ITrackingObject {
 	public Scalar getHSVMin();
 
 	public Scalar getHSVMax();
+
+	public int getMaxObjectArea();
+
+	public int getMinObjectArea();
 }

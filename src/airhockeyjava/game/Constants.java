@@ -89,6 +89,9 @@ public class Constants {
 	 */
 	public static final Scalar PUCK_HSV_MIN = new Scalar(20, 65, 160);
 	public static final Scalar PUCK_HSV_MAX = new Scalar(45, 208, 196);
+	public static final int MAX_PUCK_AREA = 100*100;
+	public static final int MIN_PUCK_AREA = 20*20;
+	public static final int MAX_NUM_DETECTABLE_OBJECTS = 10;
 
 	/**
 	 * Simulation Model Constants
