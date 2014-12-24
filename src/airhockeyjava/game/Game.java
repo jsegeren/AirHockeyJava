@@ -48,8 +48,9 @@ public class Game {
 	/**
 	 * Enumeration type to distinguish simulated and real-world games.
 	 */
-	public enum GameTypeEnum {
-		REAL_GAME_TYPE(Constants.REAL_GAME_TYPE_ARG), SIMULATED_GAME_TYPE(
+	public static enum GameTypeEnum {
+		REAL_GAME_TYPE(Constants.REAL_GAME_TYPE_ARG), REAL_HEADLESS_GAME_TYPE(
+				Constants.REAL_HEADLESS_GAME_TYPE_ARG), SIMULATED_GAME_TYPE(
 				Constants.SIMULATED_GAME_TYPE_ARG);
 
 		private final String typeString;
@@ -57,15 +58,21 @@ public class Game {
 		private GameTypeEnum(String typeString) {
 			this.typeString = typeString;
 		}
-	}
 
-	private static final Map<String, GameTypeEnum> stringArgToGameTypeMap = new HashMap<String, GameTypeEnum>() {
-		private static final long serialVersionUID = 1L;
-		{
-			put(Constants.REAL_GAME_TYPE_ARG, GameTypeEnum.REAL_GAME_TYPE);
-			put(Constants.SIMULATED_GAME_TYPE_ARG, GameTypeEnum.SIMULATED_GAME_TYPE);
+		@Override
+		public final String toString() {
+			return this.typeString;
 		}
-	};
+
+		public final static GameTypeEnum findByValue(String value) {
+			for (GameTypeEnum gameTypeEnum : values()) {
+				if (gameTypeEnum.toString().equals(value)) {
+					return gameTypeEnum;
+				}
+			}
+			return null;
+		}
+	}
 
 	/**
 	 * Set up maps for key bindings. Key -> action name, then action name -> action handler.
@@ -159,10 +166,16 @@ public class Game {
 	// Game object itself!
 	private static Game game;
 
+	// GUI frame
+	private JFrame jFrame;
+
 	/**
 	 * Top-level constructor
 	 */
 	public Game(GameTypeEnum gameType) {
+		// Output game type
+		System.out.println(String.format("Starting game: %s", gameType));
+
 		// Initialize member variables
 		gameTimeRemainingSeconds = Constants.GAME_TIME_SECONDS;
 
@@ -187,38 +200,69 @@ public class Game {
 
 		// For simulated game, instantiate the simulated detection/prediction layer thread
 		// and the input layer thread which is responsible for the user position.
-		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
-			guiLayer = new GuiLayer(this);
-			guiLayerThread = new Thread(guiLayer);
+		switch (gameType) {
+		// Real game with GUI
+		case REAL_GAME_TYPE:
+			setupGUI();
+			setupRealDetection(true);
+			break;
+		// Real game without GUI output
+		case REAL_HEADLESS_GAME_TYPE:
+			setupRealDetection(false);
+			break;
+		// Simulated game (with GUI output, and input controls)
+		case SIMULATED_GAME_TYPE:
+			setupGUI();
 			inputLayer = new InputLayer(guiLayer);
 			detectionLayer = new SimulatedDetection(this, inputLayer);
 			setKeyBindings();
+			break;
+		default:
+			break;
+		}
+	}
 
-			JFrame frame = new JFrame("AirHockey");
-			frame.setSize(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
-			frame.setResizable(false);
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.add(guiLayer);
-			frame.setVisible(true);
+	/**
+	 * Internal method to initialize openCV and devices, real tracking layer
+	 * @param isGuiEnabled whether GUI output should be shown
+	 */
+	private void setupRealDetection(boolean isGuiEnabled) {
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Load openCV 
 
-			// Start the threads
-			guiLayerThread.start();
-		} else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
-			System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Load openCV 
+		List<ITrackingObject> trackingObjectsList = new ArrayList<ITrackingObject>();
+		trackingObjectsList.add(this.gamePuck);
+		Set<List<ITrackingObject>> objectsToTrack = new HashSet<List<ITrackingObject>>();
+		objectsToTrack.add(trackingObjectsList);
 
-			List<ITrackingObject> trackingObjectsList = new ArrayList<ITrackingObject>();
-			trackingObjectsList.add(this.gamePuck);
-			Set<List<ITrackingObject>> objectsToTrack = new HashSet<List<ITrackingObject>>();
-			objectsToTrack.add(trackingObjectsList);
-
-			// Set up video feed; get device, then open capture stream
-			VideoCapture videoCapture = new VideoCapture(0);
-			videoCapture.open(0);
-
-			realDetectionLayer = new Tracking(objectsToTrack, videoCapture);
+		// Set up video feed; get device, then open capture stream
+		// Open returns false if fails
+		VideoCapture videoCapture = new VideoCapture(0);
+		if (videoCapture.open(0)) {
+			realDetectionLayer = new Tracking(objectsToTrack, videoCapture, isGuiEnabled);
 			detectionLayerThread = new Thread(realDetectionLayer);
 			detectionLayerThread.start();
+		} else {
+			// Fail out and exit
+			throw new RuntimeException("Video capture device could not be opened!");
 		}
+	}
+
+	/**
+	 * Internal method to initialize GUI thread and create JFrame
+	 */
+	private void setupGUI() {
+		guiLayer = new GuiLayer(this);
+		guiLayerThread = new Thread(guiLayer);
+
+		jFrame = new JFrame(Constants.GUI_JFRAME_LABEL);
+		jFrame.setSize(Constants.GUI_WINDOW_WIDTH, Constants.GUI_WINDOW_HEIGHT);
+		jFrame.setResizable(false);
+		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jFrame.add(guiLayer);
+		jFrame.setVisible(true);
+
+		// Start the threads
+		guiLayerThread.start();
 	}
 
 	/**
@@ -231,11 +275,12 @@ public class Game {
 		long fps = 0;
 
 		// Set the game type based on command-line argument, or use default
-		gameType = (args != null && args.length > 0 && stringArgToGameTypeMap
-				.containsKey(args[Constants.GAME_TYPE_ARG_INDEX])) ? stringArgToGameTypeMap
-				.get(args[Constants.GAME_TYPE_ARG_INDEX]) : stringArgToGameTypeMap
-				.get(Constants.DEFAULT_GAME_TYPE_ARG);
 
+		gameType = (args != null && args.length >= (Constants.GAME_TYPE_ARG_INDEX + 1) && (GameTypeEnum
+				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX]) != null)) ? GameTypeEnum
+				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX]) : GameTypeEnum
+				.findByValue(Constants.DEFAULT_GAME_TYPE_ARG);
+				
 		// Initialize the game object and game layers
 		game = new Game(gameType);
 

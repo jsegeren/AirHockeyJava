@@ -19,6 +19,7 @@ public class Constants {
 	 */
 	public static final float NANOSECONDS_IN_SECOND = 1000000000f;
 	public static final String REAL_GAME_TYPE_ARG = "real";
+	public static final String REAL_HEADLESS_GAME_TYPE_ARG = "realHeadless"; // No GUI output
 	public static final String SIMULATED_GAME_TYPE_ARG = "sim";
 	public static final int GAME_TYPE_ARG_INDEX = 0;
 	public static final String DEFAULT_GAME_TYPE_ARG = SIMULATED_GAME_TYPE_ARG;
@@ -64,6 +65,7 @@ public class Constants {
 	/**
 	 * GUI Constants
 	 */
+	public final static String GUI_JFRAME_LABEL = "AirHockeySimulation";
 	public final static int GUI_FRAMES_PER_SECOND = 120;
 	public final static int GUI_WINDOW_WIDTH = 1280;
 	public final static int GUI_WINDOW_HEIGHT = 600;
@@ -87,11 +89,16 @@ public class Constants {
 	/**
 	 * Detection/Vision System Constants
 	 */
-	public static final Scalar PUCK_HSV_MIN = new Scalar(20, 65, 160);
-	public static final Scalar PUCK_HSV_MAX = new Scalar(45, 208, 196);
-	public static final int MAX_PUCK_AREA = 100*100;
-	public static final int MIN_PUCK_AREA = 20*20;
-	public static final int MAX_NUM_DETECTABLE_OBJECTS = 10;
+	public static final String DETECTION_JFRAME_LABEL = "AirHockeyDetection";
+	public static final Scalar DETECTION_PUCK_HSV_MIN = new Scalar(20, 65, 160);
+	public static final Scalar DETECTION_PUCK_HSV_MAX = new Scalar(45, 208, 196);
+	
+	// TODO make dynamic based on capture area and physical object dimensions
+	public static final int DETECTION_FRAME_HEIGHT = 1280;
+	public static final int DETECTION_FRAME_WIDTH = 600;
+	public static final int DETECTION_PUCK_MAX_AREA = 100*100;
+	public static final int DETECTION_PUCK_MIN_AREA = 20*20;
+	public static final int DETECTION_MAX_OBJECTS = 10;
 
 	/**
 	 * Simulation Model Constants

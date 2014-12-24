@@ -4,9 +4,12 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
+
+import javax.swing.JFrame;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -17,6 +20,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
 import airhockeyjava.game.Constants;
+import airhockeyjava.graphics.VideoDisplayPanel;
 import airhockeyjava.util.Conversion;
 import airhockeyjava.util.Vector2;
 
@@ -32,18 +36,40 @@ public class Tracking implements Runnable {
 
 	// Map of tracking objects to number of occurrences/instances expected
 	private Set<List<ITrackingObject>> objectSetsToTrack;
-	private VideoCapture videoCapture;
+	private final VideoCapture videoCapture;
+	private final VideoDisplayPanel normalPanel;
+	private final JFrame jFrame;
 
-	public Tracking(Set<List<ITrackingObject>> objectsToTrack,
-			VideoCapture videoCapture) {
+	public Tracking(Set<List<ITrackingObject>> objectsToTrack, VideoCapture videoCapture,
+			boolean isGuiEnabled) {
 		this.objectSetsToTrack = objectsToTrack;
 		this.videoCapture = videoCapture;
+
+		Set<ITrackingObject> trackingObjects = new HashSet<ITrackingObject>();
+		for (List<ITrackingObject> objectList : objectsToTrack) {
+			trackingObjects.addAll(objectList);
+		}
+
+		if (isGuiEnabled) {
+			this.normalPanel = new VideoDisplayPanel(trackingObjects);
+			this.jFrame = new JFrame(Constants.DETECTION_JFRAME_LABEL);
+			this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.jFrame.setSize(Constants.DETECTION_FRAME_WIDTH, Constants.DETECTION_FRAME_HEIGHT);
+			this.jFrame.add(normalPanel);
+			this.jFrame.setVisible(true);
+		} else {
+			this.normalPanel = null;
+			this.jFrame = null;
+		}
 	}
 
 	/**
 	 * Entry point for the tracking thread
 	 */
 	public void run() {
+		long lastLoopTime = System.nanoTime();
+		long lastFpsTime = 0;
+		long fps = 0;
 
 		// Matrix that represents the individual images
 		Mat originalImage = new Mat();
@@ -51,7 +77,24 @@ public class Tracking implements Runnable {
 		// Iterate through frames as fast as possible! (for now)
 		while (true) {
 
+			// Determine how long it's been since last update
+			long currentTime = System.nanoTime();
+			long updateLengthTime = currentTime - lastLoopTime;
+			lastLoopTime = currentTime;
+
+			// Update frame counter
+			lastFpsTime += updateLengthTime;
+			fps++;
+
+			// Update FPS counter and remaining game time if a second has passed since last recorded
+			if (lastFpsTime >= Conversion.secondsToNanoseconds(1f)) {
+				System.out.println(String.format("FPS: %d", fps));
+				lastFpsTime = 0;
+				fps = 0;
+			}
+
 			// Read in the new video frame
+			// NOTE: This is a blocking call; will sleep thread until next frame available
 			videoCapture.read(originalImage);
 
 			if (!originalImage.empty()) {
@@ -63,54 +106,71 @@ public class Tracking implements Runnable {
 				// Iterate over each type of object; there is a set of objects
 				// of each type
 				for (List<ITrackingObject> trackingObjectList : objectSetsToTrack) {
-					
-					if (trackingObjectList == null
-							|| trackingObjectList.isEmpty()) {
+
+					if (trackingObjectList == null || trackingObjectList.isEmpty()) {
 						continue;
 					}
 
 					// Threshold the hsv image to filter for Pucks
-					Core.inRange(hsvImage, trackingObjectList.get(0)
-							.getHSVMin(),
-							trackingObjectList.get(0).getHSVMax(),
-							hsvImageThresholded);
+					Core.inRange(hsvImage, trackingObjectList.get(0).getHSVMin(),
+							trackingObjectList.get(0).getHSVMax(), hsvImageThresholded);
 
 					// reduce the noise in the image
 					reduceNoise(hsvImageThresholded);
 
 					// Find instance(s) of object to track
 					findObjects(hsvImageThresholded, trackingObjectList);
+				}
 
+				// Draw if GUI available
+				if (normalPanel != null) {
+					// Display updated image
+					normalPanel.setImageBuffer(toBufferedImage(originalImage));
 				}
 
 			}
-
-			// No frame found!
+			// No frame found! Either done or camera has failed
 			else {
-				System.out.println("No frame found!");
-				break;
+				throw new RuntimeException("No frame found!");
 			}
 		}
 	}
 
 	/**
+	 * Convert matrix into an image
+	 * 
+	 * @param m matrix to be converted
+	 * @return Converted BufferedImage
+	 */
+	private static BufferedImage toBufferedImage(Mat m) {
+		int type = BufferedImage.TYPE_BYTE_GRAY;
+		if (m.channels() > 1) {
+			type = BufferedImage.TYPE_3BYTE_BGR;
+		}
+		int bufferSize = m.channels() * m.cols() * m.rows();
+		byte[] b = new byte[bufferSize];
+		m.get(0, 0, b); // get all the pixels
+		BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
+		final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		System.arraycopy(b, 0, targetPixels, 0, b.length);
+		return image;
+	}
+
+	/**
 	 * Reduces the noise in the image by shrinking the groups of pixels to
-	 * eliminate outliers, and then expand the pixels to restore the shrinked
+	 * eliminate outliers, and then expand the pixels to restore the shrunken
 	 * pixels.
 	 * 
 	 * @param image
 	 *            - Image to be clarified
 	 */
 	private static void reduceNoise(Mat image) {
-
-		// create structuring element that will be used to "dilate" and "erode"
+		// Create structuring element that will be used to "dilate" and "erode"
 		// image. the element chosen here is a 3px by 3px rectangle
-		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
-				new Size(1, 1));
+		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 1));
 
-		// dilate with larger element so make sure object is nicely visible
-		Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
-				new Size(12, 12));
+		// Dilate with larger element so make sure object is nicely visible
+		Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
 
 		// Erode will shrink the grouping of pixels
 		Imgproc.erode(image, image, erodeElement);
@@ -121,20 +181,17 @@ public class Tracking implements Runnable {
 		Imgproc.dilate(image, image, dilateElement);
 		Imgproc.dilate(image, image, dilateElement);
 		Imgproc.dilate(image, image, dilateElement);
-
 	}
 
 	/**
 	 * Find the object and return the position of the centroid
 	 * 
-	 * @param inputImage
-	 *            - Image that will be scanned for objects
+	 * @param inputImage - Image that will be scanned for objects
 	 * @return Position of the centroid
 	 * */
-	public static void findObjects(Mat inputImage,
-			List<ITrackingObject> trackingObjectList) {
-		PriorityQueue<Moments> maxAreaHeap = new PriorityQueue<Moments>(
-				trackingObjectList.size(), new Comparator<Moments>() {
+	private static void findObjects(Mat inputImage, List<ITrackingObject> trackingObjectList) {
+		PriorityQueue<Moments> maxAreaHeap = new PriorityQueue<Moments>(trackingObjectList.size(),
+				new Comparator<Moments>() {
 					public int compare(Moments x, Moments y) {
 						return (int) (y.get_m00() - x.get_m00());
 					}
@@ -146,12 +203,12 @@ public class Tracking implements Runnable {
 		// Find the contours of the image and save them into contours and
 		// hierarchy Where the hierarchy holds the relationship between the
 		// current contour point and the next
-		Imgproc.findContours(inputImage, contours, hierarchy,
-				Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+		Imgproc.findContours(inputImage, contours, hierarchy, Imgproc.RETR_CCOMP,
+				Imgproc.CHAIN_APPROX_SIMPLE);
 
 		// The number of items in the hierarchy is the number of contours
 		if (!trackingObjectList.isEmpty() && !hierarchy.empty()
-				&& hierarchy.total() < Constants.MAX_NUM_DETECTABLE_OBJECTS) {
+				&& hierarchy.total() < Constants.DETECTION_MAX_OBJECTS) {
 
 			int maxArea = trackingObjectList.get(0).getMaxObjectArea();
 			int minArea = trackingObjectList.get(0).getMinObjectArea();
@@ -186,13 +243,12 @@ public class Tracking implements Runnable {
 					// between captured pixels
 					// and table dimensions
 					trackingObject.setPosition(new Vector2((float) (Conversion
-							.pixelToMeter((int) (moment.get_m10() / moment
-									.get_m00()))), (float) (Conversion
-							.meterToPixel((int) (moment.get_m01() / moment
+							.pixelToMeter((int) (moment.get_m10() / moment.get_m00()))),
+							(float) (Conversion.meterToPixel((int) (moment.get_m01() / moment
 									.get_m00())))));
 
 					// Log the position
-					System.out.println(trackingObject.getPosition().toString());
+					// System.out.println(trackingObject.getPosition().toString());
 				}
 			}
 		}

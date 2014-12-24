@@ -39,7 +39,6 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private Graphics2D bufferContext;
 	private InfoBar infoBar;
 	private String[] externalInfoBarData = new String[] {};
-	private HashMap<Class<?>, Color> colorMap;
 
 	private static final long GUI_FRAME_TIME = 1000000000 / Constants.GUI_FRAMES_PER_SECOND;
 	private long currentFps = 0;
@@ -55,16 +54,19 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		}
 	};
 
+	protected static final Map<Class<?>, Color> colorMap = new HashMap<Class<?>, Color>() {
+		private static final long serialVersionUID = -8148003520786913073L;
+		{
+			put(Puck.class, Constants.GUI_PUCK_COLOR);
+			put(Mallet.class, Constants.GUI_MALLET_COLOR);
+		}
+	};
+
 	/*
 	 * Constructor
 	 */
 	public GuiLayer(Game currentGame) {
 		this.game = currentGame;
-
-		//Setup a map of object type to color. TODO Not sure if this makes sense...
-		this.colorMap = new HashMap<Class<?>, Color>();
-		this.colorMap.put(Puck.class, Constants.GUI_PUCK_COLOR);
-		this.colorMap.put(Mallet.class, Constants.GUI_MALLET_COLOR);
 		coordinateTranslate.translate(Constants.GUI_TABLE_OFFSET_X, Constants.GUI_TABLE_OFFSET_Y);
 		coordinateTranslate.scale(Constants.GUI_SCALING_FACTOR, Constants.GUI_SCALING_FACTOR);
 	}
@@ -182,7 +184,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		// Save the context of the buffered image to draw to
 		this.bufferContext = (Graphics2D) imgBuffer.getGraphics();
 
-		//Init an info bar
+		// Initialize an info bar
 		this.infoBar = new InfoBar(Constants.GUI_WINDOW_WIDTH - Constants.GUI_INFO_BAR_WIDTH,
 				Constants.GUI_TABLE_OFFSET_Y, Constants.GUI_INFO_BAR_WIDTH,
 				Constants.GUI_WINDOW_HEIGHT - Constants.GUI_TABLE_OFFSET_Y, this.bufferContext);
@@ -215,9 +217,9 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 		Graphics context = this.bufferContext;
 		// Spin out until initialized
-		while(!isInitialized) {
+		while (!isInitialized) {
 		}
-		
+
 		context.setColor(Constants.GUI_TABLE_COLOR);
 
 		//Draw the table border
@@ -251,7 +253,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	 */
 	private void drawMovingItem(IMovingItem item) {
 		Graphics context = this.bufferContext;
-		context.setColor(this.colorMap.get(item.getClass()));
+		context.setColor(GuiLayer.colorMap.get(item.getClass()));
 		Vector2 position = item.getPosition();
 		float radius = item.getRadius();
 		context.fillOval(scale(position.x - radius) + Constants.GUI_TABLE_OFFSET_X,
