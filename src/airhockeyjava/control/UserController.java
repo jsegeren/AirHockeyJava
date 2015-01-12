@@ -26,9 +26,13 @@ public class UserController implements IController {
 	@Override
 	public void controlMallet(Vector2 targetPosition, float deltaTime) {
 		mallet.setAcceleration(pathPlanner.targetPositionToAcceleration(targetPosition));
-		
+
 		// Update internal tracking variables for rendering
 		mallet.updatePositionAndVelocity(deltaTime);
+	}
+
+	@Override
+	public void initialize() { // Nothing to init
 	}
 
 }

@@ -92,12 +92,12 @@ public class Constants {
 	public static final String DETECTION_JFRAME_LABEL = "AirHockeyDetection";
 	public static final Scalar DETECTION_PUCK_HSV_MIN = new Scalar(20, 65, 160);
 	public static final Scalar DETECTION_PUCK_HSV_MAX = new Scalar(45, 208, 196);
-	
+
 	// TODO make dynamic based on capture area and physical object dimensions
 	public static final int DETECTION_FRAME_HEIGHT = 1280;
 	public static final int DETECTION_FRAME_WIDTH = 600;
-	public static final int DETECTION_PUCK_MAX_AREA = 100*100;
-	public static final int DETECTION_PUCK_MIN_AREA = 20*20;
+	public static final int DETECTION_PUCK_MAX_AREA = 100 * 100;
+	public static final int DETECTION_PUCK_MIN_AREA = 20 * 20;
 	public static final int DETECTION_MAX_OBJECTS = 10;
 
 	/**
@@ -146,4 +146,15 @@ public class Constants {
 	public static final String INPUT_TOGGLE_RESTRICT_USER_MALLET_NAME = "toggleRestrictUserMalletMovement";
 	public static final int INPUT_TOGGLE_GOAL_DETECTION_KEY = KeyEvent.VK_G;
 	public static final String INPUT_TOGGLE_GOAL_DETECTION_NAME = "toggleGoalDetection";
+
+	/**
+	 * Output Constants
+	 */
+	public static final String SERIAL_PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1", // Mac OS X
+			"/dev/ttyACM0", // Raspberry Pi
+			"/dev/ttyUSB0", // Linux
+			"COM3", // Windows
+	};
+	
+	public static final String SERIAL_POSITION_DELIMITER = ","; // Delimiter for position data
 }

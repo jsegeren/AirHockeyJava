@@ -17,5 +17,10 @@ public interface IController {
 	 * @param deltaTime step interval
 	 */
 	public void controlMallet(Vector2 targetPosition, float deltaTime);
+	
+	/**
+	 * Initialize the controller.
+	 */
+	public void initialize();
 
 }

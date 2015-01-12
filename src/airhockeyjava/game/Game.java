@@ -20,6 +20,7 @@ import org.opencv.highgui.VideoCapture;
 
 import airhockeyjava.control.IController;
 import airhockeyjava.control.RobotController;
+import airhockeyjava.control.SerialConnection;
 import airhockeyjava.control.UserController;
 import airhockeyjava.detection.IDetection;
 import airhockeyjava.detection.ITrackingObject;
@@ -158,6 +159,7 @@ public class Game {
 	private IController robotController;
 	private GuiLayer guiLayer;
 	public IInputLayer inputLayer;
+	public SerialConnection serialConnection;
 
 	// Threads
 	private Thread guiLayerThread;
@@ -196,7 +198,6 @@ public class Game {
 
 		//		robotStrategy = new NaiveDefenseStrategy(this);
 		robotStrategy = new StrategySelector(this);
-		robotController = new RobotController(this.robotMallet);
 
 		// For simulated game, instantiate the simulated detection/prediction layer thread
 		// and the input layer thread which is responsible for the user position.
@@ -205,10 +206,14 @@ public class Game {
 		case REAL_GAME_TYPE:
 			setupGUI();
 			setupRealDetection(true);
+			robotController = new RobotController(this.robotMallet, true);
+			robotController.initialize();
 			break;
 		// Real game without GUI output
 		case REAL_HEADLESS_GAME_TYPE:
 			setupRealDetection(false);
+			robotController = new RobotController(this.robotMallet, true);
+			robotController.initialize();
 			break;
 		// Simulated game (with GUI output, and input controls)
 		case SIMULATED_GAME_TYPE:
@@ -216,12 +221,13 @@ public class Game {
 			inputLayer = new InputLayer(guiLayer);
 			detectionLayer = new SimulatedDetection(this, inputLayer);
 			setKeyBindings();
+			robotController = new RobotController(this.robotMallet, false);
 			break;
 		default:
 			break;
 		}
 	}
-
+	
 	/**
 	 * Internal method to initialize openCV and devices, real tracking layer
 	 * @param isGuiEnabled whether GUI output should be shown
