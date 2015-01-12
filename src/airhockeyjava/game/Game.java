@@ -19,8 +19,9 @@ import org.opencv.core.Core;
 import org.opencv.highgui.VideoCapture;
 
 import airhockeyjava.control.IController;
-import airhockeyjava.control.RobotController;
+import airhockeyjava.control.RealRobotController;
 import airhockeyjava.control.SerialConnection;
+import airhockeyjava.control.SimulatedRobotController;
 import airhockeyjava.control.UserController;
 import airhockeyjava.detection.IDetection;
 import airhockeyjava.detection.ITrackingObject;
@@ -206,13 +207,13 @@ public class Game {
 		case REAL_GAME_TYPE:
 			setupGUI();
 			setupRealDetection(true);
-			robotController = new RobotController(this.robotMallet, true);
+			robotController = new RealRobotController(this.robotMallet);
 			robotController.initialize();
 			break;
 		// Real game without GUI output
 		case REAL_HEADLESS_GAME_TYPE:
 			setupRealDetection(false);
-			robotController = new RobotController(this.robotMallet, true);
+			robotController = new RealRobotController(this.robotMallet);
 			robotController.initialize();
 			break;
 		// Simulated game (with GUI output, and input controls)
@@ -221,13 +222,13 @@ public class Game {
 			inputLayer = new InputLayer(guiLayer);
 			detectionLayer = new SimulatedDetection(this, inputLayer);
 			setKeyBindings();
-			robotController = new RobotController(this.robotMallet, false);
+			robotController = new SimulatedRobotController(this.robotMallet);
 			break;
 		default:
 			break;
 		}
 	}
-	
+
 	/**
 	 * Internal method to initialize openCV and devices, real tracking layer
 	 * @param isGuiEnabled whether GUI output should be shown
@@ -286,7 +287,7 @@ public class Game {
 				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX]) != null)) ? GameTypeEnum
 				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX]) : GameTypeEnum
 				.findByValue(Constants.DEFAULT_GAME_TYPE_ARG);
-				
+
 		// Initialize the game object and game layers
 		game = new Game(gameType);
 

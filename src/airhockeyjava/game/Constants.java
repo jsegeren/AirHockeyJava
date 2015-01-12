@@ -119,6 +119,8 @@ public class Constants {
 	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 1.5f;
 	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
 	public static final float MECHANICAL_MAX_POSITION_RESOLUTION_METERS = 0.005f;
+	public static final float MECHANICAL_STEPS_PER_METER_X = 1f; // TODO update with physical calc
+	public static final float MECHANICAL_STEPS_PER_METER_Y = 1f; // TODO update with physical calc
 
 	/**
 	 * Strategy Constants
@@ -148,13 +150,15 @@ public class Constants {
 	public static final String INPUT_TOGGLE_GOAL_DETECTION_NAME = "toggleGoalDetection";
 
 	/**
-	 * Output Constants
+	 * Output/Communication Constants
 	 */
 	public static final String SERIAL_PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1", // Mac OS X
 			"/dev/ttyACM0", // Raspberry Pi
 			"/dev/ttyUSB0", // Linux
 			"COM3", // Windows
 	};
-	
-	public static final String SERIAL_POSITION_DELIMITER = ","; // Delimiter for position data
+	public static final String SERIAL_POSITION_DELIMITER = ","; // Delimiter for position data to Arduino
+	public static final int SERIAL_TIME_OUT = 2000; // Time to block while waiting for port open in milliseconds
+	public static final int SERIAL_DATA_RATE = 9600; // Default bits per second for COM port
+	public static final String SERIAL_POSITION_PREFIX = "_"; // Prefix for updated position data received from Arduino
 }

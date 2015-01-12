@@ -23,4 +23,19 @@ public class Conversion {
 		return (int) (seconds * Constants.NANOSECONDS_IN_SECOND);
 	}
 
+	public static int meterToStepsX(float distance) {
+		return (int) (distance * Constants.MECHANICAL_STEPS_PER_METER_X);
+	}
+
+	public static int meterToStepsY(float distance) {
+		return (int) (distance * Constants.MECHANICAL_STEPS_PER_METER_Y);
+	}
+
+	public static float stepsToMeterX(int steps) {
+		return steps / Constants.MECHANICAL_STEPS_PER_METER_X;
+	}
+
+	public static float stepsToMeterY(int steps) {
+		return steps / Constants.MECHANICAL_STEPS_PER_METER_Y;
+	}
 }

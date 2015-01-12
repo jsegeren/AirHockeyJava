@@ -43,10 +43,4 @@ public class PathPlanner implements IPathPlanner {
 	private Vector2 getPositionDeltaVector(Vector2 targetPosition) {
 		return new Vector2(targetPosition).sub(mallet.getPosition());
 	}
-	
-	@Override
-	public Vector2 targetPositionToSteps(Vector2 targetPosition) {
-		// TODO implement conversion
-		return targetPosition;
-	}
 }

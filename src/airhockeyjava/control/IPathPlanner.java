@@ -24,12 +24,4 @@ public interface IPathPlanner {
 	 * @return target acceleration
 	 */
 	public Vector2 targetPositionToAcceleration(Vector2 targetPosition);
-	
-	/**
-	 * Transforms target absolute position to target absolute steps based on initial motor calibration
-	 * @param targetPosition
-	 * @return target steps vector
-	 */
-	public Vector2 targetPositionToSteps(Vector2 targetPosition);
-	
 }

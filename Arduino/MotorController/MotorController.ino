@@ -12,6 +12,10 @@
 #define Y_MOTOR_MAX_SPEED 1500
 #define Y_MOTOR_ACCELERATION 100000
 
+// Other constants
+#define FIELD_DELIMITER ','
+#define OUTPUT_POSITION_PREFIX '_'
+
 AccelStepper stepperX(AccelStepper::DRIVER, X_MOTOR_PIN, X_MOTOR_DIRECTION_PIN);
 AccelStepper stepperY(AccelStepper::DRIVER, Y_MOTOR_PIN, Y_MOTOR_DIRECTION_PIN);
 
@@ -34,13 +38,13 @@ boolean getSerialInput(){
   boolean gotInput = false;
   
   if (Serial.available()){
-    char ch = Serial.read();
+    char ch = (char) Serial.read();
     if(ch >= '0' && ch <= '9') // is this an ascii digit between 0 and 9?
     {
       // yes, accumulate the value
       serialCoordinates[fieldIndex] = (serialCoordinates[fieldIndex] * 10) + (ch - '0'); 
     }
-    else if (ch == ',')  // comma is our separator, so move on to the next field
+    else if (ch == FIELD_DELIMITER)  // comma is our separator, so move on to the next field
     {
       if(fieldIndex < 2)
         fieldIndex++;   // increment field index
@@ -50,15 +54,15 @@ boolean getSerialInput(){
       // any character not a digit or comma ends the acquisition of fields
       // in this example it's the newline character sent by the Serial Monitor
       if (fieldIndex != 1){
-        Serial.println("Incorrect Input Format");
+        // Serial.println("Incorrect Input Format");
       }
       else{
-        Serial.print( fieldIndex + 1);
-        Serial.println(" fields received:");
+        // Serial.print( fieldIndex + 1);
+        // Serial.println(" fields received:");
         
         for(int i = 0; i <= fieldIndex; i++)
         {
-          Serial.println(serialCoordinates[i]);
+          // Serial.println(serialCoordinates[i]);
         }
         
         gotInput = true;
@@ -77,11 +81,11 @@ void resetCoordinates(){
 }
 
 void moveToPosition(){
-  Serial.print("Moving ");
-  Serial.print(serialCoordinates[0] - stepperX.currentPosition());
-  Serial.print(" in the X, and ");
-  Serial.print(serialCoordinates[1] - stepperY.currentPosition());
-  Serial.println(" in the Y.");
+  // Serial.print("Moving ");
+  // Serial.print(serialCoordinates[0] - stepperX.currentPosition());
+  // Serial.print(" in the X, and ");
+  // Serial.print(serialCoordinates[1] - stepperY.currentPosition());
+  // Serial.println(" in the Y.");
   
   stepperX.moveTo(serialCoordinates[0]);
   stepperY.moveTo(serialCoordinates[1]);
@@ -97,4 +101,8 @@ void loop(){
   
   stepperX.run();
   stepperY.run();
+
+  // Send back current motor position
+  Serial.println(OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + \
+    FIELD_DELIMITER + stepperY.currentPosition());
 }

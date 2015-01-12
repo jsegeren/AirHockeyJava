@@ -14,7 +14,16 @@ import java.util.Enumeration;
 import airhockeyjava.game.Constants;
 
 public class SerialConnection implements SerialPortEventListener {
+
+	IController controller;
 	SerialPort serialPort;
+
+	/**
+	 * Constructor
+	 */
+	protected SerialConnection(IController controller) {
+		this.controller = controller; // Reference to instantiating controller
+	}
 
 	/**
 	* A BufferedReader which will be fed by a InputStreamReader 
@@ -22,12 +31,7 @@ public class SerialConnection implements SerialPortEventListener {
 	* making the displayed results codepage independent
 	*/
 	private BufferedReader input;
-	/** The output stream to the port */
-	private OutputStream output;
-	/** Milliseconds to block while waiting for port open */
-	private static final int TIME_OUT = 2000;
-	/** Default bits per second for COM port. */
-	private static final int DATA_RATE = 9600;
+	private OutputStream output; // Output stream to the port
 
 	public void initialize() {
 		// the next line is for Raspberry Pi and 
@@ -51,22 +55,23 @@ public class SerialConnection implements SerialPortEventListener {
 		}
 		if (portId == null) {
 			System.err.println("Could not find COM port.");
-			throw new RuntimeException(); // Can't proceeed without establishing connection. TODO try again instead?
+			throw new RuntimeException(); // Can't proceed without establishing connection. TODO try again instead?
 		}
 
 		try {
-			// open serial port, and use class name for the appName.
-			serialPort = (SerialPort) portId.open(this.getClass().getName(), TIME_OUT);
+			// Open serial port, and use class name for the appName.
+			serialPort = (SerialPort) portId.open(this.getClass().getName(),
+					Constants.SERIAL_TIME_OUT);
 
-			// set port parameters
-			serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-					SerialPort.PARITY_NONE);
+			// Set port parameters
+			serialPort.setSerialPortParams(Constants.SERIAL_DATA_RATE, SerialPort.DATABITS_8,
+					SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 
-			// open the streams
+			// Open the streams
 			input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
 			output = serialPort.getOutputStream();
 
-			// add event listeners
+			// Add event listeners
 			serialPort.addEventListener(this);
 			serialPort.notifyOnDataAvailable(true);
 		} catch (Exception e) {
@@ -93,6 +98,8 @@ public class SerialConnection implements SerialPortEventListener {
 			try {
 				String inputLine = input.readLine();
 				System.out.println(inputLine);
+				// Pass up to controller for application handling
+				controller.handleInterfaceMessage(inputLine);
 			} catch (Exception e) {
 				System.err.println(e.toString());
 			}
@@ -105,7 +112,7 @@ public class SerialConnection implements SerialPortEventListener {
 	 */
 	public synchronized void writeBytes(byte[] byteData) {
 		try {
-			serialPort.getOutputStream().write(byteData);
+			output.write(byteData);
 		} catch (IOException e) {
 			System.err.println(e.toString());
 		}
