@@ -36,21 +36,21 @@ public class VideoDisplayPanel extends JPanel {
 	 */
 	public void paint(Graphics graphicsContext) {
 		if (imageBuffer != null) {
-
+			graphicsContext.clearRect(0, 0, this.getWidth(), this.getHeight());
 			// Draws the image
 			graphicsContext.drawImage(this.imageBuffer, 0, 0, this);
 		}
-
-		for (ITrackingObject trackingObject : this.trackingObjects) {
-			// For each circle in the queue, draw the circle
-			graphicsContext.setColor(GuiLayer.colorMap.get(trackingObject.getClass()));
-			graphicsContext.fillOval(Conversion.meterToPixel(trackingObject.getPosition().x),
-					Conversion.meterToPixel(trackingObject.getPosition().y), DEFAULT_RADIUS_SIZE,
-					DEFAULT_RADIUS_SIZE);
-		}
-
-		graphicsContext.setColor(Color.CYAN);
-		graphicsContext.drawString("FPS: " + frameRate, 20, 20);
+//
+//		for (ITrackingObject trackingObject : this.trackingObjects) {
+//			// For each circle in the queue, draw the circle
+//			graphicsContext.setColor(GuiLayer.colorMap.get(trackingObject.getClass()));
+//			graphicsContext.fillOval(Conversion.meterToPixel(trackingObject.getPosition().x),
+//					Conversion.meterToPixel(trackingObject.getPosition().y), DEFAULT_RADIUS_SIZE,
+//					DEFAULT_RADIUS_SIZE);
+//		}
+//
+//		graphicsContext.setColor(Color.CYAN);
+//		graphicsContext.drawString("FPS: " + frameRate, 20, 20);
 	}
 
 	/**
