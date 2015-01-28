@@ -38,12 +38,36 @@ public class Tracking implements Runnable {
 	private Set<List<ITrackingObject>> objectSetsToTrack;
 	private final VideoCapture videoCapture;
 	private final VideoDisplayPanel normalPanel;
+	private final PS3EyeFrameGrabber ps3VideoCapture;
 	private final JFrame jFrame;
+	private boolean usePS3Cam;
 
-	public Tracking(Set<List<ITrackingObject>> objectsToTrack, VideoCapture videoCapture,
-			boolean isGuiEnabled) {
+	public Tracking(Set<List<ITrackingObject>> objectsToTrack,
+			PS3EyeFrameGrabber ps3VideoCapture, boolean isGuiEnabled) {
+		this(objectsToTrack, ps3VideoCapture, null, true, isGuiEnabled);
+	}
+
+	public Tracking(Set<List<ITrackingObject>> objectsToTrack,
+			VideoCapture videoCapture, boolean isGuiEnabled) {
+		this(objectsToTrack, null, videoCapture, false, isGuiEnabled);
+	}
+
+	public Tracking(Set<List<ITrackingObject>> objectsToTrack,
+			PS3EyeFrameGrabber ps3VideoCapture, VideoCapture videoCapture,
+			boolean usePS3Camera, boolean isGuiEnabled) {
+		this.usePS3Cam = usePS3Camera;
+
+		if (usePS3Cam) {
+
+			this.videoCapture = null;
+			this.ps3VideoCapture = ps3VideoCapture;
+		} else {
+
+			this.videoCapture = videoCapture;
+			this.ps3VideoCapture = null;
+		}
+
 		this.objectSetsToTrack = objectsToTrack;
-		this.videoCapture = videoCapture;
 
 		Set<ITrackingObject> trackingObjects = new HashSet<ITrackingObject>();
 		for (List<ITrackingObject> objectList : objectsToTrack) {
@@ -54,7 +78,8 @@ public class Tracking implements Runnable {
 			this.normalPanel = new VideoDisplayPanel(trackingObjects);
 			this.jFrame = new JFrame(Constants.DETECTION_JFRAME_LABEL);
 			this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			this.jFrame.setSize(Constants.DETECTION_FRAME_WIDTH, Constants.DETECTION_FRAME_HEIGHT);
+			this.jFrame.setSize(Constants.DETECTION_FRAME_WIDTH,
+					Constants.DETECTION_FRAME_HEIGHT);
 			this.jFrame.add(normalPanel);
 			this.jFrame.setVisible(true);
 		} else {
@@ -86,20 +111,36 @@ public class Tracking implements Runnable {
 			lastFpsTime += updateLengthTime;
 			fps++;
 
-			// Update FPS counter and remaining game time if a second has passed since last recorded
+			// Update FPS counter and remaining game time if a second has passed
+			// since last recorded
 			if (lastFpsTime >= Conversion.secondsToNanoseconds(1f)) {
 				System.out.println(String.format("FPS: %d", fps));
+				normalPanel.setFrameRate(fps);
 				lastFpsTime = 0;
 				fps = 0;
 			}
 
 			// Read in the new video frame
-			// NOTE: This is a blocking call; will sleep thread until next frame available
-			videoCapture.read(originalImage);
+			// NOTE: This is a blocking call; will sleep thread until next frame
+			// available
+			if (usePS3Cam) {
+				originalImage = ps3VideoCapture.grabMat();
+			} else {
+
+				videoCapture.read(originalImage);
+			}
 
 			if (!originalImage.empty()) {
-				// Convert matrix from RGB to HSV
-				Imgproc.cvtColor(originalImage, hsvImage, Imgproc.COLOR_BGR2HSV);
+				
+				if (usePS3Cam) {
+					// Convert matrix from RGB to HSV
+					Imgproc.cvtColor(originalImage, hsvImage,
+							Imgproc.COLOR_RGB2HSV);
+				} else {
+					// Convert matrix from BGR to HSV
+					Imgproc.cvtColor(originalImage, hsvImage,
+							Imgproc.COLOR_BGR2HSV);
+				}
 
 				Mat hsvImageThresholded = new Mat();
 
@@ -107,13 +148,16 @@ public class Tracking implements Runnable {
 				// of each type
 				for (List<ITrackingObject> trackingObjectList : objectSetsToTrack) {
 
-					if (trackingObjectList == null || trackingObjectList.isEmpty()) {
+					if (trackingObjectList == null
+							|| trackingObjectList.isEmpty()) {
 						continue;
 					}
 
 					// Threshold the hsv image to filter for Pucks
-					Core.inRange(hsvImage, trackingObjectList.get(0).getHSVMin(),
-							trackingObjectList.get(0).getHSVMax(), hsvImageThresholded);
+					Core.inRange(hsvImage, trackingObjectList.get(0)
+							.getHSVMin(),
+							trackingObjectList.get(0).getHSVMax(),
+							hsvImageThresholded);
 
 					// reduce the noise in the image
 					reduceNoise(hsvImageThresholded);
@@ -139,7 +183,8 @@ public class Tracking implements Runnable {
 	/**
 	 * Convert matrix into an image
 	 * 
-	 * @param m matrix to be converted
+	 * @param m
+	 *            matrix to be converted
 	 * @return Converted BufferedImage
 	 */
 	private static BufferedImage toBufferedImage(Mat m) {
@@ -151,7 +196,8 @@ public class Tracking implements Runnable {
 		byte[] b = new byte[bufferSize];
 		m.get(0, 0, b); // get all the pixels
 		BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
-		final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		final byte[] targetPixels = ((DataBufferByte) image.getRaster()
+				.getDataBuffer()).getData();
 		System.arraycopy(b, 0, targetPixels, 0, b.length);
 		return image;
 	}
@@ -167,10 +213,12 @@ public class Tracking implements Runnable {
 	private static void reduceNoise(Mat image) {
 		// Create structuring element that will be used to "dilate" and "erode"
 		// image. the element chosen here is a 3px by 3px rectangle
-		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 1));
+		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
+				new Size(1, 1));
 
 		// Dilate with larger element so make sure object is nicely visible
-		Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
+		Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
+				new Size(12, 12));
 
 		// Erode will shrink the grouping of pixels
 		Imgproc.erode(image, image, erodeElement);
@@ -186,12 +234,14 @@ public class Tracking implements Runnable {
 	/**
 	 * Find the object and return the position of the centroid
 	 * 
-	 * @param inputImage - Image that will be scanned for objects
+	 * @param inputImage
+	 *            - Image that will be scanned for objects
 	 * @return Position of the centroid
 	 * */
-	private static void findObjects(Mat inputImage, List<ITrackingObject> trackingObjectList) {
-		PriorityQueue<Moments> maxAreaHeap = new PriorityQueue<Moments>(trackingObjectList.size(),
-				new Comparator<Moments>() {
+	private static void findObjects(Mat inputImage,
+			List<ITrackingObject> trackingObjectList) {
+		PriorityQueue<Moments> maxAreaHeap = new PriorityQueue<Moments>(
+				trackingObjectList.size(), new Comparator<Moments>() {
 					public int compare(Moments x, Moments y) {
 						return (int) (y.get_m00() - x.get_m00());
 					}
@@ -203,8 +253,8 @@ public class Tracking implements Runnable {
 		// Find the contours of the image and save them into contours and
 		// hierarchy Where the hierarchy holds the relationship between the
 		// current contour point and the next
-		Imgproc.findContours(inputImage, contours, hierarchy, Imgproc.RETR_CCOMP,
-				Imgproc.CHAIN_APPROX_SIMPLE);
+		Imgproc.findContours(inputImage, contours, hierarchy,
+				Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
 
 		// The number of items in the hierarchy is the number of contours
 		if (!trackingObjectList.isEmpty() && !hierarchy.empty()
@@ -243,8 +293,9 @@ public class Tracking implements Runnable {
 					// between captured pixels
 					// and table dimensions
 					trackingObject.setPosition(new Vector2((float) (Conversion
-							.pixelToMeter((int) (moment.get_m10() / moment.get_m00()))),
-							(float) (Conversion.meterToPixel((int) (moment.get_m01() / moment
+							.pixelToMeter((int) (moment.get_m10() / moment
+									.get_m00()))), (float) (Conversion
+							.meterToPixel((int) (moment.get_m01() / moment
 									.get_m00())))));
 
 					// Log the position

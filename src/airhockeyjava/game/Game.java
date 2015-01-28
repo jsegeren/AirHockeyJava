@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import org.bytedeco.javacv.FrameGrabber.Exception;
 import org.opencv.core.Core;
 import org.opencv.highgui.VideoCapture;
 
@@ -25,6 +26,7 @@ import airhockeyjava.control.SimulatedRobotController;
 import airhockeyjava.control.UserController;
 import airhockeyjava.detection.IDetection;
 import airhockeyjava.detection.ITrackingObject;
+import airhockeyjava.detection.PS3EyeFrameGrabber;
 import airhockeyjava.detection.SimulatedDetection;
 import airhockeyjava.detection.Tracking;
 import airhockeyjava.graphics.GuiLayer;
@@ -40,8 +42,9 @@ import airhockeyjava.strategy.UserInputStrategy;
 import airhockeyjava.util.Conversion;
 
 /**
- * Top-level class for the game. Used for both simulated and actual games. Simulated games will
- * simply need to swap out the detection module with the mocked version.
+ * Top-level class for the game. Used for both simulated and actual games.
+ * Simulated games will simply need to swap out the detection module with the
+ * mocked version.
  *
  * @author Joshua Segeren
  *
@@ -77,9 +80,10 @@ public class Game {
 	}
 
 	/**
-	 * Set up maps for key bindings. Key -> action name, then action name -> action handler.
-	 * This is considered the preferred mechanism for handling key inputs versus the KeyListener. 
-	 * Works equally on all platforms: Windows, Mac, Linux.
+	 * Set up maps for key bindings. Key -> action name, then action name ->
+	 * action handler. This is considered the preferred mechanism for handling
+	 * key inputs versus the KeyListener. Works equally on all platforms:
+	 * Windows, Mac, Linux.
 	 */
 	private static final Map<Integer, String> keyToActionNameMap = new HashMap<Integer, String>() {
 		private static final long serialVersionUID = -8148003520786913073L;
@@ -112,22 +116,24 @@ public class Game {
 					resetPuck();
 				}
 			});
-			put(Constants.INPUT_TOGGLE_RESTRICT_USER_MALLET_NAME, new AbstractAction() {
-				private static final long serialVersionUID = 1L;
+			put(Constants.INPUT_TOGGLE_RESTRICT_USER_MALLET_NAME,
+					new AbstractAction() {
+						private static final long serialVersionUID = 1L;
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					settings.restrictUserMalletMovement = !settings.restrictUserMalletMovement;
-				}
-			});
-			put(Constants.INPUT_TOGGLE_GOAL_DETECTION_NAME, new AbstractAction() {
-				private static final long serialVersionUID = 1L;
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							settings.restrictUserMalletMovement = !settings.restrictUserMalletMovement;
+						}
+					});
+			put(Constants.INPUT_TOGGLE_GOAL_DETECTION_NAME,
+					new AbstractAction() {
+						private static final long serialVersionUID = 1L;
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					settings.goalDetectionOn = !settings.goalDetectionOn;
-				}
-			});
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							settings.goalDetectionOn = !settings.goalDetectionOn;
+						}
+					});
 		}
 	};
 
@@ -197,11 +203,13 @@ public class Game {
 		userStrategy = new UserInputStrategy(this);
 		userController = new UserController(this.userMallet);
 
-		//		robotStrategy = new NaiveDefenseStrategy(this);
+		// robotStrategy = new NaiveDefenseStrategy(this);
 		robotStrategy = new StrategySelector(this);
 
-		// For simulated game, instantiate the simulated detection/prediction layer thread
-		// and the input layer thread which is responsible for the user position.
+		// For simulated game, instantiate the simulated detection/prediction
+		// layer thread
+		// and the input layer thread which is responsible for the user
+		// position.
 		switch (gameType) {
 		// Real game with GUI
 		case REAL_GAME_TYPE:
@@ -231,10 +239,12 @@ public class Game {
 
 	/**
 	 * Internal method to initialize openCV and devices, real tracking layer
-	 * @param isGuiEnabled whether GUI output should be shown
+	 * 
+	 * @param isGuiEnabled
+	 *            whether GUI output should be shown
 	 */
 	private void setupRealDetection(boolean isGuiEnabled) {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Load openCV 
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Load openCV
 
 		List<ITrackingObject> trackingObjectsList = new ArrayList<ITrackingObject>();
 		trackingObjectsList.add(this.gamePuck);
@@ -243,14 +253,32 @@ public class Game {
 
 		// Set up video feed; get device, then open capture stream
 		// Open returns false if fails
-		VideoCapture videoCapture = new VideoCapture(0);
-		if (videoCapture.open(0)) {
-			realDetectionLayer = new Tracking(objectsToTrack, videoCapture, isGuiEnabled);
-			detectionLayerThread = new Thread(realDetectionLayer);
-			detectionLayerThread.start();
+		if (settings.usePS3Camera) {
+			try {
+				// CLEYE_QVGA (320 x 240) - 15, 30, 60, 75, 100, 125
+				// CLEYE_VGA (640 x 480) - 15, 30, 40, 50, 60, 75
+				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
+						640, 480, 75);
+				frameGrabber.start();
+				realDetectionLayer = new Tracking(objectsToTrack, frameGrabber,
+						isGuiEnabled);
+				detectionLayerThread = new Thread(realDetectionLayer);
+				detectionLayerThread.start();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else {
-			// Fail out and exit
-			throw new RuntimeException("Video capture device could not be opened!");
+			VideoCapture videoCapture = new VideoCapture(0);
+			if (videoCapture.open(0)) {
+				realDetectionLayer = new Tracking(objectsToTrack, videoCapture,
+						isGuiEnabled);
+				detectionLayerThread = new Thread(realDetectionLayer);
+				detectionLayerThread.start();
+			} else {
+				// Fail out and exit
+				throw new RuntimeException(
+						"Video capture device could not be opened!");
+			}
 		}
 	}
 
@@ -273,8 +301,8 @@ public class Game {
 	}
 
 	/**
-	 * Entry-point application method. Starts and runs a game of air hockey. Currently terminates
-	 * when game is finished. Void return.
+	 * Entry-point application method. Starts and runs a game of air hockey.
+	 * Currently terminates when game is finished. Void return.
 	 */
 	public static void main(String[] args) throws RuntimeException {
 		long lastLoopTime = System.nanoTime();
@@ -283,10 +311,11 @@ public class Game {
 
 		// Set the game type based on command-line argument, or use default
 
-		gameType = (args != null && args.length >= (Constants.GAME_TYPE_ARG_INDEX + 1) && (GameTypeEnum
+		gameType = (args != null
+				&& args.length >= (Constants.GAME_TYPE_ARG_INDEX + 1) && (GameTypeEnum
 				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX]) != null)) ? GameTypeEnum
-				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX]) : GameTypeEnum
-				.findByValue(Constants.DEFAULT_GAME_TYPE_ARG);
+				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX])
+				: GameTypeEnum.findByValue(Constants.DEFAULT_GAME_TYPE_ARG);
 
 		// Initialize the game object and game layers
 		game = new Game(gameType);
@@ -294,37 +323,45 @@ public class Game {
 		// Main loop for game logic. Uses variable timestepping.
 		// Reference: http://www.java-gaming.org/index.php?topic=24220.0
 		while (true) {
-			// Determine how long it's been since last update; this will be used to calculate
+			// Determine how long it's been since last update; this will be used
+			// to calculate
 			// how far entities should move this loop
 			long currentTime = System.nanoTime();
 			long updateLengthTime = currentTime - lastLoopTime;
 			lastLoopTime = currentTime;
-			//			double deltaTime = updateLengthTime / ((double) OPTIMAL_TIME); // nanoseconds
+			// double deltaTime = updateLengthTime / ((double) OPTIMAL_TIME); //
+			// nanoseconds
 
 			// Update frame counter
 			lastFpsTime += updateLengthTime;
 			fps++;
 
-			// Update FPS counter and remaining game time if a second has passed since last recorded
+			// Update FPS counter and remaining game time if a second has passed
+			// since last recorded
 			if (lastFpsTime >= Conversion.secondsToNanoseconds(1f)) {
 				System.out.println(String.format("FPS: %d", fps));
 				lastFpsTime = 0;
 				fps = 0;
-				game.gameTimeRemainingSeconds -= 1; // Decrement the game time by 1 second
+				game.gameTimeRemainingSeconds -= 1; // Decrement the game time
+													// by 1 second
 			}
 
 			game.updateStates(Conversion.nanosecondsToSeconds(updateLengthTime));
 
 			// If target FPS = 60 (for example), want each frame to take 10 ms,
-			// we sleep until the next target frame, taking into account the time
-			// taken to run the loop. Note this is given in ms, but other variables are in
+			// we sleep until the next target frame, taking into account the
+			// time
+			// taken to run the loop. Note this is given in ms, but other
+			// variables are in
 			// nanoseconds.
 			long sleepTime = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
-			if (sleepTime > 0) { // Only sleep if necessary; avoid negative sleep errors
+			if (sleepTime > 0) { // Only sleep if necessary; avoid negative
+									// sleep errors
 				try {
 					Thread.sleep(sleepTime);
 				} catch (InterruptedException e) {
-					// TODO figure out what to do with this exception, e.g. rethrow as RuntimeException?
+					// TODO figure out what to do with this exception, e.g.
+					// rethrow as RuntimeException?
 					e.printStackTrace();
 					throw new RuntimeException(e);
 				}
@@ -336,7 +373,8 @@ public class Game {
 	 * Send game info to the GUI for display
 	 */
 	private void setGameInfoDisplay() {
-		this.guiLayer.setExternalInfoBarData(new String[] { "User Score: " + this.userScore,
+		this.guiLayer.setExternalInfoBarData(new String[] {
+				"User Score: " + this.userScore,
 				"Robot Score: " + this.robotScore, });
 	}
 
@@ -354,11 +392,13 @@ public class Game {
 	 */
 	private void updateStates(float deltaTime) {
 		// If simulated, we need to use input data to update user mallet state
-		// Also need to use mocked detection layer to update puck position via physics
+		// Also need to use mocked detection layer to update puck position via
+		// physics
 		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
 			setGameInfoDisplay();
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
-			userController.controlMallet(userStrategy.getTargetPosition(deltaTime), deltaTime);
+			userController.controlMallet(
+					userStrategy.getTargetPosition(deltaTime), deltaTime);
 		}
 		// Otherwise we will use the vision system
 		else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
@@ -366,8 +406,8 @@ public class Game {
 
 		// Check if should control robot mallet
 		if (game.settings.enableAI) {
-			robotController.controlMallet(
-					robotStrategy.getBestStrategy().getTargetPosition(deltaTime), deltaTime);
+			robotController.controlMallet(robotStrategy.getBestStrategy()
+					.getTargetPosition(deltaTime), deltaTime);
 		}
 	}
 
@@ -375,13 +415,16 @@ public class Game {
 		InputMap inputMap = guiLayer.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = guiLayer.getActionMap();
 
-		for (Map.Entry<Integer, String> keyToActionNameEntry : keyToActionNameMap.entrySet()) {
-			inputMap.put(KeyStroke.getKeyStroke(keyToActionNameEntry.getKey(), 0),
+		for (Map.Entry<Integer, String> keyToActionNameEntry : keyToActionNameMap
+				.entrySet()) {
+			inputMap.put(
+					KeyStroke.getKeyStroke(keyToActionNameEntry.getKey(), 0),
 					keyToActionNameEntry.getValue());
 		}
 		for (Map.Entry<String, AbstractAction> actionNameToActionEntry : actionNameToActionMap
 				.entrySet()) {
-			actionMap.put(actionNameToActionEntry.getKey(), actionNameToActionEntry.getValue());
+			actionMap.put(actionNameToActionEntry.getKey(),
+					actionNameToActionEntry.getValue());
 		}
 	}
 }
