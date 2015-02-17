@@ -3,6 +3,7 @@ package airhockeyjava.graphics;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JPanel;
@@ -23,9 +24,9 @@ public class VideoDisplayPanel extends JPanel {
 	private long frameRate;
 	private BufferedImage imageBuffer;
 
-	private Set<ITrackingObject> trackingObjects;
+	private List<ITrackingObject> trackingObjects;
 
-	public VideoDisplayPanel(Set<ITrackingObject> trackingObjects) {
+	public VideoDisplayPanel(List<ITrackingObject> trackingObjects) {
 		super();
 		this.trackingObjects = trackingObjects;
 		frameRate = 0;
@@ -36,7 +37,7 @@ public class VideoDisplayPanel extends JPanel {
 	 */
 	public void paint(Graphics graphicsContext) {
 		if (imageBuffer != null) {
-
+			graphicsContext.clearRect(0, 0, this.getWidth(), this.getHeight());
 			// Draws the image
 			graphicsContext.drawImage(this.imageBuffer, 0, 0, this);
 		}

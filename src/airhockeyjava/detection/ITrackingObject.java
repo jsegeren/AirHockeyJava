@@ -18,6 +18,10 @@ public interface ITrackingObject {
 
 	public Scalar getHSVMax();
 
+	public void setHSVMin();
+
+	public void setHSVMax();	
+	
 	public int getMaxObjectArea();
 
 	public int getMinObjectArea();

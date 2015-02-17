@@ -94,8 +94,8 @@ public class Constants {
 	public static final Scalar DETECTION_PUCK_HSV_MAX = new Scalar(45, 208, 196);
 
 	// TODO make dynamic based on capture area and physical object dimensions
-	public static final int DETECTION_FRAME_HEIGHT = 1280;
-	public static final int DETECTION_FRAME_WIDTH = 600;
+	public static final int DETECTION_FRAME_HEIGHT = 480;
+	public static final int DETECTION_FRAME_WIDTH = 720;
 	public static final int DETECTION_PUCK_MAX_AREA = 100 * 100;
 	public static final int DETECTION_PUCK_MIN_AREA = 20 * 20;
 	public static final int DETECTION_MAX_OBJECTS = 10;
