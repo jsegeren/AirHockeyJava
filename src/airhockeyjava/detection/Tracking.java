@@ -1,10 +1,12 @@
 package airhockeyjava.detection;
 
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -14,6 +16,8 @@ import javax.swing.JFrame;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.highgui.VideoCapture;
@@ -23,6 +27,7 @@ import org.opencv.imgproc.Moments;
 import airhockeyjava.game.Constants;
 import airhockeyjava.graphics.ImageFilteringPanel;
 import airhockeyjava.graphics.VideoDisplayPanel;
+import airhockeyjava.physical.Table;
 import airhockeyjava.util.Conversion;
 import airhockeyjava.util.NormalDistribution;
 import airhockeyjava.util.ScalarRange;
@@ -40,6 +45,7 @@ public class Tracking implements Runnable {
 
 	// Map of tracking objects to number of occurrences/instances expected
 	private List<List<ITrackingObject>> objectSetsToTrack;
+	private List<Point> tableBounds = new ArrayList<Point>();
 
 	private VideoDisplayPanel normalPanel;
 	private JFrame jFrame;
@@ -60,23 +66,29 @@ public class Tracking implements Runnable {
 
 	private boolean isGuiEnabled;
 
+	private Table table;
+	private Mat warpMat;
+	private Mat rotMat;
+
 	public Tracking(List<List<ITrackingObject>> objectsToTrack,
-			PS3EyeFrameGrabber ps3VideoCapture, boolean isGuiEnabled) {
-		this(objectsToTrack, ps3VideoCapture, null, true, isGuiEnabled);
+			PS3EyeFrameGrabber ps3VideoCapture, boolean isGuiEnabled,
+			Table table) {
+		this(objectsToTrack, ps3VideoCapture, null, true, isGuiEnabled, table);
 	}
 
 	public Tracking(List<List<ITrackingObject>> objectsToTrack,
-			VideoCapture videoCapture, boolean isGuiEnabled) {
-		this(objectsToTrack, null, videoCapture, false, isGuiEnabled);
+			VideoCapture videoCapture, boolean isGuiEnabled, Table table) {
+		this(objectsToTrack, null, videoCapture, false, isGuiEnabled, table);
 	}
 
 	public Tracking(List<List<ITrackingObject>> objectsToTrack,
 			PS3EyeFrameGrabber ps3VideoCapture, VideoCapture videoCapture,
-			boolean usePS3Camera, boolean isGuiEnabled) {
+			boolean usePS3Camera, boolean isGuiEnabled, Table table) {
 		initializeMouseListener();
 
 		this.usePS3Cam = usePS3Camera;
 		this.isGuiEnabled = isGuiEnabled;
+		this.table = table;
 
 		if (usePS3Cam) {
 
@@ -101,7 +113,10 @@ public class Tracking implements Runnable {
 		}
 
 		if (isGuiEnabled) {
-			this.normalPanel = new VideoDisplayPanel(trackingObjects);
+			this.normalPanel = new VideoDisplayPanel(trackingObjects,
+					tableBounds);
+			this.normalPanel.addMouseListener(mouseListener);
+
 			this.jFrame = new JFrame(Constants.DETECTION_JFRAME_LABEL);
 			this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.jFrame.setSize(Constants.DETECTION_FRAME_WIDTH,
@@ -173,16 +188,23 @@ public class Tracking implements Runnable {
 			}
 
 			if (!originalImage.empty()) {
-
+				
+				if (warpMat != null) {
+					System.out.println(this.normalPanel.getWidth() + " "
+							+ this.normalPanel.getHeight());
+					Imgproc.warpAffine(originalImage, originalImage,
+							warpMat, originalImage.size());
+				}
+				
 				if (usePS3Cam) {
 					// Convert matrix from RGB to HSV
-					Imgproc.cvtColor(originalImage, hsvImage,
+					Imgproc.cvtColor(originalImage.clone(), hsvImage,
 							Imgproc.COLOR_RGB2HSV);
 					Imgproc.cvtColor(originalImage, originalImage,
 							Imgproc.COLOR_RGB2BGR);
 				} else {
 					// Convert matrix from BGR to HSV
-					Imgproc.cvtColor(originalImage, hsvImage,
+					Imgproc.cvtColor(originalImage.clone(), hsvImage,
 							Imgproc.COLOR_BGR2HSV);
 				}
 
@@ -212,6 +234,11 @@ public class Tracking implements Runnable {
 
 				// Draw if GUI available
 				if (this.isGuiEnabled) {
+
+					Dimension d = new Dimension(originalImage.width(),
+							originalImage.height());
+					jFrame.setSize(d);
+
 					// Display updated image
 					normalPanel.setImageBuffer(toBufferedImage(originalImage));
 
@@ -428,8 +455,21 @@ public class Tracking implements Runnable {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (slider != null)
-					slider.setSliders(GetColorRangeHSV(hsvImage, e.getX(),
-							e.getY()));
+					switch (slider.getCurrentObjType()) {
+					case 0:
+						// Puck
+						slider.setSliders(GetColorRangeHSV(hsvImage, e.getX(),
+								e.getY()));
+						break;
+					case 1:
+						// Table bounds
+						addTableBound(new Point(e.getX(), e.getY()));
+						break;
+					default:
+						break;
+
+					}
+
 			}
 
 			@Override
@@ -457,4 +497,32 @@ public class Tracking implements Runnable {
 			}
 		};
 	}
+
+	private void addTableBound(Point point) {
+		if (this.tableBounds.size() == 3) {
+			this.tableBounds.clear();
+		}
+
+		this.tableBounds.add(point);
+
+		if (this.tableBounds.size() == 3) {
+			this.computeAffineTransform();
+		}
+	}
+
+	private void computeAffineTransform() {
+
+		// Transform image
+
+		// Array of destination points
+		List<Point> destPoints = Arrays.asList(new Point(0, 0), new Point(
+				hsvImage.cols(), 0), new Point(0, hsvImage.rows()));
+
+		this.warpMat = Imgproc.getAffineTransform(new MatOfPoint2f(
+				this.tableBounds.get(0), this.tableBounds.get(1),
+				this.tableBounds.get(2)), new MatOfPoint2f(destPoints.get(0),
+				destPoints.get(1), destPoints.get(2)));
+
+	}
+
 }

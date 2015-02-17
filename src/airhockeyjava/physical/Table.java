@@ -6,6 +6,7 @@ import airhockeyjava.util.Vector2;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -147,5 +148,5 @@ public class Table extends RoundRectangle2D.Float {
 	 */
 	public final float getGoalEndY() {
 		return (float) (((height - goalWidth) / 2.0) + goalWidth);
-	}
+	}	
 }

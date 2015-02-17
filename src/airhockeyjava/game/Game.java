@@ -270,7 +270,7 @@ public class Game {
 						320, 240, 125);
 				frameGrabber.start();
 				realDetectionLayer = new Tracking(objectsToTrack, frameGrabber,
-						isGuiEnabled);
+						isGuiEnabled, this.gameTable);
 				detectionLayerThread = new Thread(realDetectionLayer);
 				detectionLayerThread.start();
 			} catch (Exception e) {
@@ -280,7 +280,7 @@ public class Game {
 			VideoCapture videoCapture = new VideoCapture(0);
 			if (videoCapture.open(0)) {
 				realDetectionLayer = new Tracking(objectsToTrack, videoCapture,
-						isGuiEnabled);
+						isGuiEnabled, this.gameTable);
 				detectionLayerThread = new Thread(realDetectionLayer);
 				detectionLayerThread.start();
 			} else {

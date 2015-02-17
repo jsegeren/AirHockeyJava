@@ -28,8 +28,8 @@ public class ImageFilteringPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int NUM_TICKS_SPACING = 50;
 	
-	private JButton[] objectButtons = new JButton[3];
-	private String[] objectTypes = { "Puck", "Bounds" };
+	private JButton[] objectButtons = new JButton[2];
+	private String[] objectTypes = { "Puck", "Bounds"};
 
 	// Sliders for the high and lows of the Hue, Saturation and Value
 	private JSlider[] high = new JSlider[3];
