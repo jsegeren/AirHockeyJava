@@ -197,7 +197,7 @@ public class Tracking implements Runnable {
 					reduceNoise(hsvImageThresholded);
 
 					// Find instance(s) of object to track
-					findObjects(hsvImageThresholded, trackingObjectList);
+					findObjects(hsvImageThresholded.clone(), trackingObjectList);
 				}
 
 				// Draw if GUI available

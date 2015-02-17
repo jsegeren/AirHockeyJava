@@ -53,6 +53,11 @@ public class Puck extends MovingItem implements ITrackingObject {
 	}
 	
 	@Override
+	public void setHSVMax(Scalar hsvMax) {
+		 HSVmax = hsvMax;
+	}
+	
+	@Override
 	public Scalar getHSVMax() {
 		return HSVmax;
 	}

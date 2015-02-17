@@ -124,7 +124,8 @@ public class ImageFilteringPanel extends JPanel {
 						JSlider src = (JSlider) e.getSource();
 						lowLabels[Integer.parseInt(src.getName())].setText(Integer.toString(src.getValue()));
 						
-						trackingObjects.get(currentObjType).set
+						trackingObjects.get(currentObjType).setHSVMin(new Scalar(low[0].getValue(), low[1].getValue(),
+								low[2].getValue()));
 					}
 				});
 				
