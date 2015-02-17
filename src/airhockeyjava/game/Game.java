@@ -28,6 +28,7 @@ import airhockeyjava.detection.IDetection;
 import airhockeyjava.detection.ITrackingObject;
 import airhockeyjava.detection.PS3EyeFrameGrabber;
 import airhockeyjava.detection.SimulatedDetection;
+import airhockeyjava.detection.TableBound;
 import airhockeyjava.detection.Tracking;
 import airhockeyjava.graphics.GuiLayer;
 import airhockeyjava.input.IInputLayer;
@@ -246,10 +247,18 @@ public class Game {
 	private void setupRealDetection(boolean isGuiEnabled) {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Load openCV
 
-		List<ITrackingObject> trackingObjectsList = new ArrayList<ITrackingObject>();
-		trackingObjectsList.add(this.gamePuck);
+		//List containing the puck for tracking
+		List<ITrackingObject> puckList = new ArrayList<ITrackingObject>();
+		puckList.add(this.gamePuck);
+		
+		//List of table bounds objects for tracking
+		List<ITrackingObject> tableBounds = new ArrayList<ITrackingObject>();
+		tableBounds.add(new TableBound());
+
+		//Objects to track is a list of lists of ITrackingObjects. Each list corresponds to a type of object, e.g. puck or tableBounds
 		List<List<ITrackingObject>> objectsToTrack = new ArrayList<List<ITrackingObject>>();
-		objectsToTrack.add(trackingObjectsList);
+		objectsToTrack.add(puckList);
+		objectsToTrack.add(tableBounds);
 
 		// Set up video feed; get device, then open capture stream
 		// Open returns false if fails

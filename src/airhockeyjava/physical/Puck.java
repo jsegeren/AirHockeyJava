@@ -14,8 +14,8 @@ import airhockeyjava.util.Vector2;
  */
 public class Puck extends MovingItem implements ITrackingObject {
 	// TODO set constants
-	private static Scalar HSVmin;
-	private static Scalar HSVmax;
+	private static Scalar HSVmin = Constants.DETECTION_PUCK_HSV_MIN;
+	private static Scalar HSVmax =  Constants.DETECTION_PUCK_HSV_MIN;
 	private static final int minObjectArea = Constants.DETECTION_PUCK_MIN_AREA;
 	private static final int maxObjectArea = Constants.DETECTION_PUCK_MAX_AREA;
 

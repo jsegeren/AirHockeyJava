@@ -49,8 +49,12 @@ public class ImageFilteringPanel extends JPanel {
 	private int[] highInit = { 179, 255, 255 };
 	
 	private int currentObjType;
-	
+
 	List<ITrackingObject> trackingObjects;
+	
+	public int getCurrentObjType() {
+		return currentObjType;
+	}
 	
 	public ImageFilteringPanel(List<ITrackingObject> trackingObjects) {
 		this.trackingObjects = trackingObjects;
@@ -68,7 +72,7 @@ public class ImageFilteringPanel extends JPanel {
 			this.add(objectButtons[i]);
 			objectButtons[i].setActionCommand(Integer.toString(i));
 			
-			//Add the on click listener
+			//Add the on click listener to change the current object type (i.e. toggle between puck and table bounds)
 			objectButtons[i].addActionListener(new ActionListener() {
 				
 			  public void actionPerformed(ActionEvent evt) {
@@ -76,6 +80,15 @@ public class ImageFilteringPanel extends JPanel {
 				  currentObjType = Integer.parseInt(src.getActionCommand());
 				  System.out.println("Clicked on: " + objectTypes[currentObjType]);
 
+				  double[] hsvMax = trackingObjects.get(currentObjType).getHSVMax().val;
+				  for (int i = 0; i < high.length; i++) {
+					high[i].setValue((int)hsvMax[i]);
+				  }
+					  
+				  double[] hsvMin = trackingObjects.get(currentObjType).getHSVMin().val;
+				  for (int i = 0; i < high.length; i++) {
+					low[i].setValue((int)hsvMin[i]);
+				  }
 			  }
 			});
 		}
@@ -97,14 +110,21 @@ public class ImageFilteringPanel extends JPanel {
 				high[i].setValue(highInit[i]);
 				high[i].setName(Integer.toString(i));
 				highLabels[i].setText(Integer.toString(highInit[i]));
+				
+				//Add a change listener to set hsvMax for the current object type
 				high[i].addChangeListener(new ChangeListener() {
 
 					@Override
 					public void stateChanged(ChangeEvent e) {
 						// If the slider is moved, print out the values
 						JSlider src = (JSlider) e.getSource();
+						
+						// Set the text of the labels
 						highLabels[Integer.parseInt(src.getName())].setText(Integer.toString(src.getValue()));
 
+						//Set the hsvMax values on the current object type
+						trackingObjects.get(currentObjType).setHSVMax(new Scalar(high[0].getValue(), high[1].getValue(),
+								high[2].getValue()));
 					}
 				});
 
@@ -116,6 +136,8 @@ public class ImageFilteringPanel extends JPanel {
 				low[i].setValue(lowInit[i]);
 				low[i].setName(Integer.toString(i));
 				lowLabels[i].setText(Integer.toString(lowInit[i]));
+	
+				//Add a change listener to set hsvMmin for the current object type
 				low[i].addChangeListener(new ChangeListener() {
 
 					@Override

@@ -12,12 +12,17 @@ import java.util.Set;
 import javax.swing.JFrame;
 
 
+
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.highgui.VideoCapture;
+
 import airhockeyjava.graphics.ImageFilteringPanel;
+
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
@@ -91,7 +96,7 @@ public class Tracking implements Runnable {
 		
 		List<ITrackingObject> filteringObjects = new ArrayList<ITrackingObject>();
 		for (List<ITrackingObject> objectList : objectsToTrack) {
-			trackingObjects.get(0);
+			filteringObjects.add(objectList.get(0));
 		}
 
 		if (isGuiEnabled) {
@@ -189,8 +194,8 @@ public class Tracking implements Runnable {
 					}
 
 					// Threshold the hsv image to filter for Pucks
-					Core.inRange(hsvImage, slider.getScalarLow(),
-							slider.getScalarHigh(),
+					Core.inRange(hsvImage.clone(), trackingObjectList.get(0).getHSVMin(),
+							trackingObjectList.get(0).getHSVMax(),
 							hsvImageThresholded);
 
 					// reduce the noise in the image
@@ -204,7 +209,18 @@ public class Tracking implements Runnable {
 				if (this.isGuiEnabled) {
 					// Display updated image
 					normalPanel.setImageBuffer(toBufferedImage(originalImage));
-					hsvFilteredPanel.setImageBuffer(toBufferedImage(hsvImageThresholded));
+				
+					//Threshold an image based on the currently selected image type
+					Mat thresholdedImageForDisplay = new Mat();
+					// Threshold the hsv image to display
+					Scalar hsvMin = objectSetsToTrack.get(slider.getCurrentObjType()).get(0).getHSVMin();
+					Core.inRange(hsvImage, objectSetsToTrack.get(slider.getCurrentObjType()).get(0).getHSVMin(),
+							objectSetsToTrack.get(slider.getCurrentObjType()).get(0).getHSVMax(),
+							thresholdedImageForDisplay);
+					reduceNoise(thresholdedImageForDisplay);
+
+					
+					hsvFilteredPanel.setImageBuffer(toBufferedImage(thresholdedImageForDisplay));
 
 				}
 
