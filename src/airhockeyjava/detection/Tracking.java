@@ -1,18 +1,15 @@
 package airhockeyjava.detection;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Set;
 
 import javax.swing.JFrame;
-
-
-
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -20,15 +17,15 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.highgui.VideoCapture;
-
-import airhockeyjava.graphics.ImageFilteringPanel;
-
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
 import airhockeyjava.game.Constants;
+import airhockeyjava.graphics.ImageFilteringPanel;
 import airhockeyjava.graphics.VideoDisplayPanel;
 import airhockeyjava.util.Conversion;
+import airhockeyjava.util.NormalDistribution;
+import airhockeyjava.util.ScalarRange;
 import airhockeyjava.util.Vector2;
 
 /**
@@ -49,17 +46,20 @@ public class Tracking implements Runnable {
 
 	private VideoDisplayPanel hsvFilteredPanel;
 	private JFrame hsvFilteredFrame;
-	
+
 	private ImageFilteringPanel slider;
 	private JFrame sliderFrame;
-	
+
 	private final PS3EyeFrameGrabber ps3VideoCapture;
 	private final VideoCapture videoCapture;
+
+	private MouseListener mouseListener;
+	private Mat hsvImage;
 
 	private boolean usePS3Cam;
 
 	private boolean isGuiEnabled;
-	
+
 	public Tracking(List<List<ITrackingObject>> objectsToTrack,
 			PS3EyeFrameGrabber ps3VideoCapture, boolean isGuiEnabled) {
 		this(objectsToTrack, ps3VideoCapture, null, true, isGuiEnabled);
@@ -73,10 +73,11 @@ public class Tracking implements Runnable {
 	public Tracking(List<List<ITrackingObject>> objectsToTrack,
 			PS3EyeFrameGrabber ps3VideoCapture, VideoCapture videoCapture,
 			boolean usePS3Camera, boolean isGuiEnabled) {
+		initializeMouseListener();
 
 		this.usePS3Cam = usePS3Camera;
 		this.isGuiEnabled = isGuiEnabled;
-		
+
 		if (usePS3Cam) {
 
 			this.videoCapture = null;
@@ -93,7 +94,7 @@ public class Tracking implements Runnable {
 		for (List<ITrackingObject> objectList : objectsToTrack) {
 			trackingObjects.addAll(objectList);
 		}
-		
+
 		List<ITrackingObject> filteringObjects = new ArrayList<ITrackingObject>();
 		for (List<ITrackingObject> objectList : objectsToTrack) {
 			filteringObjects.add(objectList.get(0));
@@ -107,15 +108,17 @@ public class Tracking implements Runnable {
 					Constants.DETECTION_FRAME_HEIGHT);
 			this.jFrame.add(normalPanel);
 			this.jFrame.setVisible(true);
-			
+
 			// HSV filtered content will be displayed here
 			this.hsvFilteredPanel = new VideoDisplayPanel(trackingObjects);
 			this.hsvFilteredFrame = new JFrame("HSV Filtered");
-			this.hsvFilteredFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			this.hsvFilteredFrame.setSize(Constants.DETECTION_FRAME_WIDTH, Constants.DETECTION_FRAME_HEIGHT);
+			this.hsvFilteredFrame
+					.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.hsvFilteredFrame.setSize(Constants.DETECTION_FRAME_WIDTH,
+					Constants.DETECTION_FRAME_HEIGHT);
 			this.hsvFilteredFrame.add(hsvFilteredPanel);
 			this.hsvFilteredFrame.setVisible(true);
-			
+
 			// Create frame to manipulate image level thresholding
 			this.slider = new ImageFilteringPanel(filteringObjects);
 			this.sliderFrame = new JFrame("HSV Thresholds");
@@ -137,7 +140,7 @@ public class Tracking implements Runnable {
 
 		// Matrix that represents the individual images
 		Mat originalImage = new Mat();
-		Mat hsvImage = new Mat();
+		hsvImage = new Mat();
 		// Iterate through frames as fast as possible! (for now)
 		while (true) {
 
@@ -170,12 +173,13 @@ public class Tracking implements Runnable {
 			}
 
 			if (!originalImage.empty()) {
-				
+
 				if (usePS3Cam) {
 					// Convert matrix from RGB to HSV
 					Imgproc.cvtColor(originalImage, hsvImage,
 							Imgproc.COLOR_RGB2HSV);
-					Imgproc.cvtColor(originalImage, originalImage, Imgproc.COLOR_RGB2BGR);
+					Imgproc.cvtColor(originalImage, originalImage,
+							Imgproc.COLOR_RGB2BGR);
 				} else {
 					// Convert matrix from BGR to HSV
 					Imgproc.cvtColor(originalImage, hsvImage,
@@ -194,7 +198,8 @@ public class Tracking implements Runnable {
 					}
 
 					// Threshold the hsv image to filter for Pucks
-					Core.inRange(hsvImage.clone(), trackingObjectList.get(0).getHSVMin(),
+					Core.inRange(hsvImage.clone(), trackingObjectList.get(0)
+							.getHSVMin(),
 							trackingObjectList.get(0).getHSVMax(),
 							hsvImageThresholded);
 
@@ -209,18 +214,23 @@ public class Tracking implements Runnable {
 				if (this.isGuiEnabled) {
 					// Display updated image
 					normalPanel.setImageBuffer(toBufferedImage(originalImage));
-				
-					//Threshold an image based on the currently selected image type
+
+					// Threshold an image based on the currently selected image
+					// type
 					Mat thresholdedImageForDisplay = new Mat();
 					// Threshold the hsv image to display
-					Scalar hsvMin = objectSetsToTrack.get(slider.getCurrentObjType()).get(0).getHSVMin();
-					Core.inRange(hsvImage, objectSetsToTrack.get(slider.getCurrentObjType()).get(0).getHSVMin(),
-							objectSetsToTrack.get(slider.getCurrentObjType()).get(0).getHSVMax(),
+					Scalar hsvMin = objectSetsToTrack
+							.get(slider.getCurrentObjType()).get(0).getHSVMin();
+					Core.inRange(hsvImage,
+							objectSetsToTrack.get(slider.getCurrentObjType())
+									.get(0).getHSVMin(),
+							objectSetsToTrack.get(slider.getCurrentObjType())
+									.get(0).getHSVMax(),
 							thresholdedImageForDisplay);
 					reduceNoise(thresholdedImageForDisplay);
 
-					
-					hsvFilteredPanel.setImageBuffer(toBufferedImage(thresholdedImageForDisplay));
+					hsvFilteredPanel
+							.setImageBuffer(toBufferedImage(thresholdedImageForDisplay));
 
 				}
 
@@ -355,5 +365,96 @@ public class Tracking implements Runnable {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Creates a range of colors to threshold based on a pixel location, using a
+	 * Normal Distribution.
+	 * 
+	 * @param image
+	 *            - HSV image to threshold
+	 * @param x
+	 *            - x position of desired pixel
+	 * @param y
+	 *            - y position of desired pixel
+	 * @return Range of HSV threshold values
+	 */
+	private static ScalarRange GetColorRangeHSV(Mat image, int x, int y) {
+		if (image.channels() < 3)
+			return null;
+
+		int radius = 10;
+		NormalDistribution<Double> hueDistribution = new NormalDistribution<>();
+		NormalDistribution<Double> valueDistribution = new NormalDistribution<>();
+		NormalDistribution<Double> saturationDistribution = new NormalDistribution<>();
+		ScalarRange range = null;
+
+		int initX = (x - radius >= 0) ? (x - radius) : 0;
+		int initY = (y - radius >= 0) ? (y - radius) : 0;
+		int endX = (x + radius <= image.cols()) ? (x + radius) : image.cols();
+		int endY = (y + radius <= image.rows()) ? (y + radius) : image.rows();
+		double[] color;
+
+		for (int i = initX; i < endX; i++) {
+			for (int j = initY; j < endY; j++) {
+				color = image.get(j, i);
+				hueDistribution.addData(color[0]);
+				saturationDistribution.addData(color[1]);
+				valueDistribution.addData(color[2]);
+			}
+		}
+
+		range = new ScalarRange(
+				new Scalar(
+						(hueDistribution.getMean() - (0.5 * hueDistribution
+								.getDevation())),
+						(saturationDistribution.getMean() - (2 * saturationDistribution
+								.getDevation())),
+						(valueDistribution.getMean() - (2 * valueDistribution
+								.getDevation()))),
+				new Scalar(
+						(hueDistribution.getMean() + (0.5 * hueDistribution
+								.getDevation())),
+						(saturationDistribution.getMean() + (2 * saturationDistribution
+								.getDevation())),
+						(valueDistribution.getMean() + (2 * valueDistribution
+								.getDevation()))));
+		return range;
+	}
+
+	public void initializeMouseListener() {
+		mouseListener = new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (slider != null)
+					slider.setSliders(GetColorRangeHSV(hsvImage, e.getX(),
+							e.getY()));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		};
 	}
 }

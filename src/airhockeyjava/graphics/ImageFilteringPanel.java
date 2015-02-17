@@ -1,10 +1,8 @@
 package airhockeyjava.graphics;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -16,6 +14,7 @@ import javax.swing.event.ChangeListener;
 import org.opencv.core.Scalar;
 
 import airhockeyjava.detection.ITrackingObject;
+import airhockeyjava.util.ScalarRange;
 
 /**
  * Graphics panel that displays sliders so that an HSV image levels can be
@@ -184,6 +183,14 @@ public class ImageFilteringPanel extends JPanel {
 				low[2].getValue());
 	}
 
+	public void setSliders(ScalarRange range) {
+		Scalar min = range.getMin();
+		Scalar max = range.getMax();
+		for (int i = 0; i < 3; i++) {
+			low[i].setValue((int) min.val[i]);
+			high[i].setValue((int) max.val[i]);
+		}
+	}
 	/**
 	 * Prints all the level values
 	 */
