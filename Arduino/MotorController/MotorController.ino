@@ -1,4 +1,7 @@
 #include <AccelStepper.h>
+#include <Wire.h> 
+#include "Adafruit_LEDBackpack.h"
+#include "Adafruit_GFX.h"
 
 // X - Direction Motor Settings
 #define X_MOTOR_PIN 10
@@ -20,33 +23,57 @@ AccelStepper stepperX(AccelStepper::DRIVER, X_MOTOR_PIN, X_MOTOR_DIRECTION_PIN);
 AccelStepper stepperY(AccelStepper::DRIVER, Y_MOTOR_PIN, Y_MOTOR_DIRECTION_PIN);
 
 long serialCoordinates[2]; // input X,Y coordinates from Serial connection
+int serialScore[2]; // input User and Robot score from Serial connection
+int currentScore[2]; // current User and Robot scores
 int fieldIndex = 0;
+char type;  // type of data being received
+Adafruit_7segment matrix = Adafruit_7segment();
 
 void setup(){
+ #ifndef __AVR_ATtiny85__
   Serial.begin(9600);
+ #endif
   stepperX.setMaxSpeed(X_MOTOR_MAX_SPEED);
   stepperX.setAcceleration(X_MOTOR_ACCELERATION);
   
   stepperY.setMaxSpeed(Y_MOTOR_MAX_SPEED);
   stepperY.setAcceleration(Y_MOTOR_ACCELERATION);
+  
+  matrix.begin(0x70);
 }
 /*
-* Looks for input messages of this form X,Y
-* ex. 12355,123466666
+* Looks for input messages of this form X,Y,ScoreU,ScoreR
+* ex. 12355,123466666,0,1
 */
 boolean getSerialInput(){
   boolean gotInput = false;
   
   if (Serial.available()){
     char ch = (char) Serial.read();
+    
     if(ch >= '0' && ch <= '9') // is this an ascii digit between 0 and 9?
     {
-      // yes, accumulate the value
-      serialCoordinates[fieldIndex] = (serialCoordinates[fieldIndex] * 10) + (ch - '0'); 
+      if(type == 'P'){  // positional data is being received
+        if(fieldIndex < 3){
+          // yes, accumulate the Coordinate value
+          serialCoordinates[fieldIndex-1] = (serialCoordinates[fieldIndex-1] * 10) + (ch - '0'); 
+        }
+      }
+      else if(type == 'S'){  // score data is being received
+        if(fieldIndex < 3){
+          // yes, accumulate the Score value        
+          serialScore[fieldIndex-1] = ch - '0';
+        }
+      }
+    }
+    else if (ch >= 'A' && ch <= 'Z')  // determine the type of data being passed to the arduino
+    {
+      type = ch;  // make type equal to the correct type of data being received
+      Serial.println((String) type);
     }
     else if (ch == FIELD_DELIMITER)  // comma is our separator, so move on to the next field
     {
-      if(fieldIndex < 2)
+      if(fieldIndex < 3)
         fieldIndex++;   // increment field index
     }
     else
@@ -67,7 +94,6 @@ boolean getSerialInput(){
         
         gotInput = true;
       }
-      
       fieldIndex = 0;  // ready to start over
     }
   }
@@ -80,12 +106,15 @@ void resetCoordinates(){
   serialCoordinates[1] = 0;
 }
 
+void resetScore(){
+  serialScore[0] = 0;
+  serialScore[1] = 0;
+}
+
 void moveToPosition(){
-  // Serial.print("Moving ");
-  // Serial.print(serialCoordinates[0] - stepperX.currentPosition());
-  // Serial.print(" in the X, and ");
-  // Serial.print(serialCoordinates[1] - stepperY.currentPosition());
-  // Serial.println(" in the Y.");
+  //long distanceX = serialCoordinates[0] - stepperX.currentPosition();
+  //long distanceY = serialCoordinates[1] - stepperY.currentPosition();
+  //Serial.println("Moving " + distanceX + " in the X, and " + distanceY + " in the Y.");
   
   stepperX.moveTo(serialCoordinates[0]);
   stepperY.moveTo(serialCoordinates[1]);
@@ -94,15 +123,30 @@ void moveToPosition(){
   resetCoordinates();
 }
 
+void displayScore(){
+  //matrix.writeDigitNum(0, 0, false);
+  matrix.writeDigitNum(1, serialScore[0], true);
+  matrix.drawColon(true);
+  matrix.writeDigitNum(3, serialScore[1], true);
+  //matrix.writeDigitNum(4, serialScore[1], true);
+  matrix.writeDisplay();
+  
+  currentScore[0] = serialScore[0];
+  currentScore[1] = serialScore[1];  
+}
+
 void loop(){
   if(getSerialInput()){
-    moveToPosition();
+    moveToPosition();  
+  }
+  
+  if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
+    displayScore();
   }
   
   stepperX.run();
   stepperY.run();
 
   // Send back current motor position
-  Serial.println(OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + \
-    FIELD_DELIMITER + stepperY.currentPosition());
+  Serial.println((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition() + (String) FIELD_DELIMITER + serialScore[0] + (String) FIELD_DELIMITER + serialScore[1]);
 }
