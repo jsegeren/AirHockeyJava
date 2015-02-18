@@ -150,7 +150,7 @@ public class Tracking implements Runnable {
 
 		// Matrix that represents the individual images
 		Mat originalImage = new Mat();
-		hsvImage = new Mat();
+		hsvImage = originalImage;
 		// Iterate through frames as fast as possible! (for now)
 		while (true) {
 
@@ -220,13 +220,13 @@ public class Tracking implements Runnable {
 				// Iterate over each type of object; there is a set of objects
 				// of each type
 				for (List<ITrackingObject> trackingObjectList : objectSetsToTrack) {
-
+			
 					if (trackingObjectList == null || trackingObjectList.isEmpty()) {
 						continue;
 					}
-
+					//164, 179,46,70,183,240
 					// Threshold the hsv image to filter for Pucks
-					Core.inRange(hsvImage.clone(), trackingObjectList.get(0).getHSVMin(),
+					Core.inRange(hsvImage, trackingObjectList.get(0).getHSVMin(),
 							trackingObjectList.get(0).getHSVMax(), hsvImageThresholded);
 
 					// reduce the noise in the image
@@ -241,17 +241,7 @@ public class Tracking implements Runnable {
 
 					// Display updated image
 					normalPanel.setImageBuffer(toBufferedImage(originalImage));
-
-					// Threshold an image based on the currently selected image
-					// type
-					Mat thresholdedImageForDisplay = new Mat();
-					// Threshold the hsv image to display
-					Core.inRange(hsvImage, objectSetsToTrack.get(slider.getCurrentObjType()).get(0)
-							.getHSVMin(), objectSetsToTrack.get(slider.getCurrentObjType()).get(0)
-							.getHSVMax(), thresholdedImageForDisplay);
-					reduceNoise(thresholdedImageForDisplay);
-
-					hsvFilteredPanel.setImageBuffer(toBufferedImage(thresholdedImageForDisplay));
+					hsvFilteredPanel.setImageBuffer(toBufferedImage(hsvImageThresholded));
 
 				}
 

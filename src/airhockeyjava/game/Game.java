@@ -251,14 +251,9 @@ public class Game {
 		List<ITrackingObject> puckList = new ArrayList<ITrackingObject>();
 		puckList.add(this.gamePuck);
 		
-		//List of table bounds objects for tracking
-		List<ITrackingObject> tableBounds = new ArrayList<ITrackingObject>();
-		tableBounds.add(new TableBound());
-
 		//Objects to track is a list of lists of ITrackingObjects. Each list corresponds to a type of object, e.g. puck or tableBounds
 		List<List<ITrackingObject>> objectsToTrack = new ArrayList<List<ITrackingObject>>();
 		objectsToTrack.add(puckList);
-		objectsToTrack.add(tableBounds);
 
 		// Set up video feed; get device, then open capture stream
 		// Open returns false if fails
@@ -268,6 +263,8 @@ public class Game {
 				// CLEYE_VGA (640 x 480) - 15, 30, 40, 50, 60, 75
 				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
 						320, 240, 125);
+//				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
+//				640, 480, 75);
 				frameGrabber.start();
 				realDetectionLayer = new Tracking(objectsToTrack, frameGrabber,
 						isGuiEnabled);
