@@ -85,6 +85,24 @@ public class Constants {
 	public final static float GUI_SCALING_FACTOR = (Constants.GUI_WINDOW_WIDTH
 			- Constants.GUI_INFO_BAR_WIDTH - (Constants.GUI_TABLE_OFFSET_X * 2))
 			/ Constants.GAME_TABLE_WIDTH_METERS;
+	
+	public static void setDetectionFrameHeight(int detectionFrameHeight) {
+		Constants.DETECTION_FRAME_HEIGHT = detectionFrameHeight;
+	}
+
+	public static void setDetectionFrameWidth(int detectionFrameWidth) {
+		Constants.DETECTION_FRAME_WIDTH = detectionFrameWidth;
+	}
+	
+	// Retrieves the pixels / m scaling factor for the detection/capture image height
+	public final static float getDetectionHeightScalingFactor() {
+		return Constants.DETECTION_FRAME_HEIGHT / Constants.GAME_TABLE_HEIGHT_METERS;
+	}
+	
+	// Retrieves the pixels / m  scaling factor for detection/capture image width
+	public final static float getDetectionWidthScalingFactor() {
+		return Constants.DETECTION_FRAME_WIDTH / Constants.GAME_TABLE_WIDTH_METERS;
+	}
 
 	/**
 	 * Detection/Vision System Constants
@@ -94,8 +112,8 @@ public class Constants {
 	public static final Scalar DETECTION_PUCK_HSV_MAX = new Scalar(45, 208, 196);
 
 	// TODO make dynamic based on capture area and physical object dimensions
-	public static final int DETECTION_FRAME_HEIGHT = 480;
-	public static final int DETECTION_FRAME_WIDTH = 720;
+	public static int DETECTION_FRAME_HEIGHT = 480;
+	public static int DETECTION_FRAME_WIDTH = 720;
 	public static final int DETECTION_PUCK_MAX_AREA = 100 * 100;
 	public static final int DETECTION_PUCK_MIN_AREA = 20 * 20;
 	public static final int DETECTION_MAX_OBJECTS = 10;

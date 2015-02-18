@@ -19,6 +19,8 @@ public class RealRobotController implements IController {
 	private final Mallet mallet;
 
 	private class InvalidMessageException extends Exception {
+		private static final long serialVersionUID = 8054257167367669050L;
+
 		InvalidMessageException(String message) {
 			super(message);
 		}

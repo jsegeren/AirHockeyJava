@@ -27,7 +27,6 @@ import org.opencv.imgproc.Moments;
 import airhockeyjava.game.Constants;
 import airhockeyjava.graphics.ImageFilteringPanel;
 import airhockeyjava.graphics.VideoDisplayPanel;
-import airhockeyjava.physical.Table;
 import airhockeyjava.util.Conversion;
 import airhockeyjava.util.NormalDistribution;
 import airhockeyjava.util.ScalarRange;
@@ -66,29 +65,28 @@ public class Tracking implements Runnable {
 
 	private boolean isGuiEnabled;
 
-	private Table table;
+	// Use this to dynamically resize the JFrame based on the capture size
+	// Only need to resize the JFrame after the first frame capture!
+	private boolean isFirstCaptureImage = true;
+
 	private Mat warpMat;
-	private Mat rotMat;
 
-	public Tracking(List<List<ITrackingObject>> objectsToTrack,
-			PS3EyeFrameGrabber ps3VideoCapture, boolean isGuiEnabled,
-			Table table) {
-		this(objectsToTrack, ps3VideoCapture, null, true, isGuiEnabled, table);
+	public Tracking(List<List<ITrackingObject>> objectsToTrack, PS3EyeFrameGrabber ps3VideoCapture,
+			boolean isGuiEnabled) {
+		this(objectsToTrack, ps3VideoCapture, null, true, isGuiEnabled);
 	}
 
-	public Tracking(List<List<ITrackingObject>> objectsToTrack,
-			VideoCapture videoCapture, boolean isGuiEnabled, Table table) {
-		this(objectsToTrack, null, videoCapture, false, isGuiEnabled, table);
+	public Tracking(List<List<ITrackingObject>> objectsToTrack, VideoCapture videoCapture,
+			boolean isGuiEnabled) {
+		this(objectsToTrack, null, videoCapture, false, isGuiEnabled);
 	}
 
-	public Tracking(List<List<ITrackingObject>> objectsToTrack,
-			PS3EyeFrameGrabber ps3VideoCapture, VideoCapture videoCapture,
-			boolean usePS3Camera, boolean isGuiEnabled, Table table) {
+	public Tracking(List<List<ITrackingObject>> objectsToTrack, PS3EyeFrameGrabber ps3VideoCapture,
+			VideoCapture videoCapture, boolean usePS3Camera, boolean isGuiEnabled) {
 		initializeMouseListener();
 
 		this.usePS3Cam = usePS3Camera;
 		this.isGuiEnabled = isGuiEnabled;
-		this.table = table;
 
 		if (usePS3Cam) {
 
@@ -113,22 +111,19 @@ public class Tracking implements Runnable {
 		}
 
 		if (isGuiEnabled) {
-			this.normalPanel = new VideoDisplayPanel(trackingObjects,
-					tableBounds);
+			this.normalPanel = new VideoDisplayPanel(trackingObjects, tableBounds);
 			this.normalPanel.addMouseListener(mouseListener);
 
 			this.jFrame = new JFrame(Constants.DETECTION_JFRAME_LABEL);
 			this.jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			this.jFrame.setSize(Constants.DETECTION_FRAME_WIDTH,
-					Constants.DETECTION_FRAME_HEIGHT);
+			this.jFrame.setSize(Constants.DETECTION_FRAME_WIDTH, Constants.DETECTION_FRAME_HEIGHT);
 			this.jFrame.add(normalPanel);
 			this.jFrame.setVisible(true);
 
 			// HSV filtered content will be displayed here
 			this.hsvFilteredPanel = new VideoDisplayPanel(trackingObjects);
 			this.hsvFilteredFrame = new JFrame("HSV Filtered");
-			this.hsvFilteredFrame
-					.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.hsvFilteredFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.hsvFilteredFrame.setSize(Constants.DETECTION_FRAME_WIDTH,
 					Constants.DETECTION_FRAME_HEIGHT);
 			this.hsvFilteredFrame.add(hsvFilteredPanel);
@@ -171,7 +166,7 @@ public class Tracking implements Runnable {
 			// Update FPS counter and remaining game time if a second has passed
 			// since last recorded
 			if (lastFpsTime >= Conversion.secondsToNanoseconds(1f)) {
-				System.out.println(String.format("FPS: %d", fps));
+				//				System.out.println(String.format("FPS: %d", fps));
 				normalPanel.setFrameRate(fps);
 				lastFpsTime = 0;
 				fps = 0;
@@ -188,24 +183,36 @@ public class Tracking implements Runnable {
 			}
 
 			if (!originalImage.empty()) {
-				
-				if (warpMat != null) {
-					System.out.println(this.normalPanel.getWidth() + " "
-							+ this.normalPanel.getHeight());
-					Imgproc.warpAffine(originalImage, originalImage,
-							warpMat, originalImage.size());
+				// Dynamically resize the JFrames based on the capture size (device-dependent)
+				if (isFirstCaptureImage) {
+					Dimension actualSize = new Dimension(originalImage.width(),
+							originalImage.height());
+					if (jFrame.getWidth() != actualSize.getWidth()
+							|| jFrame.getHeight() != actualSize.getHeight()) {
+						// Update the global width & height
+						Constants.setDetectionFrameWidth(originalImage.width());
+						Constants.setDetectionFrameHeight(originalImage.height());
+						// Update the local frame sizes to display
+						jFrame.setSize(actualSize);
+						hsvFilteredFrame.setSize(actualSize);
+					}
+					isFirstCaptureImage = false;
 				}
-				
+
+				// Affine transformation -> 2D to 2D input warp so capture doesn't have to be flat or level
+				if (warpMat != null) {
+					//					System.out.println(this.normalPanel.getWidth() + " "
+					//							+ this.normalPanel.getHeight());
+					Imgproc.warpAffine(originalImage, originalImage, warpMat, originalImage.size());
+				}
+
 				if (usePS3Cam) {
 					// Convert matrix from RGB to HSV
-					Imgproc.cvtColor(originalImage.clone(), hsvImage,
-							Imgproc.COLOR_RGB2HSV);
-					Imgproc.cvtColor(originalImage, originalImage,
-							Imgproc.COLOR_RGB2BGR);
+					Imgproc.cvtColor(originalImage.clone(), hsvImage, Imgproc.COLOR_RGB2HSV);
+					Imgproc.cvtColor(originalImage, originalImage, Imgproc.COLOR_RGB2BGR);
 				} else {
 					// Convert matrix from BGR to HSV
-					Imgproc.cvtColor(originalImage.clone(), hsvImage,
-							Imgproc.COLOR_BGR2HSV);
+					Imgproc.cvtColor(originalImage.clone(), hsvImage, Imgproc.COLOR_BGR2HSV);
 				}
 
 				Mat hsvImageThresholded = new Mat();
@@ -214,16 +221,13 @@ public class Tracking implements Runnable {
 				// of each type
 				for (List<ITrackingObject> trackingObjectList : objectSetsToTrack) {
 
-					if (trackingObjectList == null
-							|| trackingObjectList.isEmpty()) {
+					if (trackingObjectList == null || trackingObjectList.isEmpty()) {
 						continue;
 					}
 
 					// Threshold the hsv image to filter for Pucks
-					Core.inRange(hsvImage.clone(), trackingObjectList.get(0)
-							.getHSVMin(),
-							trackingObjectList.get(0).getHSVMax(),
-							hsvImageThresholded);
+					Core.inRange(hsvImage.clone(), trackingObjectList.get(0).getHSVMin(),
+							trackingObjectList.get(0).getHSVMax(), hsvImageThresholded);
 
 					// reduce the noise in the image
 					reduceNoise(hsvImageThresholded);
@@ -235,10 +239,6 @@ public class Tracking implements Runnable {
 				// Draw if GUI available
 				if (this.isGuiEnabled) {
 
-					Dimension d = new Dimension(originalImage.width(),
-							originalImage.height());
-					jFrame.setSize(d);
-
 					// Display updated image
 					normalPanel.setImageBuffer(toBufferedImage(originalImage));
 
@@ -246,18 +246,12 @@ public class Tracking implements Runnable {
 					// type
 					Mat thresholdedImageForDisplay = new Mat();
 					// Threshold the hsv image to display
-					Scalar hsvMin = objectSetsToTrack
-							.get(slider.getCurrentObjType()).get(0).getHSVMin();
-					Core.inRange(hsvImage,
-							objectSetsToTrack.get(slider.getCurrentObjType())
-									.get(0).getHSVMin(),
-							objectSetsToTrack.get(slider.getCurrentObjType())
-									.get(0).getHSVMax(),
-							thresholdedImageForDisplay);
+					Core.inRange(hsvImage, objectSetsToTrack.get(slider.getCurrentObjType()).get(0)
+							.getHSVMin(), objectSetsToTrack.get(slider.getCurrentObjType()).get(0)
+							.getHSVMax(), thresholdedImageForDisplay);
 					reduceNoise(thresholdedImageForDisplay);
 
-					hsvFilteredPanel
-							.setImageBuffer(toBufferedImage(thresholdedImageForDisplay));
+					hsvFilteredPanel.setImageBuffer(toBufferedImage(thresholdedImageForDisplay));
 
 				}
 
@@ -285,8 +279,7 @@ public class Tracking implements Runnable {
 		byte[] b = new byte[bufferSize];
 		m.get(0, 0, b); // get all the pixels
 		BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
-		final byte[] targetPixels = ((DataBufferByte) image.getRaster()
-				.getDataBuffer()).getData();
+		final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 		System.arraycopy(b, 0, targetPixels, 0, b.length);
 		return image;
 	}
@@ -302,12 +295,10 @@ public class Tracking implements Runnable {
 	private static void reduceNoise(Mat image) {
 		// Create structuring element that will be used to "dilate" and "erode"
 		// image. the element chosen here is a 3px by 3px rectangle
-		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
-				new Size(1, 1));
+		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 1));
 
 		// Dilate with larger element so make sure object is nicely visible
-		Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
-				new Size(12, 12));
+		Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));
 
 		// Erode will shrink the grouping of pixels
 		Imgproc.erode(image, image, erodeElement);
@@ -327,10 +318,9 @@ public class Tracking implements Runnable {
 	 *            - Image that will be scanned for objects
 	 * @return Position of the centroid
 	 * */
-	private static void findObjects(Mat inputImage,
-			List<ITrackingObject> trackingObjectList) {
-		PriorityQueue<Moments> maxAreaHeap = new PriorityQueue<Moments>(
-				trackingObjectList.size(), new Comparator<Moments>() {
+	private static void findObjects(Mat inputImage, List<ITrackingObject> trackingObjectList) {
+		PriorityQueue<Moments> maxAreaHeap = new PriorityQueue<Moments>(trackingObjectList.size(),
+				new Comparator<Moments>() {
 					public int compare(Moments x, Moments y) {
 						return (int) (y.get_m00() - x.get_m00());
 					}
@@ -342,8 +332,8 @@ public class Tracking implements Runnable {
 		// Find the contours of the image and save them into contours and
 		// hierarchy Where the hierarchy holds the relationship between the
 		// current contour point and the next
-		Imgproc.findContours(inputImage, contours, hierarchy,
-				Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+		Imgproc.findContours(inputImage, contours, hierarchy, Imgproc.RETR_CCOMP,
+				Imgproc.CHAIN_APPROX_SIMPLE);
 
 		// The number of items in the hierarchy is the number of contours
 		if (!trackingObjectList.isEmpty() && !hierarchy.empty()
@@ -381,11 +371,13 @@ public class Tracking implements Runnable {
 					// TODO Use real dimensions! Need to figure out ratio
 					// between captured pixels
 					// and table dimensions
-					trackingObject.setPosition(new Vector2((float) (Conversion
-							.pixelToMeter((int) (moment.get_m10() / moment
-									.get_m00()))), (float) (Conversion
-							.meterToPixel((int) (moment.get_m01() / moment
-									.get_m00())))));
+					int detectedPositionPixelX = (int) (moment.get_m10() / moment.get_m00());
+					int detectedPositionPixelY = (int) (moment.get_m01() / moment.get_m00());
+					Vector2 updatedPosition = new Vector2(Conversion.pixelToMeter(
+							detectedPositionPixelX, Constants.getDetectionWidthScalingFactor()),
+							Conversion.pixelToMeter(detectedPositionPixelY,
+									Constants.getDetectionHeightScalingFactor()));
+					trackingObject.setPosition(updatedPosition);
 
 					// Log the position
 					// System.out.println(trackingObject.getPosition().toString());
@@ -431,21 +423,13 @@ public class Tracking implements Runnable {
 			}
 		}
 
-		range = new ScalarRange(
-				new Scalar(
-						(hueDistribution.getMean() - (0.5 * hueDistribution
-								.getDevation())),
-						(saturationDistribution.getMean() - (2 * saturationDistribution
-								.getDevation())),
-						(valueDistribution.getMean() - (2 * valueDistribution
-								.getDevation()))),
-				new Scalar(
-						(hueDistribution.getMean() + (0.5 * hueDistribution
-								.getDevation())),
-						(saturationDistribution.getMean() + (2 * saturationDistribution
-								.getDevation())),
-						(valueDistribution.getMean() + (2 * valueDistribution
-								.getDevation()))));
+		range = new ScalarRange(new Scalar(
+				(hueDistribution.getMean() - (0.5 * hueDistribution.getDevation())),
+				(saturationDistribution.getMean() - (2 * saturationDistribution.getDevation())),
+				(valueDistribution.getMean() - (2 * valueDistribution.getDevation()))), new Scalar(
+				(hueDistribution.getMean() + (0.5 * hueDistribution.getDevation())),
+				(saturationDistribution.getMean() + (2 * saturationDistribution.getDevation())),
+				(valueDistribution.getMean() + (2 * valueDistribution.getDevation()))));
 		return range;
 	}
 
@@ -458,8 +442,7 @@ public class Tracking implements Runnable {
 					switch (slider.getCurrentObjType()) {
 					case 0:
 						// Puck
-						slider.setSliders(GetColorRangeHSV(hsvImage, e.getX(),
-								e.getY()));
+						slider.setSliders(GetColorRangeHSV(hsvImage, e.getX(), e.getY()));
 						break;
 					case 1:
 						// Table bounds
@@ -467,33 +450,27 @@ public class Tracking implements Runnable {
 						break;
 					default:
 						break;
-
 					}
-
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
 				// TODO Auto-generated method stub
-
 			}
 		};
 	}
@@ -511,18 +488,13 @@ public class Tracking implements Runnable {
 	}
 
 	private void computeAffineTransform() {
-
-		// Transform image
-
 		// Array of destination points
-		List<Point> destPoints = Arrays.asList(new Point(0, 0), new Point(
-				hsvImage.cols(), 0), new Point(0, hsvImage.rows()));
+		List<Point> destPoints = Arrays.asList(new Point(0, 0), new Point(hsvImage.cols(), 0),
+				new Point(0, hsvImage.rows()));
 
-		this.warpMat = Imgproc.getAffineTransform(new MatOfPoint2f(
-				this.tableBounds.get(0), this.tableBounds.get(1),
-				this.tableBounds.get(2)), new MatOfPoint2f(destPoints.get(0),
-				destPoints.get(1), destPoints.get(2)));
-
+		this.warpMat = Imgproc.getAffineTransform(new MatOfPoint2f(this.tableBounds.get(0),
+				this.tableBounds.get(1), this.tableBounds.get(2)),
+				new MatOfPoint2f(destPoints.get(0), destPoints.get(1), destPoints.get(2)));
 	}
 
 }
