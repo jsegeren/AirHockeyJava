@@ -38,4 +38,10 @@ public class NaiveOffenseStrategy implements IStrategy {
 		return strategyLabelString;
 	}
 
+	@Override
+	public void initStrategy() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

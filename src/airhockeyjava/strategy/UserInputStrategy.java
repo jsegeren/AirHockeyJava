@@ -50,4 +50,10 @@ public class UserInputStrategy implements IStrategy {
 
 		return new Vector2(targetPositionX, targetPositionY);
 	}
+
+	@Override
+	public void initStrategy() {
+		// TODO Auto-generated method stub
+		
+	}
 }

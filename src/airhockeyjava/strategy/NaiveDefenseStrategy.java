@@ -30,4 +30,10 @@ public class NaiveDefenseStrategy implements IStrategy {
 	public String toString() {
 		return strategyLabelString;
 	}
+
+	@Override
+	public void initStrategy() {
+		// TODO Auto-generated method stub
+		
+	}
 }

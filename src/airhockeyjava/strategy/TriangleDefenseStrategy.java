@@ -18,17 +18,19 @@ public class TriangleDefenseStrategy implements IStrategy {
 
 	final private static String strategyLabelString = Constants.STRATEGY_TRIANGLE_DEFENSE_STRING;
 	final private List<Vector2> availablePositions;
-
+	public static Vector2 homePosition;
 	final private Game game;
 
 	public TriangleDefenseStrategy(Game game) {
 		this.game = game;
-		// TODO choose any position along the triangle instead of defining only three or four
-		availablePositions = new ArrayList<Vector2>();
-		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
+		homePosition = new Vector2((float) game.gameTable.getWidth()
 				- game.robotMallet.getRadius()
 				- Constants.STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS, (float) game.gameTable
-				.getHeight() / 2f));
+				.getHeight() / 2f);
+
+		// TODO choose any position along the triangle instead of defining only three or four
+		availablePositions = new ArrayList<Vector2>();
+		availablePositions.add(homePosition);
 		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
 				- game.robotMallet.getRadius(), game.gameTable.getGoalStartY()));
 		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
@@ -70,5 +72,11 @@ public class TriangleDefenseStrategy implements IStrategy {
 	@Override
 	public String toString() {
 		return strategyLabelString;
+	}
+
+	@Override
+	public void initStrategy() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -117,24 +117,22 @@ public class Game {
 					resetPuck();
 				}
 			});
-			put(Constants.INPUT_TOGGLE_RESTRICT_USER_MALLET_NAME,
-					new AbstractAction() {
-						private static final long serialVersionUID = 1L;
+			put(Constants.INPUT_TOGGLE_RESTRICT_USER_MALLET_NAME, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
 
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							settings.restrictUserMalletMovement = !settings.restrictUserMalletMovement;
-						}
-					});
-			put(Constants.INPUT_TOGGLE_GOAL_DETECTION_NAME,
-					new AbstractAction() {
-						private static final long serialVersionUID = 1L;
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					settings.restrictUserMalletMovement = !settings.restrictUserMalletMovement;
+				}
+			});
+			put(Constants.INPUT_TOGGLE_GOAL_DETECTION_NAME, new AbstractAction() {
+				private static final long serialVersionUID = 1L;
 
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							settings.goalDetectionOn = !settings.goalDetectionOn;
-						}
-					});
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					settings.goalDetectionOn = !settings.goalDetectionOn;
+				}
+			});
 		}
 	};
 
@@ -250,7 +248,7 @@ public class Game {
 		//List containing the puck for tracking
 		List<ITrackingObject> puckList = new ArrayList<ITrackingObject>();
 		puckList.add(this.gamePuck);
-		
+
 		//Objects to track is a list of lists of ITrackingObjects. Each list corresponds to a type of object, e.g. puck or tableBounds
 		List<List<ITrackingObject>> objectsToTrack = new ArrayList<List<ITrackingObject>>();
 		objectsToTrack.add(puckList);
@@ -261,13 +259,11 @@ public class Game {
 			try {
 				// CLEYE_QVGA (320 x 240) - 15, 30, 60, 75, 100, 125
 				// CLEYE_VGA (640 x 480) - 15, 30, 40, 50, 60, 75
-				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
-						320, 240, 125);
-//				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
-//				640, 480, 75);
+				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0, 320, 240, 125);
+				//				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
+				//				640, 480, 75);
 				frameGrabber.start();
-				realDetectionLayer = new Tracking(objectsToTrack, frameGrabber,
-						isGuiEnabled);
+				realDetectionLayer = new Tracking(objectsToTrack, frameGrabber, isGuiEnabled);
 				detectionLayerThread = new Thread(realDetectionLayer);
 				detectionLayerThread.start();
 			} catch (Exception e) {
@@ -276,14 +272,12 @@ public class Game {
 		} else {
 			VideoCapture videoCapture = new VideoCapture(0);
 			if (videoCapture.open(0)) {
-				realDetectionLayer = new Tracking(objectsToTrack, videoCapture,
-						isGuiEnabled);
+				realDetectionLayer = new Tracking(objectsToTrack, videoCapture, isGuiEnabled);
 				detectionLayerThread = new Thread(realDetectionLayer);
 				detectionLayerThread.start();
 			} else {
 				// Fail out and exit
-				throw new RuntimeException(
-						"Video capture device could not be opened!");
+				throw new RuntimeException("Video capture device could not be opened!");
 			}
 		}
 	}
@@ -317,11 +311,10 @@ public class Game {
 
 		// Set the game type based on command-line argument, or use default
 
-		gameType = (args != null
-				&& args.length >= (Constants.GAME_TYPE_ARG_INDEX + 1) && (GameTypeEnum
+		gameType = (args != null && args.length >= (Constants.GAME_TYPE_ARG_INDEX + 1) && (GameTypeEnum
 				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX]) != null)) ? GameTypeEnum
-				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX])
-				: GameTypeEnum.findByValue(Constants.DEFAULT_GAME_TYPE_ARG);
+				.findByValue(args[Constants.GAME_TYPE_ARG_INDEX]) : GameTypeEnum
+				.findByValue(Constants.DEFAULT_GAME_TYPE_ARG);
 
 		// Initialize the game object and game layers
 		game = new Game(gameType);
@@ -379,8 +372,7 @@ public class Game {
 	 * Send game info to the GUI for display
 	 */
 	private void setGameInfoDisplay() {
-		this.guiLayer.setExternalInfoBarData(new String[] {
-				"User Score: " + this.userScore,
+		this.guiLayer.setExternalInfoBarData(new String[] { "User Score: " + this.userScore,
 				"Robot Score: " + this.robotScore, });
 	}
 
@@ -403,8 +395,7 @@ public class Game {
 		if (gameType.equals(GameTypeEnum.SIMULATED_GAME_TYPE)) {
 			setGameInfoDisplay();
 			game.detectionLayer.detectAndUpdateItemStates(deltaTime);
-			userController.controlMallet(
-					userStrategy.getTargetPosition(deltaTime), deltaTime);
+			userController.controlMallet(userStrategy.getTargetPosition(deltaTime), deltaTime);
 		}
 		// Otherwise we will use the vision system
 		else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
@@ -412,8 +403,9 @@ public class Game {
 
 		// Check if should control robot mallet
 		if (game.settings.enableAI) {
-			robotController.controlMallet(robotStrategy.getBestStrategy()
-					.getTargetPosition(deltaTime), deltaTime);
+			robotController.controlMallet(game.gameTable.enforceSafeRobotPosition(robotStrategy
+					.getBestStrategy().getTargetPosition(deltaTime),
+					Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS), deltaTime);
 		}
 	}
 
@@ -421,16 +413,13 @@ public class Game {
 		InputMap inputMap = guiLayer.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = guiLayer.getActionMap();
 
-		for (Map.Entry<Integer, String> keyToActionNameEntry : keyToActionNameMap
-				.entrySet()) {
-			inputMap.put(
-					KeyStroke.getKeyStroke(keyToActionNameEntry.getKey(), 0),
+		for (Map.Entry<Integer, String> keyToActionNameEntry : keyToActionNameMap.entrySet()) {
+			inputMap.put(KeyStroke.getKeyStroke(keyToActionNameEntry.getKey(), 0),
 					keyToActionNameEntry.getValue());
 		}
 		for (Map.Entry<String, AbstractAction> actionNameToActionEntry : actionNameToActionMap
 				.entrySet()) {
-			actionMap.put(actionNameToActionEntry.getKey(),
-					actionNameToActionEntry.getValue());
+			actionMap.put(actionNameToActionEntry.getKey(), actionNameToActionEntry.getValue());
 		}
 	}
 }

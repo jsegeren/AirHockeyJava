@@ -16,4 +16,9 @@ public interface IStrategy {
 	 */
 	public Vector2 getTargetPosition(float deltaTime);
 	
+	/**
+	 * Initialize / reset the internal (persisted) state of the strategy component
+	 */
+	public void initStrategy();
+	
 }

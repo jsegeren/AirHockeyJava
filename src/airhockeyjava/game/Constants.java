@@ -39,6 +39,7 @@ public class Constants {
 	public static final float GAME_GOAL_WIDTH_METERS = 0.4f;
 	// Allowed distance from edge that a goal can be counted, since the puck never actually goes into the goal
 	public static final float GAME_GOAL_ALLOWANCE = 0.015f;
+	
 
 	// Quick visual of coordinate convention being used here, where tuples are in (x,y) form:
 	//
@@ -139,6 +140,7 @@ public class Constants {
 	public static final float MECHANICAL_MAX_POSITION_RESOLUTION_METERS = 0.005f;
 	public static final float MECHANICAL_STEPS_PER_METER_X = 1f; // TODO update with physical calc
 	public static final float MECHANICAL_STEPS_PER_METER_Y = 1f; // TODO update with physical calc
+	public static final float MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS = 0.10f;
 
 	/**
 	 * Strategy Constants
@@ -150,10 +152,15 @@ public class Constants {
 	public static final float STRATEGY_TRIANGLE_LOOKAHEAD_TIME_SECONDS = 0.1f;
 	public static final float STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE = 1.5f;
 	public static final float MIN_TIME_BETWEEN_STRATEGY_TRANSITION_SECONDS = 0.01f;
+	public static final float STRATEGY_VIA_DISTANCE_BEHIND_PUCK_METERS = 0.15f;
+	public static final float STRATEGY_VIA_DISTANCE_AHEAD_PUCK_METERS = 0.15f;
+	public static final float STRATEGY_VIA_SWITCH_DISTANCE_METERS_SQUARED = 0.05f*0.05f;
+	public static final float STRATEGY_VIA_ROTATE_ANGLE_DEGREES = 120f;
 
 	public static final String STRATEGY_NAIVE_DEFENSE_STRING = "Naive defense strategy";
 	public static final String STRATEGY_TRIANGLE_DEFENSE_STRING = "Triangle defense strategy";
 	public static final String STRATEGY_NAIVE_OFFENSE_STRING = "Naive offense strategy";
+	public static final String STRATEGY_WAYPOINT_OFFENSE_STRING = "Waypoint offense strategy";
 
 	/**
 	 * Input Constants

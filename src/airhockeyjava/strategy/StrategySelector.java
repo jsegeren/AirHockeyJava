@@ -17,7 +17,7 @@ public class StrategySelector {
 	final private IStrategy triangleDefenseStrategy;
 	final private IStrategy naiveDefenseStrategy;
 	final private IStrategy naiveOffenseStrategy;
-
+	final private IStrategy waypointOffenseStrategy;
 	private IStrategy currentStrategy;
 
 	private long lastUpdatedTime;
@@ -27,6 +27,7 @@ public class StrategySelector {
 		this.triangleDefenseStrategy = new TriangleDefenseStrategy(game);
 		this.naiveDefenseStrategy = new NaiveDefenseStrategy(game);
 		this.naiveOffenseStrategy = new NaiveOffenseStrategy(game);
+		this.waypointOffenseStrategy = new WaypointOffenseStrategy(game);
 		this.updateStrategy(naiveDefenseStrategy);
 	}
 
@@ -37,14 +38,14 @@ public class StrategySelector {
 			if (puckPosition.x <= (float) game.gameTable.getWidth() - game.robotMallet.getRadius()
 					* 2 - Constants.STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS) {
 				if (game.gamePuck.getVelocity().len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE) {
-					updateStrategy(naiveOffenseStrategy);
+					updateStrategy(waypointOffenseStrategy);
 				} else {
 					updateStrategy(naiveDefenseStrategy);
 				}
 				// Check if puck moving slowly, and in the positive x direction
 			} else if (puckVelocity.len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE
 					&& puckVelocity.x > 0) {
-				updateStrategy(naiveOffenseStrategy);
+				updateStrategy(waypointOffenseStrategy);
 			} else {
 				updateStrategy(triangleDefenseStrategy);
 			}
@@ -62,6 +63,8 @@ public class StrategySelector {
 						.secondsToNanoseconds(Constants.MIN_TIME_BETWEEN_STRATEGY_TRANSITION_SECONDS))) {
 			System.out.println(desiredStrategy.toString());
 			currentStrategy = desiredStrategy;
+			// Reinitialize strategy objects with persisted state
+			currentStrategy.initStrategy();
 			lastUpdatedTime = currentTime;
 		}
 	}

@@ -26,6 +26,9 @@ public class Table extends RoundRectangle2D.Float {
 	private static final long serialVersionUID = -828896685446216562L;
 	private final float goalWidth; // Width of goal
 
+	public final Vector2 gameTableUserGoalCenterPosition;
+	public final Vector2 gameTableRobotGoalCenterPosition;
+
 	// Map to cache collision frames
 	private Map<java.lang.Float, Rectangle2D> collisionFrameMap = new HashMap<java.lang.Float, Rectangle2D>();
 
@@ -38,6 +41,8 @@ public class Table extends RoundRectangle2D.Float {
 	public Table(float height, float width, float cornerRadius, float goalWidth) {
 		super(0, 0, height, width, cornerRadius, cornerRadius);
 		this.goalWidth = goalWidth;
+		this.gameTableUserGoalCenterPosition = new Vector2(0, height / 2);
+		this.gameTableRobotGoalCenterPosition = new Vector2(width, height / 2);
 	}
 
 	public Table() {
@@ -66,6 +71,12 @@ public class Table extends RoundRectangle2D.Float {
 			collisionFrameMap.put(collisionRadius, collisionFrame);
 		}
 		return collisionFrame;
+	}
+
+	public Rectangle2D getRobotWorkspaceCollisionFrame(float collisionRadius) {
+		return new Rectangle2D.Float((float) this.getWidth() / 2f + collisionRadius, (float) 0f
+				+ collisionRadius, (float) this.getWidth() / 2f - 2 * collisionRadius,
+				(float) this.getHeight() - 2 * collisionRadius);
 	}
 
 	/**
@@ -148,5 +159,20 @@ public class Table extends RoundRectangle2D.Float {
 	 */
 	public final float getGoalEndY() {
 		return (float) (((height - goalWidth) / 2.0) + goalWidth);
-	}	
+	}
+
+	/**
+	 * Applies safety constraints to position vector
+	 * Modifies the input vector
+	 * @param position
+	 * @return the same position object, to be used for chaining
+	 */
+	public Vector2 enforceSafeRobotPosition(Vector2 position, float safetyMargin) {
+		Rectangle2D collisionFrame = this.getRobotWorkspaceCollisionFrame(safetyMargin);
+		position.x = (float) Math.min(Math.max(position.x, collisionFrame.getMinX()),
+				collisionFrame.getMaxX());
+		position.y = (float) Math.min(Math.max(position.y, collisionFrame.getMinY()),
+				collisionFrame.getMaxY());
+		return position;
+	}
 }
