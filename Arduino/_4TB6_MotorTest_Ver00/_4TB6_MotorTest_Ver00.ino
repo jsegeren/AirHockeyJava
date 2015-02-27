@@ -9,8 +9,8 @@
 #define Y_MOTOR_PIN 10
 #define Y_MOTOR_DIRECTION_PIN 11
 
-#define X_MOTOR_MAX_SPEED 1000
-#define X_MOTOR_ACCELERATION 1000
+#define X_MOTOR_MAX_SPEED 3000
+#define X_MOTOR_ACCELERATION 5000
 #define Y_MOTOR_MAX_SPEED 5000
 #define Y_MOTOR_ACCELERATION 5000
 
@@ -27,7 +27,12 @@ void setup() {
   // Y motor settings
   stepperY.setMaxSpeed(Y_MOTOR_MAX_SPEED);
   stepperY.setAcceleration(Y_MOTOR_ACCELERATION);
-  stepperY.moveTo(1600);
+  stepperY.moveTo(-1000);
+  
+  // X motor settings
+  stepperX.setMaxSpeed(X_MOTOR_MAX_SPEED);
+  stepperX.setAcceleration(X_MOTOR_ACCELERATION);
+  stepperX.moveTo(1000);
 
 }
 
@@ -37,5 +42,6 @@ void loop() {
   // Motor run!
   //stepperX.run();
   stepperY.run();
+  stepperX.run();
   
 }
