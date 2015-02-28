@@ -259,13 +259,11 @@ public class Game {
 			try {
 				// CLEYE_QVGA (320 x 240) - 15, 30, 60, 75, 100, 125
 				// CLEYE_VGA (640 x 480) - 15, 30, 40, 50, 60, 75
-				//PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0, 320, 240, 125);
-				//				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
-				//				640, 480, 75);
 				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
-						320, 240, 125);
+				640, 480, 75);
 //				PS3EyeFrameGrabber frameGrabber = new PS3EyeFrameGrabber(0,
-//				640, 480, 75);
+//						320, 240, 125);
+
 				frameGrabber.start();
 				realDetectionLayer = new Tracking(objectsToTrack, frameGrabber, isGuiEnabled);
 				detectionLayerThread = new Thread(realDetectionLayer);

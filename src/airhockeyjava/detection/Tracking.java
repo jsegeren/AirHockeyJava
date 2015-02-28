@@ -183,7 +183,8 @@ public class Tracking implements Runnable {
 			}
 
 			if (!originalImage.empty()) {
-				// Dynamically resize the JFrames based on the capture size (device-dependent)
+				//TODO FIX RESIZING OF FRAME
+/*				// Dynamically resize the JFrames based on the capture size (device-dependent)
 				if (isFirstCaptureImage) {
 					Dimension actualSize = new Dimension(originalImage.width(),
 							originalImage.height());
@@ -197,7 +198,7 @@ public class Tracking implements Runnable {
 						hsvFilteredFrame.setSize(actualSize);
 					}
 					isFirstCaptureImage = false;
-				}
+				}*/
 
 				// Perspective transformation -> 2D to 2D input warp so capture doesn't have to be flat or level
 				if (warpMat != null) {

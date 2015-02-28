@@ -26,6 +26,7 @@ long serialCoordinates[2]; // input X,Y coordinates from Serial connection
 int serialScore[2]; // input User and Robot score from Serial connection
 int currentScore[2]; // current User and Robot scores
 int fieldIndex = 0;
+bool moveFlag = true;
 char type;  // type of data being received
 Adafruit_7segment matrix = Adafruit_7segment();
 
@@ -33,6 +34,8 @@ void setup(){
  #ifndef __AVR_ATtiny85__
   Serial.begin(9600);
  #endif
+   Serial.println("hi guys");
+
   stepperX.setMaxSpeed(X_MOTOR_MAX_SPEED);
   stepperX.setAcceleration(X_MOTOR_ACCELERATION);
   
@@ -112,12 +115,14 @@ void resetScore(){
 }
 
 void moveToPosition(){
+    Serial.println("moving guys!");
+
   //long distanceX = serialCoordinates[0] - stepperX.currentPosition();
   //long distanceY = serialCoordinates[1] - stepperY.currentPosition();
   //Serial.println("Moving " + distanceX + " in the X, and " + distanceY + " in the Y.");
   
-  stepperX.moveTo(serialCoordinates[0]);
-  stepperY.moveTo(serialCoordinates[1]);
+  stepperX.moveTo(100);
+  stepperY.moveTo(100);
   
   //Reset coordinates for next input
   resetCoordinates();
@@ -136,9 +141,13 @@ void displayScore(){
 }
 
 void loop(){
-  if(getSerialInput()){
-    moveToPosition();  
+//  if(getSerialInput()){
+    
+  if(moveFlag){
+      moveToPosition();  
+      moveFlag = false;
   }
+//  }
   
   if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
     displayScore();
