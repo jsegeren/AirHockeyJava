@@ -131,12 +131,10 @@ void displayScore(){
 }
 
 void loop(){
-  // if(getSerialInput()){
-  if (moveFlag) {
+  if(getSerialInput()){
     moveToPosition();  
     Serial.println(PULL_NEXT_POSITION_CHAR);
-  // }
-}
+  }
   
   if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
     displayScore();
