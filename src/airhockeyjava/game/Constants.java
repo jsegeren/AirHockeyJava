@@ -135,8 +135,8 @@ public class Constants {
 	/**
 	 * Mechanical Constants
 	 */
-//	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 1.5f;
-//	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
+	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 1.5f;
+	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
 	public static final float MECHANICAL_MAX_POSITION_RESOLUTION_METERS = 0.005f;
 	public static final float MECHANICAL_STEPS_PER_METER_X = 2387;
 	public static final float MECHANICAL_STEPS_PER_METER_Y = 10; // TODO update with physical calc
