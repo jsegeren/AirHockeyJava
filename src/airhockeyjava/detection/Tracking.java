@@ -199,11 +199,11 @@ public class Tracking implements Runnable {
 					isFirstCaptureImage = false;
 				}
 
-				// Affine transformation -> 2D to 2D input warp so capture doesn't have to be flat or level
+				// Perspective transformation -> 2D to 2D input warp so capture doesn't have to be flat or level
 				if (warpMat != null) {
 					//					System.out.println(this.normalPanel.getWidth() + " "
 					//							+ this.normalPanel.getHeight());
-					Imgproc.warpAffine(originalImage, originalImage, warpMat, originalImage.size());
+					Imgproc.warpPerspective(originalImage, originalImage, warpMat, originalImage.size());
 				}
 
 				if (usePS3Cam) {
@@ -224,7 +224,6 @@ public class Tracking implements Runnable {
 					if (trackingObjectList == null || trackingObjectList.isEmpty()) {
 						continue;
 					}
-					//164, 179,46,70,183,240
 					// Threshold the hsv image to filter for Pucks
 					Core.inRange(hsvImage, trackingObjectList.get(0).getHSVMin(),
 							trackingObjectList.get(0).getHSVMax(), hsvImageThresholded);
@@ -466,25 +465,25 @@ public class Tracking implements Runnable {
 	}
 
 	private void addTableBound(Point point) {
-		if (this.tableBounds.size() == 3) {
+		if (this.tableBounds.size() == 4) {
 			this.tableBounds.clear();
 		}
 
 		this.tableBounds.add(point);
 
-		if (this.tableBounds.size() == 3) {
-			this.computeAffineTransform();
+		if (this.tableBounds.size() == 4) {
+			this.computePerspectiveTransform();
 		}
 	}
 
-	private void computeAffineTransform() {
+	private void computePerspectiveTransform() {
 		// Array of destination points
 		List<Point> destPoints = Arrays.asList(new Point(0, 0), new Point(hsvImage.cols(), 0),
-				new Point(0, hsvImage.rows()));
+				new Point(0, hsvImage.rows()), new Point(hsvImage.cols(), hsvImage.rows()));
 
-		this.warpMat = Imgproc.getAffineTransform(new MatOfPoint2f(this.tableBounds.get(0),
-				this.tableBounds.get(1), this.tableBounds.get(2)),
-				new MatOfPoint2f(destPoints.get(0), destPoints.get(1), destPoints.get(2)));
+		this.warpMat = Imgproc.getPerspectiveTransform(new MatOfPoint2f(this.tableBounds.get(0),
+				this.tableBounds.get(1), this.tableBounds.get(2), this.tableBounds.get(3)),
+				new MatOfPoint2f(destPoints.get(0), destPoints.get(1), destPoints.get(2), destPoints.get(3)));
 	}
 
 }
