@@ -15,8 +15,8 @@ import airhockeyjava.util.Vector2;
 public class RealRobotController implements IController {
 
 	private final SerialConnection serialConnection;
-	private final IPathPlanner pathPlanner;
 	private final Mallet mallet;
+	private boolean isArduinoReadyNextPosition = true;
 
 	private class InvalidMessageException extends Exception {
 		private static final long serialVersionUID = 8054257167367669050L;
@@ -28,7 +28,6 @@ public class RealRobotController implements IController {
 
 	public RealRobotController(Mallet mallet) {
 		this.mallet = mallet;
-		pathPlanner = new PathPlanner(mallet);
 		serialConnection = new SerialConnection(this);
 	}
 
@@ -38,8 +37,9 @@ public class RealRobotController implements IController {
 	@Override
 	public void controlMallet(Vector2 targetPosition, float deltaTime) {
 		// Send/output control positions to Arduino
-		if (serialConnection != null) {
+		if (serialConnection != null && this.isArduinoReadyNextPosition) {
 			sendAbsolutePositionOverSerial(distancesToStepsVector(targetPosition));
+			this.isArduinoReadyNextPosition = false; // Wait until Arduino ready for next position
 		}
 	}
 
@@ -73,7 +73,11 @@ public class RealRobotController implements IController {
 				} else {
 					throw new InvalidMessageException("Unexpected position message length.");
 				}
-			} else {
+			} 
+			else if (interfaceMessage.startsWith(Constants.SERIAL_SEND_NEXT_POSITION_CHAR)) {
+				this.isArduinoReadyNextPosition = true;
+			}
+			else {
 				throw new InvalidMessageException("Unexpected message prefix.");
 			}
 		} catch (Exception e) {

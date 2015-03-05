@@ -138,8 +138,9 @@ public class Constants {
 	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 1.5f;
 	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
 	public static final float MECHANICAL_MAX_POSITION_RESOLUTION_METERS = 0.005f;
-	public static final float MECHANICAL_STEPS_PER_METER_X = 1f; // TODO update with physical calc
-	public static final float MECHANICAL_STEPS_PER_METER_Y = 1f; // TODO update with physical calc
+	public static final float MECHANICAL_STEPS_PER_METER_X = 2387;
+	public static final float MECHANICAL_STEPS_PER_METER_Y = 10; // TODO update with physical calc
+//	public static final float MECHANICAL_STEPS_PER_METER_Y = 3193; // TODO update with physical calc
 	public static final float MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS = 0.10f;
 
 	/**
@@ -186,4 +187,5 @@ public class Constants {
 	public static final int SERIAL_TIME_OUT = 2000; // Time to block while waiting for port open in milliseconds
 	public static final int SERIAL_DATA_RATE = 9600; // Default bits per second for COM port
 	public static final String SERIAL_POSITION_PREFIX = "_"; // Prefix for updated position data received from Arduino
+	public static final String SERIAL_SEND_NEXT_POSITION_CHAR = "N"; // Signal that Arduino ready for next position
 }
