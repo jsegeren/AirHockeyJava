@@ -29,6 +29,10 @@ int currentScore[2];             // Current User and Robot scores
 int fieldIndex = -1;
 char type;                      // Type of data being received
 Adafruit_7segment matrix = Adafruit_7segment();
+String currentSerialOutput = "";   // The current serial message to output
+String queuedSerialOutput = "";    // The next serial message to output. PLEASE USE FOR ALL PRINT MESSAGES
+String urgentSerialOutput = "";    // messages that take priority over the queued serial message
+int serialOutputIndex = 0;
 
 void setup(){
     #ifndef __AVR_ATtiny85__
@@ -58,7 +62,6 @@ boolean getSerialInput(){
         if (ch >= 'A' && ch <= 'Z')          // Determine the type of data being passed to the arduino
         {
             type = ch;                          // Make type equal to the correct type of data being received
-            Serial.println((String) type);
         }
         
         else if(ch >= '0' && ch <= '9')     // Is this an ascii digit between 0 and 9?
@@ -134,10 +137,33 @@ void displayScore(){
     currentScore[1] = serialScore[1];
 }
 
+void printNextChar(){
+  if(currentSerialOutput != ""){
+    if(serialOutputIndex < currentSerialOutput.length()){
+      Serial.print(currentSerialOutput[serialOutputIndex]);
+    }else{
+      Serial.print('/n');
+      serialOutputIndex = 0;
+      currentSerialOutput = "";
+    }
+    
+  }else{
+    if(urgentSerialOutput != ""){
+      currentSerialOutput = urgentSerialOutput;
+      urgentSerialOutput = "";
+    }else{
+      if(queuedSerialOutput != ""){
+        currentSerialOutput = queuedSerialOutput;
+        queuedSerialOutput = "";
+      }
+    }
+  }
+}
+
 void loop(){
     if(getSerialInput()){
         moveToPosition();
-        Serial.println(PULL_NEXT_POSITION_CHAR);
+        urgentSerialOutput = (String) PULL_NEXT_POSITION_CHAR;
     }
     
     if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
@@ -148,5 +174,7 @@ void loop(){
     stepperY.run();
     
     // Send back current motor position
-    Serial.println((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition() + (String) FIELD_DELIMITER + serialScore[0] + (String) FIELD_DELIMITER + serialScore[1]);
+    queuedSerialOutput = ((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition() + (String) FIELD_DELIMITER + serialScore[0] + (String) FIELD_DELIMITER + serialScore[1]);
+
+    printNextChar();
 }
