@@ -1,0 +1,1 @@
+Replace the files in \Program Files (x86)\Arduino\hardware\arduino\cores\	robot and arduino with these files.

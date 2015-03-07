@@ -27,13 +27,14 @@ AccelStepper stepperY(AccelStepper::DRIVER, Y_MOTOR_PIN, Y_MOTOR_DIRECTION_PIN);
 long serialCoordinates[2];         // Input X,Y coordinates from Serial connection
 int serialScore[2];             // Input User and Robot score from Serial connection
 int currentScore[2];             // Current User and Robot scores
-int fieldIndex = -1;
+int fieldIndex = 0;
 char type;                      // Type of data being received
 Adafruit_7segment matrix = Adafruit_7segment();
-String currentSerialOutput = "";   // The current serial message to output
-String queuedSerialOutput = "";    // The next serial message to output. PLEASE USE FOR ALL PRINT MESSAGES
-String urgentSerialOutput = "";    // messages that take priority over the queued serial message
-int serialOutputIndex = 0;
+boolean readyForNextInput = false;
+//String currentSerialOutput = "";   // The current serial message to output
+//String queuedSerialOutput = "";    // The next serial message to output. PLEASE USE FOR ALL PRINT MESSAGES
+//String urgentSerialOutput = "";    // messages that take priority over the queued serial message
+//int serialOutputIndex = 0;
 
 void setup(){
     #ifndef __AVR_ATtiny85__
@@ -88,17 +89,18 @@ boolean getSerialInput(){
             }
         }
         else {
+        	fieldIndex = 0;                  // Reset field index for next type
+        
         	if (fieldIndex != 1){
         		// Serial.println("Incorrect Input Format");
         		return false;
       		}
 
-            // Any character not a digit or comma ends the acquisition of fields
-            // Signal back to the Java system that we're ready for the next update
-            // This is a "pull" technique to avoid race conditions on values getting overwritten
-            // on the line and potentially causing fatal mechanical malfunctions!
+                // Any character not a digit or comma ends the acquisition of fields
+                // Signal back to the Java system that we're ready for the next update
+                // This is a "pull" technique to avoid race conditions on values getting overwritten
+                // on the line and potentially causing fatal mechanical malfunctions!
         	gotInput = true;
-        	fieldIndex = -1;                  // Reset field index for next type
         }
     }
     return gotInput;
@@ -139,33 +141,33 @@ void displayScore(){
     currentScore[1] = serialScore[1];
 }
 
-void printNextChar(){
-  if(currentSerialOutput != ""){
-    if(serialOutputIndex < currentSerialOutput.length()){
-      Serial.print(currentSerialOutput[serialOutputIndex]);
-    }else{
-      Serial.print('/n');
-      serialOutputIndex = 0;
-      currentSerialOutput = "";
-    }
-    
-  }else{
-    if(urgentSerialOutput != ""){
-      currentSerialOutput = urgentSerialOutput;
-      urgentSerialOutput = "";
-    }else{
-      if(queuedSerialOutput != ""){
-        currentSerialOutput = queuedSerialOutput;
-        queuedSerialOutput = "";
-      }
-    }
-  }
-}
+//void printNextChar(){
+//  if(currentSerialOutput != ""){
+//    if(serialOutputIndex < currentSerialOutput.length()){
+//      Serial.print(currentSerialOutput[serialOutputIndex]);
+//    }else{
+//      Serial.print('/n');
+//      serialOutputIndex = 0;
+//      currentSerialOutput = "";
+//    }
+//    
+//  }else{
+//    if(urgentSerialOutput != ""){
+//      currentSerialOutput = urgentSerialOutput;
+//      urgentSerialOutput = "";
+//    }else{
+//      if(queuedSerialOutput != ""){
+//        currentSerialOutput = queuedSerialOutput;
+//        queuedSerialOutput = "";
+//      }
+//    }
+//  }
+//}
 
 void loop(){
     if(getSerialInput()){
         moveToPosition();
-        urgentSerialOutput = (String) PULL_NEXT_POSITION_CHAR;
+        readyForNextInput = true;
     }
     
     if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
@@ -175,10 +177,16 @@ void loop(){
     stepperX.run();
     stepperY.run();
     
-    // Send back current motor position
-
-    queuedSerialOutput = ((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition() + (String) FIELD_DELIMITER + serialScore[0] + (String) FIELD_DELIMITER + serialScore[1]);
-
-    printNextChar();
+    // if there is room in the outputbuffer send the following messages
+    if(Serial.isOutputBufferEmpty()){
+      // Send back current motor position
+      Serial.println((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition());
+       
+       if(readyForNextInput){
+          Serial.println(PULL_NEXT_POSITION_CHAR);
+          readyForNextInput = false;
+       }  
+    }
+//    printNextChar();
 }
 
