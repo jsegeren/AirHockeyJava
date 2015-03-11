@@ -32,26 +32,27 @@ public class StrategySelector {
 	}
 
 	public IStrategy getBestStrategy() {
-		Vector2 puckPosition = game.gamePuck.getPosition();
-		Vector2 puckVelocity = game.gamePuck.getVelocity();
-		if (puckPosition.x > game.gameTable.getWidth() / 2) {
-			if (puckPosition.x <= (float) game.gameTable.getWidth() - game.robotMallet.getRadius()
-					* 2 - Constants.STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS) {
-				if (game.gamePuck.getVelocity().len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE) {
-					updateStrategy(waypointOffenseStrategy);
-				} else {
-					updateStrategy(naiveDefenseStrategy);
-				}
-				// Check if puck moving slowly, and in the positive x direction
-			} else if (puckVelocity.len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE
-					&& puckVelocity.x > 0) {
-				updateStrategy(waypointOffenseStrategy);
-			} else {
-				updateStrategy(triangleDefenseStrategy);
-			}
-		} else {
-			updateStrategy(triangleDefenseStrategy);
-		}
+//		Vector2 puckPosition = game.gamePuck.getPosition();
+//		Vector2 puckVelocity = game.gamePuck.getVelocity();
+//		if (puckPosition.x > game.gameTable.getWidth() / 2) {
+//			if (puckPosition.x <= (float) game.gameTable.getWidth() - game.robotMallet.getRadius()
+//					* 2 - Constants.STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS) {
+//				if (game.gamePuck.getVelocity().len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE) {
+//					updateStrategy(waypointOffenseStrategy);
+//				} else {
+//					updateStrategy(naiveDefenseStrategy);
+//				}
+//				// Check if puck moving slowly, and in the positive x direction
+//			} else if (puckVelocity.len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE
+//					&& puckVelocity.x > 0) {
+//				updateStrategy(waypointOffenseStrategy);
+//			} else {
+//				updateStrategy(triangleDefenseStrategy);
+//			}
+//		} else {
+//			updateStrategy(triangleDefenseStrategy);
+//		}
+		updateStrategy(naiveDefenseStrategy);
 		return currentStrategy;
 
 	}

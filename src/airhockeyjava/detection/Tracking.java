@@ -285,7 +285,7 @@ public class Tracking implements Runnable {
 	private static void reduceNoise(Mat image) {
 		// Create structuring element that will be used to "dilate" and "erode"
 		// image. the element chosen here is a 3px by 3px rectangle
-		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 1));
+		Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2, 2));
 
 		// Dilate with larger element so make sure object is nicely visible
 		Mat dilateElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(12, 12));

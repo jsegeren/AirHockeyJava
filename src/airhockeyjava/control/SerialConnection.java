@@ -17,6 +17,7 @@ public class SerialConnection implements SerialPortEventListener {
 
 	IController controller;
 	SerialPort serialPort;
+	private String inputBuffer = "";
 
 	/**
 	 * Constructor
@@ -94,12 +95,21 @@ public class SerialConnection implements SerialPortEventListener {
 	 * Handle an event on the serial port. Read the data and print it.
 	 */
 	public synchronized void serialEvent(SerialPortEvent oEvent) {
+		
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
-				String inputLine = input.readLine();
-				System.out.println(inputLine);
-				// Pass up to controller for application handling
-				controller.handleInterfaceMessage(inputLine);
+//				char inputChar = (char)input.read();
+////				System.out.println(inputChar);
+//				if(inputChar == '\n'){
+					inputBuffer = input.readLine();
+					System.out.println("FROM ARDUINO: " + inputBuffer);
+//					controller.handleInterfaceMessage(inputBuffer);
+//					inputBuffer = "";
+//	
+//				}else{
+//					inputBuffer += inputChar;
+//				}
+				controller.handleInterfaceMessage(inputBuffer);
 			} catch (Exception e) {
 				System.err.println(e.toString());
 			}

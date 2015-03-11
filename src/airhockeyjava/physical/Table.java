@@ -74,7 +74,7 @@ public class Table extends RoundRectangle2D.Float {
 	}
 
 	public Rectangle2D getRobotWorkspaceCollisionFrame(float collisionRadius) {
-		return new Rectangle2D.Float((float) this.getWidth() / 2f + collisionRadius, (float) 0f
+		return new Rectangle2D.Float((float) this.getWidth() / 2f + collisionRadius , (float) 0f
 				+ collisionRadius, (float) this.getWidth() / 2f - 2 * collisionRadius,
 				(float) this.getHeight() - 2 * collisionRadius);
 	}

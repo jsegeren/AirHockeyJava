@@ -44,12 +44,14 @@ public class RealRobotController implements IController {
 	}
 
 	private void sendAbsolutePositionOverSerial(Vector2 targetPositionAbsoluteSteps) {
-		serialConnection.writeBytes(getDataStringFromPositionVector(targetPositionAbsoluteSteps)
-				.getBytes());
+
+		String positionString = getDataStringFromPositionVector(targetPositionAbsoluteSteps);
+		System.out.println("targetPos: " + positionString);
+		serialConnection.writeBytes(positionString.getBytes());
 	}
 
 	private static String getDataStringFromPositionVector(Vector2 position) {
-		return String.format("%s%s%s", position.x, Constants.SERIAL_POSITION_DELIMITER, position.y);
+		return String.format("P%s%s%s\n", (int)position.x, Constants.SERIAL_POSITION_DELIMITER, (int)position.y);
 	}
 
 	@Override
@@ -68,8 +70,11 @@ public class RealRobotController implements IController {
 						.length());
 				String[] stepPosition = interfaceMessage.split(Constants.SERIAL_POSITION_DELIMITER);
 				if (stepPosition.length == 2) {
-					mallet.setPosition(stepsToDistancesVector(new Vector2(Integer
-							.parseInt(stepPosition[0]), Integer.parseInt(stepPosition[1]))));
+					Vector2 stepsOffset = stepsToDistancesVector(new Vector2(Integer
+							.parseInt(stepPosition[0]), Integer.parseInt(stepPosition[1])));
+					stepsOffset.y += Constants.ROBOT_MALLET_INITIAL_POSITION_Y;
+					stepsOffset.x += Constants.ROBOT_MALLET_INTIIAL_POSITION_X;
+					mallet.setPosition(stepsOffset);
 				} else {
 					throw new InvalidMessageException("Unexpected position message length.");
 				}
@@ -87,8 +92,8 @@ public class RealRobotController implements IController {
 	}
 
 	private static Vector2 distancesToStepsVector(Vector2 position) {
-		return new Vector2(Conversion.meterToStepsX(position.x),
-				Conversion.meterToStepsY(position.y));
+		return new Vector2(Conversion.meterToStepsX(position.x - Constants.ROBOT_MALLET_INTIIAL_POSITION_X),
+				Conversion.meterToStepsY(position.y - Constants.ROBOT_MALLET_INITIAL_POSITION_Y));
 	}
 
 	private static Vector2 stepsToDistancesVector(Vector2 steps) {

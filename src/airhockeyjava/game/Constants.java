@@ -114,7 +114,7 @@ public class Constants {
 
 	// TODO make dynamic based on capture area and physical object dimensions
 	public static int DETECTION_FRAME_HEIGHT = 480;
-	public static int DETECTION_FRAME_WIDTH = 720;
+	public static int DETECTION_FRAME_WIDTH = 640;
 	public static final int DETECTION_PUCK_MAX_AREA = 100 * 100;
 	public static final int DETECTION_PUCK_MIN_AREA = 20 * 20;
 	public static final int DETECTION_MAX_OBJECTS = 10;
@@ -126,7 +126,7 @@ public class Constants {
 	public static final float WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.80f;
 	public static final float PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT = 0.001f;
 	public static final float PUCK_AIR_FRICTION_COEFFICIENT = 0.3f;
-	public static final int GAME_SIMULATION_TARGET_FRAMES_PER_SECOND = 120;
+	public static final int GAME_SIMULATION_TARGET_FRAMES_PER_SECOND = 10;
 	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 15f;
 	public static final int NUMBER_PREDICTED_PATH_REFLECTIONS = 3;
 	public static final float DIRECTIONAL_FORCE_SCALE_FACTOR = 10000f;
@@ -138,10 +138,10 @@ public class Constants {
 	public static final float MECHANICAL_MAX_SPEED_METERS_PER_SECOND = 1.5f;
 	public static final float MECHANICAL_MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1f;
 	public static final float MECHANICAL_MAX_POSITION_RESOLUTION_METERS = 0.005f;
-	public static final float MECHANICAL_STEPS_PER_METER_X = 2387;
-	public static final float MECHANICAL_STEPS_PER_METER_Y = 10; // TODO update with physical calc
+	public static final float MECHANICAL_STEPS_PER_METER_X = 2247;
+	public static final float MECHANICAL_STEPS_PER_METER_Y = 3333; // TODO update with physical calc
 //	public static final float MECHANICAL_STEPS_PER_METER_Y = 3193; // TODO update with physical calc
-	public static final float MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS = 0.10f;
+	public static final float MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS = 0.20f;
 
 	/**
 	 * Strategy Constants
@@ -163,6 +163,8 @@ public class Constants {
 	public static final String STRATEGY_NAIVE_OFFENSE_STRING = "Naive offense strategy";
 	public static final String STRATEGY_WAYPOINT_OFFENSE_STRING = "Waypoint offense strategy";
 
+	public static final float STRATEGY_MOVEMENT_TOLERANCE = 0.07f;
+	
 	/**
 	 * Input Constants
 	 */

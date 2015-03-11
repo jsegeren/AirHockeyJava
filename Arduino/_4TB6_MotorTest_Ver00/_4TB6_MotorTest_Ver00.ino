@@ -27,12 +27,12 @@ void setup() {
   // Y motor settings
   stepperY.setMaxSpeed(Y_MOTOR_MAX_SPEED);
   stepperY.setAcceleration(Y_MOTOR_ACCELERATION);
-  stepperY.moveTo(-1000);
+  stepperY.moveTo(-100);
   
   // X motor settings
   stepperX.setMaxSpeed(X_MOTOR_MAX_SPEED);
   stepperX.setAcceleration(X_MOTOR_ACCELERATION);
-  stepperX.moveTo(1000);
+  stepperX.moveTo(-1000);
 
 }
 

@@ -6,14 +6,14 @@
 // X - Direction Motor Settings
 #define X_MOTOR_PIN 10
 #define X_MOTOR_DIRECTION_PIN 11
-#define X_MOTOR_MAX_SPEED 5000
-#define X_MOTOR_ACCELERATION 5000
+#define X_MOTOR_MAX_SPEED 3000
+#define X_MOTOR_ACCELERATION 3000
 
 // Y - Direction Motor Settings
 #define Y_MOTOR_PIN 5
 #define Y_MOTOR_DIRECTION_PIN 6
-#define Y_MOTOR_MAX_SPEED 3000
-#define Y_MOTOR_ACCELERATION 5000
+#define Y_MOTOR_MAX_SPEED 5000
+#define Y_MOTOR_ACCELERATION 100000
 
 // Other constants
 #define FIELD_DELIMITER ','
@@ -38,6 +38,8 @@ int outputBufferIndex = 0;
 String queuedSerialOutput[2];    // The queue of output messages. PLEASE USE FOR ALL PRINT MESSAGES
 const int OUTPUT_BUFFER_SIZE = 2;
 int serialOutputIndex = 0;
+
+boolean readyForNextInput = false;
 
 void setup(){
     #ifndef __AVR_ATtiny85__
@@ -72,8 +74,8 @@ boolean getSerialInput(){
         // This will be an alpha character
         if (ch >= 'A' && ch <= 'Z')          // Determine the type of data being passed to the arduino
         {
-            type = ch;            // Make type equal to the correct type of data being received
-            fieldIndex ++;  
+            type = ch;            // Make type equal to the correct type of data being received  
+            fieldIndex++;
       }
         
         else if(ch >= '0' && ch <= '9')     // Is this an ascii digit between 0 and 9?
@@ -102,9 +104,10 @@ boolean getSerialInput(){
             }
         }
         else {
+        
         	if (fieldIndex != 1){
         		//Serial.println("Incorrect Input Format");
-                        fieldIndex = -1;
+        	        fieldIndex = -1;                  // Reset field index for next type
         		return false;
       		}
 
@@ -116,8 +119,9 @@ boolean getSerialInput(){
                 serialCoordinates[1] *=  directionVector[1];
                 directionVector[0] = 1;
                 directionVector[1] = 1;
-        	gotInput = true;
+                
         	fieldIndex = -1;                  // Reset field index for next type
+        	gotInput = true;
         }
     }
     return gotInput;
@@ -179,7 +183,7 @@ void printNextChar(){
 void loop(){
     if(getSerialInput()){
         moveToPosition();
-        queuedSerialOutput[0] = (String) PULL_NEXT_POSITION_CHAR;
+        readyForNextInput = true;
     }
     
 //    if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
@@ -189,14 +193,16 @@ void loop(){
     stepperX.run();
     stepperY.run();
     
-    // Send back current motor position
-    queuedSerialOutput[1] = ((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition()); //+ (String) FIELD_DELIMITER + serialScore[0] + (String) FIELD_DELIMITER + serialScore[1]);
-
-    if (outputDelayCounter == 10){
-
-      printNextChar();
-      outputDelayCounter = 0;
+    // if there is room in the outputbuffer send the following messages
+    if(Serial.isOutputBufferEmpty()){
+      // Send back current motor position
+      Serial.println((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition());
+       
+       if(readyForNextInput){
+          Serial.println(PULL_NEXT_POSITION_CHAR);
+          readyForNextInput = false;
+       }  
     }
-    outputDelayCounter ++;
+//    printNextChar();
 }
 
