@@ -28,6 +28,7 @@ import airhockeyjava.game.Constants;
 import airhockeyjava.graphics.ImageFilteringPanel;
 import airhockeyjava.graphics.VideoDisplayPanel;
 import airhockeyjava.util.Conversion;
+import airhockeyjava.util.FileWriter;
 import airhockeyjava.util.NormalDistribution;
 import airhockeyjava.util.ScalarRange;
 import airhockeyjava.util.Vector2;
@@ -64,6 +65,7 @@ public class Tracking implements Runnable {
 	private boolean usePS3Cam;
 
 	private boolean isGuiEnabled;
+	
 
 	// Use this to dynamically resize the JFrame based on the capture size
 	// Only need to resize the JFrame after the first frame capture!
@@ -83,6 +85,7 @@ public class Tracking implements Runnable {
 
 	public Tracking(List<List<ITrackingObject>> objectsToTrack, PS3EyeFrameGrabber ps3VideoCapture,
 			VideoCapture videoCapture, boolean usePS3Camera, boolean isGuiEnabled) {
+
 		initializeMouseListener();
 
 		this.usePS3Cam = usePS3Camera;
@@ -416,10 +419,10 @@ public class Tracking implements Runnable {
 		range = new ScalarRange(new Scalar(
 				(hueDistribution.getMean() - (0.5 * hueDistribution.getDevation())),
 				(saturationDistribution.getMean() - (2 * saturationDistribution.getDevation())),
-				(valueDistribution.getMean() - (2 * valueDistribution.getDevation()))), new Scalar(
+				(valueDistribution.getMean() - (3 * valueDistribution.getDevation()))), new Scalar(
 				(hueDistribution.getMean() + (0.5 * hueDistribution.getDevation())),
 				(saturationDistribution.getMean() + (2 * saturationDistribution.getDevation())),
-				(valueDistribution.getMean() + (2 * valueDistribution.getDevation()))));
+				(valueDistribution.getMean() + (3 * valueDistribution.getDevation()))));
 		return range;
 	}
 

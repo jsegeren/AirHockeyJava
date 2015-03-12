@@ -2,6 +2,7 @@ package airhockeyjava.graphics;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -14,6 +15,8 @@ import javax.swing.event.ChangeListener;
 import org.opencv.core.Scalar;
 
 import airhockeyjava.detection.ITrackingObject;
+import airhockeyjava.game.Constants;
+import airhockeyjava.util.FileWriter;
 import airhockeyjava.util.ScalarRange;
 
 /**
@@ -28,9 +31,9 @@ public class ImageFilteringPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int NUM_TICKS_SPACING = 50;
 	
-	private JButton[] objectButtons = new JButton[2];
-	private String[] objectTypes = { "Puck", "Bounds"};
-
+	private JButton[] objectButtons = new JButton[3];
+	private String[] objectTypes = { "Puck", "Bounds", "Save"};
+	
 	// Sliders for the high and lows of the Hue, Saturation and Value
 	private JSlider[] high = new JSlider[3];
 	private JLabel [] highLabels = new JLabel[3];
@@ -51,12 +54,17 @@ public class ImageFilteringPanel extends JPanel {
 
 	List<ITrackingObject> trackingObjects;
 	
+	private FileWriter writer;
+
+	
 	public int getCurrentObjType() {
 		return currentObjType;
 	}
 	
 	public ImageFilteringPanel(List<ITrackingObject> trackingObjects) {
 		this.trackingObjects = trackingObjects;
+		this.writer = new FileWriter(Constants.DETECTION_THRESHOLD_FILE_NAME);
+
 		initialize();
 	}
 
@@ -78,16 +86,21 @@ public class ImageFilteringPanel extends JPanel {
 				  JButton src = (JButton) evt.getSource();
 				  currentObjType = Integer.parseInt(src.getActionCommand());
 				  System.out.println("Clicked on: " + objectTypes[currentObjType]);
+				  
+				  switch (objectTypes[currentObjType]){
+				  case "Save":
+					  saveThresholdValues();
+				  }
 
-				  double[] hsvMax = trackingObjects.get(currentObjType).getHSVMax().val;
-				  for (int i = 0; i < high.length; i++) {
-					high[i].setValue((int)hsvMax[i]);
-				  }
-					  
-				  double[] hsvMin = trackingObjects.get(currentObjType).getHSVMin().val;
-				  for (int i = 0; i < high.length; i++) {
-					low[i].setValue((int)hsvMin[i]);
-				  }
+//				  double[] hsvMax = trackingObjects.get(currentObjType).getHSVMax().val;
+//				  for (int i = 0; i < high.length; i++) {
+//					high[i].setValue((int)hsvMax[i]);
+//				  }
+//					  
+//				  double[] hsvMin = trackingObjects.get(currentObjType).getHSVMin().val;
+//				  for (int i = 0; i < high.length; i++) {
+//					low[i].setValue((int)hsvMin[i]);
+//				  }
 			  }
 			});
 		}
@@ -161,6 +174,8 @@ public class ImageFilteringPanel extends JPanel {
 
 			}
 		}
+		
+		loadThresholdValues();
 	}
 
 	/**
@@ -201,6 +216,34 @@ public class ImageFilteringPanel extends JPanel {
 				+ ") Value Range: (" + low[2].getValue() + ","
 				+ high[2].getValue() + ")");
 	}
+	
+	public void loadThresholdValues(){
+		try {
+			String text = this.writer.read();
+			String[] values = text.split(",");
 
+			int j = 0;
+			for (int i = 0; i < 3; i++) {
+				low[i].setValue( Integer.parseInt(values[j++]));
+				high[i].setValue(Integer.parseInt(values[j++]));
+			}			
+		} catch (IOException e){
+			
+		}
+
+	}
+
+	public void saveThresholdValues(){
+		//Generate String
+		String text = low[0].getValue() + ",";
+		text += high[0].getValue() + ",";
+		text += low[1].getValue() + ",";
+		text += high[1].getValue() + ",";
+		text += low[2].getValue() + ",";
+		text += high[2].getValue();
+		
+		//Write String
+		this.writer.write(text);
+	}
 }
 

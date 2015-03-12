@@ -401,6 +401,10 @@ public class Game {
 		}
 		// Otherwise we will use the vision system
 		else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
+			// Update predicted path
+			game.gamePuck.calculateAnUpdateDectectedVelocity(deltaTime);
+			game.gamePuck.updatePredictedPath(Constants.NUMBER_PREDICTED_PATH_REFLECTIONS,
+					true);
 		}
 
 		// Check if should control robot mallet

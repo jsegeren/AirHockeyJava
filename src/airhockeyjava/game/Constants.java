@@ -118,6 +118,7 @@ public class Constants {
 	public static final int DETECTION_PUCK_MAX_AREA = 100 * 100;
 	public static final int DETECTION_PUCK_MIN_AREA = 20 * 20;
 	public static final int DETECTION_MAX_OBJECTS = 10;
+	public static final String DETECTION_THRESHOLD_FILE_NAME = "threshVals.txt";
 
 	/**
 	 * Simulation Model Constants

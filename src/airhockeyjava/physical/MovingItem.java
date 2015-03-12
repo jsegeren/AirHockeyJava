@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import airhockeyjava.game.Constants;
+import airhockeyjava.util.FixedStack;
 import airhockeyjava.util.Geometry;
 import airhockeyjava.util.LineVectorUtils;
 import airhockeyjava.util.Vector2;
@@ -40,7 +41,9 @@ public abstract class MovingItem implements IMovingItem {
 	private Vector2 acceleration;
 	private final float mass; // Used in simulated friction calculation and energy transfer model
 	private final float radius;
-
+	
+	private FixedStack<Vector2> pastPositions; 
+	
 	boolean predictedPathFound = true;
 
 	/**
@@ -59,6 +62,7 @@ public abstract class MovingItem implements IMovingItem {
 				new Point2D.Float(position.x, position.y));
 		this.pathAndFlag = new PathAndFlag(new Path2D.Float(), false);
 		this.table = table;
+		this.pastPositions = new FixedStack(4);
 	}
 
 	@Override
@@ -68,6 +72,7 @@ public abstract class MovingItem implements IMovingItem {
 
 	@Override
 	public void setPosition(Vector2 newPosition) {
+		this.pastPositions.push(position);
 		this.position = newPosition;
 	}
 
@@ -148,6 +153,13 @@ public abstract class MovingItem implements IMovingItem {
 	public void updatePositionAndVelocity(float deltaTime) {
 		this.velocity.add(new Vector2(this.acceleration).scl(deltaTime));
 		updatePosition(deltaTime);
+	}
+	
+	public void calculateAnUpdateDectectedVelocity(float deltaTime){
+		if(this.pastPositions.size() > 0){
+			this.velocity = new Vector2(this.position).sub(this.pastPositions.peek());
+			System.out.println(this.velocity);			
+		}
 	}
 
 	/**
