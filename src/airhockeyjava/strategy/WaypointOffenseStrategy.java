@@ -1,5 +1,6 @@
 package airhockeyjava.strategy;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class WaypointOffenseStrategy implements IStrategy {
 				Constants.STRATEGY_VIA_SWITCH_DISTANCE_METERS_SQUARED) {
 			if (nextWaypointIndex + 1 >= waypointsList.size()) {
 				nextWaypointIndex = 0;
-				return TriangleDefenseStrategy.homePosition;
+				return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
 			}
 			nextWaypointIndex++;
 		}

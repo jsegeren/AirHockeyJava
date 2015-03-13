@@ -4,23 +4,24 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.swing.JPanel;
+
 import airhockeyjava.game.Constants;
+import airhockeyjava.game.Game;
 import airhockeyjava.physical.IMovingItem;
 import airhockeyjava.physical.Mallet;
 import airhockeyjava.physical.MovingItem;
 import airhockeyjava.physical.Puck;
 import airhockeyjava.physical.Table;
-
-import javax.swing.JPanel;
-
-import airhockeyjava.game.Game;
-import airhockeyjava.util.*;
+import airhockeyjava.util.Conversion;
+import airhockeyjava.util.Vector2;
 
 /**
  * Class for simulation UI layer.
@@ -45,6 +46,10 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	private boolean isInitialized = false;
 
 	AffineTransform coordinateTranslate = new AffineTransform();
+	
+	public Line2D tmpTriangleLine1 = null;
+	public Line2D tmpTriangleLine2 = null;
+
 
 	private static final Map<Boolean, Color> criticalPathColorMap = new HashMap<Boolean, Color>() {
 		private static final long serialVersionUID = 8650122016462175223L;
@@ -244,6 +249,19 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 				Constants.GUI_TABLE_OFFSET_Y
 						+ scale(tableHeight - Constants.GAME_GOAL_WIDTH_METERS) / 2,
 				scale(Constants.GAME_GOAL_ALLOWANCE), scale(Constants.GAME_GOAL_WIDTH_METERS));
+	
+		//TEST
+		if(this.tmpTriangleLine1 != null && this.tmpTriangleLine2 != null){
+			context.drawLine(Constants.GUI_TABLE_OFFSET_X + scale((float)this.tmpTriangleLine1.getX1()), 
+								   Constants.GUI_TABLE_OFFSET_Y + scale((float)this.tmpTriangleLine1.getY1()), 
+								   Constants.GUI_TABLE_OFFSET_X + scale((float)this.tmpTriangleLine1.getX2()), 
+								   Constants.GUI_TABLE_OFFSET_Y + scale((float)this.tmpTriangleLine1.getY2()));
+			context.drawLine(Constants.GUI_TABLE_OFFSET_X + scale((float)this.tmpTriangleLine2.getX1()), 
+					   Constants.GUI_TABLE_OFFSET_Y + scale((float)this.tmpTriangleLine2.getY1()), 
+					   Constants.GUI_TABLE_OFFSET_X + scale((float)this.tmpTriangleLine2.getX2()), 
+					   Constants.GUI_TABLE_OFFSET_Y + scale((float)this.tmpTriangleLine2.getY2()));
+		}
+
 	}
 
 	/**

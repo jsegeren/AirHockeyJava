@@ -7,7 +7,7 @@
 #define X_MOTOR_PIN 10
 #define X_MOTOR_DIRECTION_PIN 11
 #define X_MOTOR_MAX_SPEED 3000
-#define X_MOTOR_ACCELERATION 3000
+#define X_MOTOR_ACCELERATION 5000
 
 // Y - Direction Motor Settings
 #define Y_MOTOR_PIN 5

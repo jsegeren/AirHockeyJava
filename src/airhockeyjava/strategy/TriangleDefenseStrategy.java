@@ -1,5 +1,7 @@
 package airhockeyjava.strategy;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,56 +19,54 @@ import airhockeyjava.util.Vector2;
 public class TriangleDefenseStrategy implements IStrategy {
 
 	final private static String strategyLabelString = Constants.STRATEGY_TRIANGLE_DEFENSE_STRING;
-	final private List<Vector2> availablePositions;
-	public static Vector2 homePosition;
 	final private Game game;
+	private Line2D[] triangleLines = new Line2D.Float[2];
 
 	public TriangleDefenseStrategy(Game game) {
+		//Generate lines to represent the triangle
 		this.game = game;
-		homePosition = new Vector2((float) game.gameTable.getWidth()
-				- game.robotMallet.getRadius()
-				- Constants.STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS, (float) game.gameTable
-				.getHeight() / 2f);
+		
+		Point2D homePosition = new Point2D.Float(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
+		Point2D traingleBase1 = new Point2D.Float(Constants.GAME_TABLE_WIDTH_METERS - Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS, 
+												  Constants.GAME_TABLE_HEIGHT_METERS / 2 - Constants.GAME_GOAL_WIDTH_METERS / 2);
+				 //Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS);
 
-		// TODO choose any position along the triangle instead of defining only three or four
-		availablePositions = new ArrayList<Vector2>();
-		availablePositions.add(homePosition);
-		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
-				- game.robotMallet.getRadius(), game.gameTable.getGoalStartY()));
-		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
-				- game.robotMallet.getRadius(), game.gameTable.getGoalEndY()));
-		//		availablePositions.add(new Vector2((float) game.gameTable.getWidth()
-		//				- game.robotMallet.getRadius(), (float) game.gameTable.getHeight() / 2));
+				Point2D traingleBase2 = new Point2D.Float(Constants.GAME_TABLE_WIDTH_METERS - Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS, 
+												 Constants.GAME_TABLE_HEIGHT_METERS / 2 + Constants.GAME_GOAL_WIDTH_METERS / 2);
+												//Constants.GAME_TABLE_HEIGHT_METERS - Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS);
+
+		triangleLines[0] = new Line2D.Float(homePosition, traingleBase1);
+		triangleLines[1] = new Line2D.Float(homePosition, traingleBase2);
+		
+
 
 	}
+
+
+
 
 	@Override
 	public Vector2 getTargetPosition(float deltaTime) {
-		//		return new Vector2(game.robotMallet.getPosition().x, game.gamePuck.getPosition().y);
-		float bestPositionScore = Float.MIN_VALUE;
-		Vector2 bestPosition = null;
-		for (Vector2 position : availablePositions) {
-			float positionScore = getPositionScore(position);
-			if (positionScore > bestPositionScore) {
-				bestPositionScore = positionScore;
-				bestPosition = position;
-			}
+		if(game.guiLayer != null){
+			game.guiLayer.tmpTriangleLine1 = triangleLines[0];
+			game.guiLayer.tmpTriangleLine2 = triangleLines[1];			
 		}
-		return bestPosition;
-	}
 
-	/**
-	 * Method to score each position. Higher score is better
-	 * @param position
-	 * @return score (higher is better)
-	 */
-	private float getPositionScore(Vector2 position) {
-		// TODO revise the last expected point to give something more useful
-		//		return 1/(game.gamePuck.getLastExpectedPointVector().dst2(position));
-		//		return (float) (1 / (game.gamePuck.getPosition().dst2(position)));
-		return (float) (1 / (game.gamePuck
-				.getExpectedPosition(Constants.STRATEGY_TRIANGLE_LOOKAHEAD_TIME_SECONDS)
-				.dst(position)));
+		Point2D collisionPoint = game.gamePuck.getExpectedInterectionWithLine(this.triangleLines);
+		
+		Vector2 puckPosition = game.gamePuck.getPosition();
+		if(puckPosition.x < game.gameTable.getWidth() / 3){
+			return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
+		} else {
+			if(collisionPoint != null){
+				return new Vector2((float)collisionPoint.getX(), (float)collisionPoint.getY());
+			}else{
+				return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
+			}
+
+		}
+		
+	
 	}
 
 	@Override

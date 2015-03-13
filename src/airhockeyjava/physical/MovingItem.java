@@ -329,4 +329,53 @@ public abstract class MovingItem implements IMovingItem {
 				Intersection.getCollisionEdge((float) predictedLine.getX2(),
 						(float) predictedLine.getY2(), collisionFrame));
 	}
+	
+	public Point2D getExpectedInterectionWithLine(Line2D line){
+		Point2D intersectionPoint = null;
+		Line2D currentLine;
+
+		for (int i = 0; i < predictedPathPoints.size()-1; i++){
+			Point2D p1 = predictedPathPoints.get(i);
+			Point2D p2 = predictedPathPoints.get(i+1);
+
+			currentLine = new Line2D.Float(p1, p2);
+			intersectionPoint = Intersection.getIntersectionPoint(currentLine, line);
+			if(intersectionPoint != null){
+				break;
+			}
+		}
+		
+		return intersectionPoint;
+	}
+	
+	public Point2D getExpectedInterectionWithLine(Line2D lines[]){
+		Point2D intersectionPoint = null;
+		Line2D currentLine;
+
+	
+		
+		for (int i = 0; i < predictedPathPoints.size()-1; i++){
+			Point2D p1 = predictedPathPoints.get(i);
+			Point2D p2 = predictedPathPoints.get(i+1);
+			currentLine = new Line2D.Float(p1, p2);
+
+			
+			for (int j = 0; j < lines.length; j++){
+				Line2D line = lines[j];
+				intersectionPoint = Intersection.getIntersectionPoint(currentLine, line);
+				if(intersectionPoint != null){
+					break;
+				}
+			
+			}
+
+			if(intersectionPoint != null){
+				break;
+			}
+		}
+		
+		return intersectionPoint;
+	}	
+
+	
 }

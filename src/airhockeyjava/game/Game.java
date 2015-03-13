@@ -163,7 +163,7 @@ public class Game {
 	private StrategySelector robotStrategy;
 	private IController userController;
 	private IController robotController;
-	private GuiLayer guiLayer;
+	public GuiLayer guiLayer;
 	public IInputLayer inputLayer;
 	public SerialConnection serialConnection;
 

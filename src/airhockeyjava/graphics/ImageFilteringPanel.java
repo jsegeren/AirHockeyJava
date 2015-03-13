@@ -224,7 +224,7 @@ public class ImageFilteringPanel extends JPanel {
 
 			int j = 0;
 			for (int i = 0; i < 3; i++) {
-				low[i].setValue( Integer.parseInt(values[j++]));
+				low[i].setValue(Integer.parseInt(values[j++]));
 				high[i].setValue(Integer.parseInt(values[j++]));
 			}			
 		} catch (IOException e){

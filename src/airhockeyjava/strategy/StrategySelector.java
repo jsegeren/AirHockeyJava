@@ -52,7 +52,7 @@ public class StrategySelector {
 //		} else {
 //			updateStrategy(triangleDefenseStrategy);
 //		}
-		updateStrategy(naiveDefenseStrategy);
+		updateStrategy(triangleDefenseStrategy);
 		return currentStrategy;
 
 	}
