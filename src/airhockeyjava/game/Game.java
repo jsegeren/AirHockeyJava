@@ -296,6 +296,7 @@ public class Game {
 		jFrame.setResizable(false);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.add(guiLayer);
+		jFrame.setLocation(0, 480);			
 		jFrame.setVisible(true);
 
 		// Start the threads

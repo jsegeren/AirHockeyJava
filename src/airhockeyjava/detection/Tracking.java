@@ -45,7 +45,7 @@ public class Tracking implements Runnable {
 
 	// Map of tracking objects to number of occurrences/instances expected
 	private List<List<ITrackingObject>> objectSetsToTrack;
-	private List<Point> tableBounds = new ArrayList<Point>();
+	private List<Point> perspectiveBounds = new ArrayList<Point>();
 
 	private VideoDisplayPanel normalPanel;
 	private JFrame jFrame;
@@ -114,7 +114,7 @@ public class Tracking implements Runnable {
 		}
 
 		if (isGuiEnabled) {
-			this.normalPanel = new VideoDisplayPanel(trackingObjects, tableBounds);
+			this.normalPanel = new VideoDisplayPanel(trackingObjects, perspectiveBounds);
 			this.normalPanel.addMouseListener(mouseListener);
 
 			this.jFrame = new JFrame(Constants.DETECTION_JFRAME_LABEL);
@@ -131,11 +131,13 @@ public class Tracking implements Runnable {
 					Constants.DETECTION_FRAME_HEIGHT);
 			this.hsvFilteredFrame.add(hsvFilteredPanel);
 			this.hsvFilteredFrame.setVisible(true);
+			this.hsvFilteredFrame.setLocation(640, 0);			
 
 			// Create frame to manipulate image level thresholding
-			this.slider = new ImageFilteringPanel(filteringObjects);
+			this.slider = new ImageFilteringPanel(filteringObjects, this);
 			this.sliderFrame = new JFrame("HSV Thresholds");
-			this.sliderFrame.setSize(500, 250);
+			this.sliderFrame.setSize(500, 800);
+			this.sliderFrame.setLocation(1280, 0);			
 			this.sliderFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.sliderFrame.add(slider);
 			this.sliderFrame.setVisible(true);
@@ -187,21 +189,22 @@ public class Tracking implements Runnable {
 
 			if (!originalImage.empty()) {
 				//TODO FIX RESIZING OF FRAME
-/*				// Dynamically resize the JFrames based on the capture size (device-dependent)
+				// Dynamically resize the JFrames based on the capture size (device-dependent)
 				if (isFirstCaptureImage) {
-					Dimension actualSize = new Dimension(originalImage.width(),
-							originalImage.height());
-					if (jFrame.getWidth() != actualSize.getWidth()
-							|| jFrame.getHeight() != actualSize.getHeight()) {
-						// Update the global width & height
-						Constants.setDetectionFrameWidth(originalImage.width());
-						Constants.setDetectionFrameHeight(originalImage.height());
-						// Update the local frame sizes to display
-						jFrame.setSize(actualSize);
-						hsvFilteredFrame.setSize(actualSize);
-					}
+					slider.loadTransform();
+//					Dimension actualSize = new Dimension(originalImage.width(),
+//							originalImage.height());
+//					if (jFrame.getWidth() != actualSize.getWidth()
+//							|| jFrame.getHeight() != actualSize.getHeight()) {
+//						// Update the global width & height
+//						Constants.setDetectionFrameWidth(originalImage.width());
+//						Constants.setDetectionFrameHeight(originalImage.height());
+//						// Update the local frame sizes to display
+//						jFrame.setSize(actualSize);
+//						hsvFilteredFrame.setSize(actualSize);
+//					}
 					isFirstCaptureImage = false;
-				}*/
+				}
 
 				// Perspective transformation -> 2D to 2D input warp so capture doesn't have to be flat or level
 				if (warpMat != null) {
@@ -439,7 +442,7 @@ public class Tracking implements Runnable {
 						break;
 					case 1:
 						// Table bounds
-						addTableBound(new Point(e.getX(), e.getY()));
+						addPerspectiveBound(new Point(e.getX(), e.getY()));
 						break;
 					default:
 						break;
@@ -468,14 +471,14 @@ public class Tracking implements Runnable {
 		};
 	}
 
-	private void addTableBound(Point point) {
-		if (this.tableBounds.size() == 4) {
-			this.tableBounds.clear();
+	public void addPerspectiveBound(Point point) {
+		if (this.perspectiveBounds.size() == 4) {
+			this.perspectiveBounds.clear();
 		}
 
-		this.tableBounds.add(point);
+		this.perspectiveBounds.add(point);
 
-		if (this.tableBounds.size() == 4) {
+		if (this.perspectiveBounds.size() == 4) {
 			this.computePerspectiveTransform();
 		}
 	}
@@ -485,9 +488,20 @@ public class Tracking implements Runnable {
 		List<Point> destPoints = Arrays.asList(new Point(0, 0), new Point(hsvImage.cols(), 0),
 				new Point(0, hsvImage.rows()), new Point(hsvImage.cols(), hsvImage.rows()));
 
-		this.warpMat = Imgproc.getPerspectiveTransform(new MatOfPoint2f(this.tableBounds.get(0),
-				this.tableBounds.get(1), this.tableBounds.get(2), this.tableBounds.get(3)),
+		this.warpMat = Imgproc.getPerspectiveTransform(new MatOfPoint2f(this.perspectiveBounds.get(0),
+				this.perspectiveBounds.get(1), this.perspectiveBounds.get(2), this.perspectiveBounds.get(3)),
 				new MatOfPoint2f(destPoints.get(0), destPoints.get(1), destPoints.get(2), destPoints.get(3)));
+	}
+	
+	public void resetPrespectiveTransform(){
+		this.addPerspectiveBound(new Point(0, 0));
+		this.addPerspectiveBound(new Point(hsvImage.cols(), 0));
+		this.addPerspectiveBound(new Point(0, hsvImage.rows()));
+		this.addPerspectiveBound(new Point(hsvImage.cols(), hsvImage.rows()));
+	}
+	
+	public List<Point> getPerspectiveBounds(){
+		return this.perspectiveBounds;
 	}
 
 }

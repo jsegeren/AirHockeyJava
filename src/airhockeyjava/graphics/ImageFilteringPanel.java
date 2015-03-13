@@ -1,5 +1,6 @@
 package airhockeyjava.graphics;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -12,9 +13,11 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 
 import airhockeyjava.detection.ITrackingObject;
+import airhockeyjava.detection.Tracking;
 import airhockeyjava.game.Constants;
 import airhockeyjava.util.FileWriter;
 import airhockeyjava.util.ScalarRange;
@@ -31,9 +34,9 @@ public class ImageFilteringPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int NUM_TICKS_SPACING = 50;
 	
-	private JButton[] objectButtons = new JButton[3];
-	private String[] objectTypes = { "Puck", "Bounds", "Save"};
-	
+	private String[] objectTypes = { "Find Puck", "Set Bounds", "Save Thresholds", "Save Transform", "Reset Transform"};
+	private JButton[] objectButtons = new JButton[objectTypes.length];
+
 	// Sliders for the high and lows of the Hue, Saturation and Value
 	private JSlider[] high = new JSlider[3];
 	private JLabel [] highLabels = new JLabel[3];
@@ -54,19 +57,26 @@ public class ImageFilteringPanel extends JPanel {
 
 	List<ITrackingObject> trackingObjects;
 	
-	private FileWriter writer;
+	//FileWriters for thresholds and transforms
+	private FileWriter thresholdWriter;
+	private FileWriter transformWriter;
 
+	private Tracking tracker;
 	
 	public int getCurrentObjType() {
 		return currentObjType;
 	}
 	
-	public ImageFilteringPanel(List<ITrackingObject> trackingObjects) {
+	public ImageFilteringPanel(List<ITrackingObject> trackingObjects, Tracking tracker) {
 		this.trackingObjects = trackingObjects;
-		this.writer = new FileWriter(Constants.DETECTION_THRESHOLD_FILE_NAME);
+		this.tracker = tracker;
+		this.thresholdWriter = new FileWriter(Constants.DETECTION_THRESHOLD_FILE_NAME);
+		this.transformWriter = new FileWriter(Constants.DETECTION_TRANSFORM_FILE_NAME);
 
 		initialize();
 	}
+
+
 
 	/**
 	 * Initializes the panel's slider components
@@ -76,6 +86,8 @@ public class ImageFilteringPanel extends JPanel {
 		//Add the object buttons
 		for (int i = 0; i < objectTypes.length; i++) {
 			objectButtons[i] = new JButton(objectTypes[i]);
+			objectButtons[i].setPreferredSize(new Dimension(480, 30));
+
 			this.add(objectButtons[i]);
 			objectButtons[i].setActionCommand(Integer.toString(i));
 			
@@ -88,8 +100,16 @@ public class ImageFilteringPanel extends JPanel {
 				  System.out.println("Clicked on: " + objectTypes[currentObjType]);
 				  
 				  switch (objectTypes[currentObjType]){
-				  case "Save":
+				  case "Save Thresholds":
 					  saveThresholdValues();
+					  break;
+				  case "Save Transform":
+					  saveTransform();
+					  break;
+				  case "Reset Transform":
+					  resetTransform();
+					  break;
+				  default: break;
 				  }
 
 //				  double[] hsvMax = trackingObjects.get(currentObjType).getHSVMax().val;
@@ -113,7 +133,12 @@ public class ImageFilteringPanel extends JPanel {
 				highLabels[i] = new JLabel("");
 				low[i] = new JSlider(lowRange[i], highRange[i]);
 				lowLabels[i] = new JLabel("");
-
+				
+				low[i].setPreferredSize(new Dimension(480, 50));
+				high[i].setPreferredSize(new Dimension(480, 50));
+				lowLabels[i].setPreferredSize(new Dimension(480, 40));
+				highLabels[i].setPreferredSize(new Dimension(480, 40));
+				
 				// format the labeling and ticks
 				high[i].createStandardLabels(NUM_TICKS_SPACING);
 				high[i].setMajorTickSpacing(NUM_TICKS_SPACING);
@@ -122,7 +147,7 @@ public class ImageFilteringPanel extends JPanel {
 				high[i].setValue(highInit[i]);
 				high[i].setName(Integer.toString(i));
 				highLabels[i].setText(Integer.toString(highInit[i]));
-				
+
 				//Add a change listener to set hsvMax for the current object type
 				high[i].addChangeListener(new ChangeListener() {
 
@@ -166,16 +191,17 @@ public class ImageFilteringPanel extends JPanel {
 				// Display a label and then the respective slider
 				this.add(new JLabel(levelType[i] + " low"));
 				this.add(low[i]);
-				this.add(lowLabels[i]);
+				//this.add(lowLabels[i]);
 				
 				this.add(new JLabel(levelType[i] + " high"));
 				this.add(high[i]);
-				this.add(highLabels[i]);
+				//this.add(highLabels[i]);
 
 			}
 		}
 		
 		loadThresholdValues();
+
 	}
 
 	/**
@@ -219,7 +245,7 @@ public class ImageFilteringPanel extends JPanel {
 	
 	public void loadThresholdValues(){
 		try {
-			String text = this.writer.read();
+			String text = this.thresholdWriter.read();
 			String[] values = text.split(",");
 
 			int j = 0;
@@ -243,7 +269,43 @@ public class ImageFilteringPanel extends JPanel {
 		text += high[2].getValue();
 		
 		//Write String
-		this.writer.write(text);
+		this.thresholdWriter.write(text);
+	}
+	
+	public void loadTransform(){
+		try {
+			String text = this.transformWriter.read();
+			String[] values = text.split(",");
+
+			int j = 0;
+			for (int i = 0; i < 4; i++) {
+				float x = Float.parseFloat(values[j++]);
+				float y = Float.parseFloat(values[j++]);
+				this.tracker.addPerspectiveBound(new Point(x,y));
+			}			
+		} catch (IOException e){
+			
+		}
+	}
+	
+	public void saveTransform(){
+		String text = "";
+		List<Point> bounds = this.tracker.getPerspectiveBounds();
+		text += bounds.get(0).x + ",";
+		text += bounds.get(0).y + ",";
+		text += bounds.get(1).x + ",";
+		text += bounds.get(1).y + ",";
+		text += bounds.get(2).x + ",";
+		text += bounds.get(2).y + ",";
+		text += bounds.get(3).x + ",";
+		text += bounds.get(3).y;
+		this.transformWriter.write(text);
+
+	}
+	
+	
+	public void resetTransform(){
+		this.tracker.resetPrespectiveTransform();
 	}
 }
 
