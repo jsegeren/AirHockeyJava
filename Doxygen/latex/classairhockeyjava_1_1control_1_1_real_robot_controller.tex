@@ -1,0 +1,70 @@
+\hypertarget{classairhockeyjava_1_1control_1_1_real_robot_controller}{}\section{airhockeyjava.\+control.\+Real\+Robot\+Controller Class Reference}
+\label{classairhockeyjava_1_1control_1_1_real_robot_controller}\index{airhockeyjava.\+control.\+Real\+Robot\+Controller@{airhockeyjava.\+control.\+Real\+Robot\+Controller}}
+Inheritance diagram for airhockeyjava.\+control.\+Real\+Robot\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classairhockeyjava_1_1control_1_1_real_robot_controller}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classairhockeyjava_1_1control_1_1_real_robot_controller_aa27633a67b7fe893d0b00dea098b84ac}{}{\bfseries Real\+Robot\+Controller} (\hyperlink{classairhockeyjava_1_1physical_1_1_mallet}{Mallet} mallet)\label{classairhockeyjava_1_1control_1_1_real_robot_controller_aa27633a67b7fe893d0b00dea098b84ac}
+
+\item 
+void \hyperlink{classairhockeyjava_1_1control_1_1_real_robot_controller_a6cd39edab2adc50e6455e5d90499ca45}{control\+Mallet} (\hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} target\+Position, float delta\+Time)
+\item 
+void \hyperlink{classairhockeyjava_1_1control_1_1_real_robot_controller_a12d184d548d39367f6818884e7c4bc4c}{initialize} ()
+\item 
+void \hyperlink{classairhockeyjava_1_1control_1_1_real_robot_controller_a2c8d78d1fc2241b822fcf794236fa96d}{handle\+Interface\+Message} (String interface\+Message)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Mechanical mallet controller, which is responsible for controlling the mallet, outputting appropriate control signals.
+
+\begin{DoxyAuthor}{Author}
+Joshua Segeren 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1control_1_1_real_robot_controller_a6cd39edab2adc50e6455e5d90499ca45}{}\index{airhockeyjava\+::control\+::\+Real\+Robot\+Controller@{airhockeyjava\+::control\+::\+Real\+Robot\+Controller}!control\+Mallet@{control\+Mallet}}
+\index{control\+Mallet@{control\+Mallet}!airhockeyjava\+::control\+::\+Real\+Robot\+Controller@{airhockeyjava\+::control\+::\+Real\+Robot\+Controller}}
+\subsubsection[{control\+Mallet}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+control.\+Real\+Robot\+Controller.\+control\+Mallet (
+\begin{DoxyParamCaption}
+\item[{{\bf Vector2}}]{target\+Position, }
+\item[{float}]{delta\+Time}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1control_1_1_real_robot_controller_a6cd39edab2adc50e6455e5d90499ca45}
+Set instantaneous mallet velocity and acceleration 
+
+Implements \hyperlink{interfaceairhockeyjava_1_1control_1_1_i_controller_ad70e45ec858fa82506e8dcf166961e43}{airhockeyjava.\+control.\+I\+Controller}.
+
+\hypertarget{classairhockeyjava_1_1control_1_1_real_robot_controller_a2c8d78d1fc2241b822fcf794236fa96d}{}\index{airhockeyjava\+::control\+::\+Real\+Robot\+Controller@{airhockeyjava\+::control\+::\+Real\+Robot\+Controller}!handle\+Interface\+Message@{handle\+Interface\+Message}}
+\index{handle\+Interface\+Message@{handle\+Interface\+Message}!airhockeyjava\+::control\+::\+Real\+Robot\+Controller@{airhockeyjava\+::control\+::\+Real\+Robot\+Controller}}
+\subsubsection[{handle\+Interface\+Message}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+control.\+Real\+Robot\+Controller.\+handle\+Interface\+Message (
+\begin{DoxyParamCaption}
+\item[{String}]{interface\+Message}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1control_1_1_real_robot_controller_a2c8d78d1fc2241b822fcf794236fa96d}
+Respond to interface events or feedback 
+
+Implements \hyperlink{interfaceairhockeyjava_1_1control_1_1_i_controller_a734e16cfbd13ec095a71c7dcd60b2e2c}{airhockeyjava.\+control.\+I\+Controller}.
+
+\hypertarget{classairhockeyjava_1_1control_1_1_real_robot_controller_a12d184d548d39367f6818884e7c4bc4c}{}\index{airhockeyjava\+::control\+::\+Real\+Robot\+Controller@{airhockeyjava\+::control\+::\+Real\+Robot\+Controller}!initialize@{initialize}}
+\index{initialize@{initialize}!airhockeyjava\+::control\+::\+Real\+Robot\+Controller@{airhockeyjava\+::control\+::\+Real\+Robot\+Controller}}
+\subsubsection[{initialize}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+control.\+Real\+Robot\+Controller.\+initialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1control_1_1_real_robot_controller_a12d184d548d39367f6818884e7c4bc4c}
+Set up the serial connection of P\+C -\/$>$ Arduino via U\+S\+B 
+
+Implements \hyperlink{interfaceairhockeyjava_1_1control_1_1_i_controller_a5cff7c5681c4bb29e631cebe77e02a93}{airhockeyjava.\+control.\+I\+Controller}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/control/Real\+Robot\+Controller.\+java\end{DoxyCompactItemize}

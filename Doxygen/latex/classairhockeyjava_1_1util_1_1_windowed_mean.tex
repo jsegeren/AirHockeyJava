@@ -1,0 +1,125 @@
+\hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean}{}\section{airhockeyjava.\+util.\+Windowed\+Mean Class Reference}
+\label{classairhockeyjava_1_1util_1_1_windowed_mean}\index{airhockeyjava.\+util.\+Windowed\+Mean@{airhockeyjava.\+util.\+Windowed\+Mean}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean_a01174171588fa1cb761fc73789e6438f}{Windowed\+Mean} (int window\+\_\+size)
+\item 
+boolean \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean_ab4fdcd6a109fe2e15ee241b645d70436}{has\+Enough\+Data} ()
+\item 
+void \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean_a237f873e3427ea6d2d704426973d7525}{clear} ()
+\item 
+void \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean_acf6e2efc9b18226d56ce966557ce8f9d}{add\+Value} (float value)
+\item 
+float \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean_a14e5e757007bea1a08d952f156b13721}{get\+Mean} ()
+\item 
+float \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean_adcf9e5d15a655561086d16f605c6cdae}{get\+Oldest} ()
+\item 
+float \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean_adf524389aa0dd7be207238e0a96c43ef}{get\+Latest} ()
+\item 
+float \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean_a60cd82bf898d77deb1c00bb7b0c17483}{standard\+Deviation} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A simple class keeping track of the mean of a stream of values within a certain window. the \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean}{Windowed\+Mean} will only return a value in case enough data has been sampled. After enough data has been sampled the oldest sample will be replaced by the newest in case a new sample is added.
+
+\begin{DoxyAuthor}{Author}
+\href{mailto:badlogicgames@gmail.com}{\tt badlogicgames@gmail.\+com} 
+\end{DoxyAuthor}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean_a01174171588fa1cb761fc73789e6438f}{}\index{airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}!Windowed\+Mean@{Windowed\+Mean}}
+\index{Windowed\+Mean@{Windowed\+Mean}!airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}}
+\subsubsection[{Windowed\+Mean}]{\setlength{\rightskip}{0pt plus 5cm}airhockeyjava.\+util.\+Windowed\+Mean.\+Windowed\+Mean (
+\begin{DoxyParamCaption}
+\item[{int}]{window\+\_\+size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1util_1_1_windowed_mean_a01174171588fa1cb761fc73789e6438f}
+constructor, window\+\_\+size specifies the number of samples we will continuously get the mean and variance from. the class will only return meaning full values if at least window\+\_\+size values have been added.
+
+
+\begin{DoxyParams}{Parameters}
+{\em window\+\_\+size} & size of the sample window \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean_acf6e2efc9b18226d56ce966557ce8f9d}{}\index{airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}!add\+Value@{add\+Value}}
+\index{add\+Value@{add\+Value}!airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}}
+\subsubsection[{add\+Value}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+util.\+Windowed\+Mean.\+add\+Value (
+\begin{DoxyParamCaption}
+\item[{float}]{value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1util_1_1_windowed_mean_acf6e2efc9b18226d56ce966557ce8f9d}
+adds a new sample to this mean. In case the window is full the oldest value will be replaced by this new value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to add \\
+\hline
+\end{DoxyParams}
+\hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean_a237f873e3427ea6d2d704426973d7525}{}\index{airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}!clear@{clear}}
+\index{clear@{clear}!airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}}
+\subsubsection[{clear}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+util.\+Windowed\+Mean.\+clear (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1util_1_1_windowed_mean_a237f873e3427ea6d2d704426973d7525}
+clears this \hyperlink{classairhockeyjava_1_1util_1_1_windowed_mean}{Windowed\+Mean}. The class will only return meaningful values after enough data has been added again. \hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean_adf524389aa0dd7be207238e0a96c43ef}{}\index{airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}!get\+Latest@{get\+Latest}}
+\index{get\+Latest@{get\+Latest}!airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}}
+\subsubsection[{get\+Latest}]{\setlength{\rightskip}{0pt plus 5cm}float airhockeyjava.\+util.\+Windowed\+Mean.\+get\+Latest (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1util_1_1_windowed_mean_adf524389aa0dd7be207238e0a96c43ef}
+\begin{DoxyReturn}{Returns}
+the value last added 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean_a14e5e757007bea1a08d952f156b13721}{}\index{airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}!get\+Mean@{get\+Mean}}
+\index{get\+Mean@{get\+Mean}!airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}}
+\subsubsection[{get\+Mean}]{\setlength{\rightskip}{0pt plus 5cm}float airhockeyjava.\+util.\+Windowed\+Mean.\+get\+Mean (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1util_1_1_windowed_mean_a14e5e757007bea1a08d952f156b13721}
+returns the mean of the samples added to this instance. Only returns meaningful results when at least window\+\_\+size samples as specified in the constructor have been added. \begin{DoxyReturn}{Returns}
+the mean 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean_adcf9e5d15a655561086d16f605c6cdae}{}\index{airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}!get\+Oldest@{get\+Oldest}}
+\index{get\+Oldest@{get\+Oldest}!airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}}
+\subsubsection[{get\+Oldest}]{\setlength{\rightskip}{0pt plus 5cm}float airhockeyjava.\+util.\+Windowed\+Mean.\+get\+Oldest (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1util_1_1_windowed_mean_adcf9e5d15a655561086d16f605c6cdae}
+\begin{DoxyReturn}{Returns}
+the oldest value in the window 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean_ab4fdcd6a109fe2e15ee241b645d70436}{}\index{airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}!has\+Enough\+Data@{has\+Enough\+Data}}
+\index{has\+Enough\+Data@{has\+Enough\+Data}!airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}}
+\subsubsection[{has\+Enough\+Data}]{\setlength{\rightskip}{0pt plus 5cm}boolean airhockeyjava.\+util.\+Windowed\+Mean.\+has\+Enough\+Data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1util_1_1_windowed_mean_ab4fdcd6a109fe2e15ee241b645d70436}
+\begin{DoxyReturn}{Returns}
+whether the value returned will be meaningful 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_windowed_mean_a60cd82bf898d77deb1c00bb7b0c17483}{}\index{airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}!standard\+Deviation@{standard\+Deviation}}
+\index{standard\+Deviation@{standard\+Deviation}!airhockeyjava\+::util\+::\+Windowed\+Mean@{airhockeyjava\+::util\+::\+Windowed\+Mean}}
+\subsubsection[{standard\+Deviation}]{\setlength{\rightskip}{0pt plus 5cm}float airhockeyjava.\+util.\+Windowed\+Mean.\+standard\+Deviation (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1util_1_1_windowed_mean_a60cd82bf898d77deb1c00bb7b0c17483}
+\begin{DoxyReturn}{Returns}
+The standard deviation 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/util/Windowed\+Mean.\+java\end{DoxyCompactItemize}

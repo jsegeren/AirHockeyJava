@@ -1,0 +1,62 @@
+\hypertarget{classairhockeyjava_1_1simulation_1_1_collision}{}\section{airhockeyjava.\+simulation.\+Collision Class Reference}
+\label{classairhockeyjava_1_1simulation_1_1_collision}\index{airhockeyjava.\+simulation.\+Collision@{airhockeyjava.\+simulation.\+Collision}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static boolean \hyperlink{classairhockeyjava_1_1simulation_1_1_collision_ae9ec1587a927afd0e39c9de6f14d59e9}{is\+Colliding} (\hyperlink{interfaceairhockeyjava_1_1physical_1_1_i_moving_item}{I\+Moving\+Item} item\+A, \hyperlink{interfaceairhockeyjava_1_1physical_1_1_i_moving_item}{I\+Moving\+Item} item\+B)
+\item 
+\hypertarget{classairhockeyjava_1_1simulation_1_1_collision_af19fedd3a391a9b05262418f70b0b33f}{}static boolean {\bfseries has\+Collided} (\hyperlink{interfaceairhockeyjava_1_1physical_1_1_i_moving_item}{I\+Moving\+Item} item\+A, \hyperlink{interfaceairhockeyjava_1_1physical_1_1_i_moving_item}{I\+Moving\+Item} item\+B)\label{classairhockeyjava_1_1simulation_1_1_collision_af19fedd3a391a9b05262418f70b0b33f}
+
+\item 
+static \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} \hyperlink{classairhockeyjava_1_1simulation_1_1_collision_aa368543caab06047d1d0f1a0cd0bb779}{handle\+Collision} (\hyperlink{classairhockeyjava_1_1physical_1_1_puck}{Puck} puck, \hyperlink{classairhockeyjava_1_1physical_1_1_mallet}{Mallet} mallet)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class with static methods for evaluating current or future collisions between physical entities. \begin{DoxyAuthor}{Author}
+Joshua Segeren 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1simulation_1_1_collision_aa368543caab06047d1d0f1a0cd0bb779}{}\index{airhockeyjava\+::simulation\+::\+Collision@{airhockeyjava\+::simulation\+::\+Collision}!handle\+Collision@{handle\+Collision}}
+\index{handle\+Collision@{handle\+Collision}!airhockeyjava\+::simulation\+::\+Collision@{airhockeyjava\+::simulation\+::\+Collision}}
+\subsubsection[{handle\+Collision}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf Vector2} airhockeyjava.\+simulation.\+Collision.\+handle\+Collision (
+\begin{DoxyParamCaption}
+\item[{{\bf Puck}}]{puck, }
+\item[{{\bf Mallet}}]{mallet}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1simulation_1_1_collision_aa368543caab06047d1d0f1a0cd0bb779}
+Static method to handle collision between puck and mallet. Derivation based on resource\+: \href{http://www.vobarian.com/collisions/2dcollisions2.pdf}{\tt http\+://www.\+vobarian.\+com/collisions/2dcollisions2.\+pdf} 
+\begin{DoxyParams}{Parameters}
+{\em puck} & \\
+\hline
+{\em mallet} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector2 the new velocity of the puck 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1simulation_1_1_collision_ae9ec1587a927afd0e39c9de6f14d59e9}{}\index{airhockeyjava\+::simulation\+::\+Collision@{airhockeyjava\+::simulation\+::\+Collision}!is\+Colliding@{is\+Colliding}}
+\index{is\+Colliding@{is\+Colliding}!airhockeyjava\+::simulation\+::\+Collision@{airhockeyjava\+::simulation\+::\+Collision}}
+\subsubsection[{is\+Colliding}]{\setlength{\rightskip}{0pt plus 5cm}static boolean airhockeyjava.\+simulation.\+Collision.\+is\+Colliding (
+\begin{DoxyParamCaption}
+\item[{{\bf I\+Moving\+Item}}]{item\+A, }
+\item[{{\bf I\+Moving\+Item}}]{item\+B}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1simulation_1_1_collision_ae9ec1587a927afd0e39c9de6f14d59e9}
+Static method to check if two moving items are colliding 
+\begin{DoxyParams}{Parameters}
+{\em item\+A} & \\
+\hline
+{\em item\+B} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/simulation/Collision.\+java\end{DoxyCompactItemize}

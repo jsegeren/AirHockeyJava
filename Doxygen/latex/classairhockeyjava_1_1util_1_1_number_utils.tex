@@ -1,0 +1,51 @@
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils}{}\section{airhockeyjava.\+util.\+Number\+Utils Class Reference}
+\label{classairhockeyjava_1_1util_1_1_number_utils}\index{airhockeyjava.\+util.\+Number\+Utils@{airhockeyjava.\+util.\+Number\+Utils}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils_a5ed83b1f1781602b4dd73192bf8174d4}{}static int {\bfseries float\+To\+Int\+Bits} (float value)\label{classairhockeyjava_1_1util_1_1_number_utils_a5ed83b1f1781602b4dd73192bf8174d4}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils_a4c490adc0c32c7301651787d11c75bd9}{}static int {\bfseries float\+To\+Raw\+Int\+Bits} (float value)\label{classairhockeyjava_1_1util_1_1_number_utils_a4c490adc0c32c7301651787d11c75bd9}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils_a6e0afdea91c6b0c0bf3b6f879c6566d5}{}static int {\bfseries float\+To\+Int\+Color} (float value)\label{classairhockeyjava_1_1util_1_1_number_utils_a6e0afdea91c6b0c0bf3b6f879c6566d5}
+
+\item 
+static float \hyperlink{classairhockeyjava_1_1util_1_1_number_utils_ae0482ec6ce04cbf04cb9fd2799c153e2}{int\+To\+Float\+Color} (int value)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils_a01f777cf5db01faf2eac87dbbe953071}{}static float {\bfseries int\+Bits\+To\+Float} (int value)\label{classairhockeyjava_1_1util_1_1_number_utils_a01f777cf5db01faf2eac87dbbe953071}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils_a1df3ad6bfd4abc4c61fd291f6110833b}{}static long {\bfseries double\+To\+Long\+Bits} (double value)\label{classairhockeyjava_1_1util_1_1_number_utils_a1df3ad6bfd4abc4c61fd291f6110833b}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils_a9de2d493d327b286e96ce46f6a86e9bc}{}static double {\bfseries long\+Bits\+To\+Double} (long value)\label{classairhockeyjava_1_1util_1_1_number_utils_a9de2d493d327b286e96ce46f6a86e9bc}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static boolean \hyperlink{classairhockeyjava_1_1util_1_1_number_utils_a6b33766f5a40dbc01baeea59eab7d58e}{int\+To\+Float\+Color\+Mask} = true
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils_ae0482ec6ce04cbf04cb9fd2799c153e2}{}\index{airhockeyjava\+::util\+::\+Number\+Utils@{airhockeyjava\+::util\+::\+Number\+Utils}!int\+To\+Float\+Color@{int\+To\+Float\+Color}}
+\index{int\+To\+Float\+Color@{int\+To\+Float\+Color}!airhockeyjava\+::util\+::\+Number\+Utils@{airhockeyjava\+::util\+::\+Number\+Utils}}
+\subsubsection[{int\+To\+Float\+Color}]{\setlength{\rightskip}{0pt plus 5cm}static float airhockeyjava.\+util.\+Number\+Utils.\+int\+To\+Float\+Color (
+\begin{DoxyParamCaption}
+\item[{int}]{value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_number_utils_ae0482ec6ce04cbf04cb9fd2799c153e2}
+Encodes the A\+B\+G\+R int color as a float. The high bits are masked to avoid using floats in the Na\+N range, which unfortunately means the full range of alpha cannot be used. See \hyperlink{}{Float\#int\+Bits\+To\+Float(int)} javadocs. 
+
+\subsection{Member Data Documentation}
+\hypertarget{classairhockeyjava_1_1util_1_1_number_utils_a6b33766f5a40dbc01baeea59eab7d58e}{}\index{airhockeyjava\+::util\+::\+Number\+Utils@{airhockeyjava\+::util\+::\+Number\+Utils}!int\+To\+Float\+Color\+Mask@{int\+To\+Float\+Color\+Mask}}
+\index{int\+To\+Float\+Color\+Mask@{int\+To\+Float\+Color\+Mask}!airhockeyjava\+::util\+::\+Number\+Utils@{airhockeyjava\+::util\+::\+Number\+Utils}}
+\subsubsection[{int\+To\+Float\+Color\+Mask}]{\setlength{\rightskip}{0pt plus 5cm}boolean airhockeyjava.\+util.\+Number\+Utils.\+int\+To\+Float\+Color\+Mask = true\hspace{0.3cm}{\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_number_utils_a6b33766f5a40dbc01baeea59eab7d58e}
+When false, the mask in \hyperlink{classairhockeyjava_1_1util_1_1_number_utils_ae0482ec6ce04cbf04cb9fd2799c153e2}{int\+To\+Float\+Color(int)} will not be used. This must only be used when the resulting floats will not be used with \hyperlink{}{float\+To\+Int\+Color(float)}. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/util/Number\+Utils.\+java\end{DoxyCompactItemize}

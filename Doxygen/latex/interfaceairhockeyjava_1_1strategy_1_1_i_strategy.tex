@@ -1,0 +1,58 @@
+\hypertarget{interfaceairhockeyjava_1_1strategy_1_1_i_strategy}{}\section{airhockeyjava.\+strategy.\+I\+Strategy Interface Reference}
+\label{interfaceairhockeyjava_1_1strategy_1_1_i_strategy}\index{airhockeyjava.\+strategy.\+I\+Strategy@{airhockeyjava.\+strategy.\+I\+Strategy}}
+Inheritance diagram for airhockeyjava.\+strategy.\+I\+Strategy\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=0.754209cm]{interfaceairhockeyjava_1_1strategy_1_1_i_strategy}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} \hyperlink{interfaceairhockeyjava_1_1strategy_1_1_i_strategy_a210029614aca3e2d2f344d0b5fa600be}{get\+Target\+Position} (float delta\+Time)
+\item 
+void \hyperlink{interfaceairhockeyjava_1_1strategy_1_1_i_strategy_a28eb187bf61ef4bbd7d152f5856ce857}{init\+Strategy} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface for the strategy layer which is responsible for robot/\+A\+I decision making.
+
+\begin{DoxyAuthor}{Author}
+Joshua Segeren 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{interfaceairhockeyjava_1_1strategy_1_1_i_strategy_a210029614aca3e2d2f344d0b5fa600be}{}\index{airhockeyjava\+::strategy\+::\+I\+Strategy@{airhockeyjava\+::strategy\+::\+I\+Strategy}!get\+Target\+Position@{get\+Target\+Position}}
+\index{get\+Target\+Position@{get\+Target\+Position}!airhockeyjava\+::strategy\+::\+I\+Strategy@{airhockeyjava\+::strategy\+::\+I\+Strategy}}
+\subsubsection[{get\+Target\+Position}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Vector2} airhockeyjava.\+strategy.\+I\+Strategy.\+get\+Target\+Position (
+\begin{DoxyParamCaption}
+\item[{float}]{delta\+Time}
+\end{DoxyParamCaption}
+)}\label{interfaceairhockeyjava_1_1strategy_1_1_i_strategy_a210029614aca3e2d2f344d0b5fa600be}
+Returns the desired position for this iteration, regardless of state. 
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classairhockeyjava_1_1strategy_1_1_triangle_defense_strategy_af9461db9242baadb47a7429ec6fc72d0}{airhockeyjava.\+strategy.\+Triangle\+Defense\+Strategy}, \hyperlink{classairhockeyjava_1_1strategy_1_1_user_input_strategy_ad46bf58719bfae0f6134458c0901b18a}{airhockeyjava.\+strategy.\+User\+Input\+Strategy}, \hyperlink{classairhockeyjava_1_1strategy_1_1_waypoint_offense_strategy_a63b1e999e272ca5d7e577e74cc701503}{airhockeyjava.\+strategy.\+Waypoint\+Offense\+Strategy}, \hyperlink{classairhockeyjava_1_1strategy_1_1_naive_defense_strategy_abe8ef1ed46c46a428016cabe178f9d33}{airhockeyjava.\+strategy.\+Naive\+Defense\+Strategy}, and \hyperlink{classairhockeyjava_1_1strategy_1_1_naive_offense_strategy_abd97ea4c8c973821819b132ab61bcbbc}{airhockeyjava.\+strategy.\+Naive\+Offense\+Strategy}.
+
+\hypertarget{interfaceairhockeyjava_1_1strategy_1_1_i_strategy_a28eb187bf61ef4bbd7d152f5856ce857}{}\index{airhockeyjava\+::strategy\+::\+I\+Strategy@{airhockeyjava\+::strategy\+::\+I\+Strategy}!init\+Strategy@{init\+Strategy}}
+\index{init\+Strategy@{init\+Strategy}!airhockeyjava\+::strategy\+::\+I\+Strategy@{airhockeyjava\+::strategy\+::\+I\+Strategy}}
+\subsubsection[{init\+Strategy}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+strategy.\+I\+Strategy.\+init\+Strategy (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{interfaceairhockeyjava_1_1strategy_1_1_i_strategy_a28eb187bf61ef4bbd7d152f5856ce857}
+Initialize / reset the internal (persisted) state of the strategy component 
+
+Implemented in \hyperlink{classairhockeyjava_1_1strategy_1_1_triangle_defense_strategy_ac15219bfdfff130eb7df84b9d4e20c24}{airhockeyjava.\+strategy.\+Triangle\+Defense\+Strategy}, \hyperlink{classairhockeyjava_1_1strategy_1_1_waypoint_offense_strategy_a04eac2b8a2c2b9fcdcac0f6735f8785f}{airhockeyjava.\+strategy.\+Waypoint\+Offense\+Strategy}, \hyperlink{classairhockeyjava_1_1strategy_1_1_naive_defense_strategy_aa6f905456fdf94c934c37b3a7d09d857}{airhockeyjava.\+strategy.\+Naive\+Defense\+Strategy}, \hyperlink{classairhockeyjava_1_1strategy_1_1_user_input_strategy_abfc82d3a4457e6ec07fce1b1a0ff9abc}{airhockeyjava.\+strategy.\+User\+Input\+Strategy}, and \hyperlink{classairhockeyjava_1_1strategy_1_1_naive_offense_strategy_ace0bcde8dbe5254e0c866b52f857ba9a}{airhockeyjava.\+strategy.\+Naive\+Offense\+Strategy}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/strategy/I\+Strategy.\+java\end{DoxyCompactItemize}

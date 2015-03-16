@@ -1,0 +1,93 @@
+\hypertarget{classairhockeyjava_1_1simulation_1_1_puck_simulation}{}\section{airhockeyjava.\+simulation.\+Puck\+Simulation Class Reference}
+\label{classairhockeyjava_1_1simulation_1_1_puck_simulation}\index{airhockeyjava.\+simulation.\+Puck\+Simulation@{airhockeyjava.\+simulation.\+Puck\+Simulation}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static boolean \hyperlink{classairhockeyjava_1_1simulation_1_1_puck_simulation_a2b27538e1061f9d71e7a795164940779}{update\+Puck\+From\+Wall\+Collisions} (\hyperlink{classairhockeyjava_1_1physical_1_1_puck}{Puck} puck, Rectangle2\+D table\+Puck\+Collision\+Frame, float delta\+Time)
+\item 
+static boolean \hyperlink{classairhockeyjava_1_1simulation_1_1_puck_simulation_a03787a040f5b9cd2a73bc86b86ddc90a}{update\+Puck\+From\+Mallet\+Collisions} (\hyperlink{classairhockeyjava_1_1physical_1_1_puck}{Puck} puck, \hyperlink{classairhockeyjava_1_1physical_1_1_mallet}{Mallet} mallet\+A, \hyperlink{classairhockeyjava_1_1physical_1_1_mallet}{Mallet} mallet\+B, float delta\+Time)
+\item 
+static void \hyperlink{classairhockeyjava_1_1simulation_1_1_puck_simulation_a0dcffcc03bd9d861e0e0c179ae4b6ad9}{apply\+Air\+Friction\+To\+Puck\+Velocity} (\hyperlink{classairhockeyjava_1_1physical_1_1_puck}{Puck} puck, float air\+Friction\+Coefficient, float delta\+Time)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class which defines simulated puck behavior. Used by both the simulated detection/physics engine, and by the strategy engine for predicted where puck will be, in order to decide how to respond. \begin{DoxyAuthor}{Author}
+Joshua Segeren 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1simulation_1_1_puck_simulation_a0dcffcc03bd9d861e0e0c179ae4b6ad9}{}\index{airhockeyjava\+::simulation\+::\+Puck\+Simulation@{airhockeyjava\+::simulation\+::\+Puck\+Simulation}!apply\+Air\+Friction\+To\+Puck\+Velocity@{apply\+Air\+Friction\+To\+Puck\+Velocity}}
+\index{apply\+Air\+Friction\+To\+Puck\+Velocity@{apply\+Air\+Friction\+To\+Puck\+Velocity}!airhockeyjava\+::simulation\+::\+Puck\+Simulation@{airhockeyjava\+::simulation\+::\+Puck\+Simulation}}
+\subsubsection[{apply\+Air\+Friction\+To\+Puck\+Velocity}]{\setlength{\rightskip}{0pt plus 5cm}static void airhockeyjava.\+simulation.\+Puck\+Simulation.\+apply\+Air\+Friction\+To\+Puck\+Velocity (
+\begin{DoxyParamCaption}
+\item[{{\bf Puck}}]{puck, }
+\item[{float}]{air\+Friction\+Coefficient, }
+\item[{float}]{delta\+Time}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1simulation_1_1_puck_simulation_a0dcffcc03bd9d861e0e0c179ae4b6ad9}
+Attenuate puck velocity by applying air friction Where v\+\_\+t = v\+\_\+0 $\ast$ e $^\wedge$ (-\/kt/m) 
+\begin{DoxyParams}{Parameters}
+{\em puck} & \\
+\hline
+{\em coefficient\+Of\+Air\+Friction} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{classairhockeyjava_1_1simulation_1_1_puck_simulation_a03787a040f5b9cd2a73bc86b86ddc90a}{}\index{airhockeyjava\+::simulation\+::\+Puck\+Simulation@{airhockeyjava\+::simulation\+::\+Puck\+Simulation}!update\+Puck\+From\+Mallet\+Collisions@{update\+Puck\+From\+Mallet\+Collisions}}
+\index{update\+Puck\+From\+Mallet\+Collisions@{update\+Puck\+From\+Mallet\+Collisions}!airhockeyjava\+::simulation\+::\+Puck\+Simulation@{airhockeyjava\+::simulation\+::\+Puck\+Simulation}}
+\subsubsection[{update\+Puck\+From\+Mallet\+Collisions}]{\setlength{\rightskip}{0pt plus 5cm}static boolean airhockeyjava.\+simulation.\+Puck\+Simulation.\+update\+Puck\+From\+Mallet\+Collisions (
+\begin{DoxyParamCaption}
+\item[{{\bf Puck}}]{puck, }
+\item[{{\bf Mallet}}]{mallet\+A, }
+\item[{{\bf Mallet}}]{mallet\+B, }
+\item[{float}]{delta\+Time}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1simulation_1_1_puck_simulation_a03787a040f5b9cd2a73bc86b86ddc90a}
+Static method to update puck position, velocity based on mallet collisions over elapsed time interval. 
+\begin{DoxyParams}{Parameters}
+{\em puck} & \\
+\hline
+{\em mallet\+A} & \\
+\hline
+{\em mallet\+B} & \\
+\hline
+{\em delta\+Time} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true iff collision handled 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1simulation_1_1_puck_simulation_a2b27538e1061f9d71e7a795164940779}{}\index{airhockeyjava\+::simulation\+::\+Puck\+Simulation@{airhockeyjava\+::simulation\+::\+Puck\+Simulation}!update\+Puck\+From\+Wall\+Collisions@{update\+Puck\+From\+Wall\+Collisions}}
+\index{update\+Puck\+From\+Wall\+Collisions@{update\+Puck\+From\+Wall\+Collisions}!airhockeyjava\+::simulation\+::\+Puck\+Simulation@{airhockeyjava\+::simulation\+::\+Puck\+Simulation}}
+\subsubsection[{update\+Puck\+From\+Wall\+Collisions}]{\setlength{\rightskip}{0pt plus 5cm}static boolean airhockeyjava.\+simulation.\+Puck\+Simulation.\+update\+Puck\+From\+Wall\+Collisions (
+\begin{DoxyParamCaption}
+\item[{{\bf Puck}}]{puck, }
+\item[{Rectangle2\+D}]{table\+Puck\+Collision\+Frame, }
+\item[{float}]{delta\+Time}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1simulation_1_1_puck_simulation_a2b27538e1061f9d71e7a795164940779}
+Static method to update puck state. Note the assumptions currently in place for the physical model\+:
+\begin{DoxyItemize}
+\item \hyperlink{classairhockeyjava_1_1simulation_1_1_collision}{Collision} between puck and mallet do not affect the velocity/position of the mallet.
+\end{DoxyItemize}
+
+Reference (billiard collisions i.\+e. 1st year physics)\+: \href{http://www.real-world-physics-problems.com/physics-of-billiards.html}{\tt http\+://www.\+real-\/world-\/physics-\/problems.\+com/physics-\/of-\/billiards.\+html}
+
+Note that this method D\+O\+E\+S modify the passed puck object velocity and position based on wall reflections. 
+\begin{DoxyParams}{Parameters}
+{\em puck} & \\
+\hline
+{\em table\+Puck\+Collision\+Frame} & \\
+\hline
+{\em delta\+Time} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true iff collision handled 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/simulation/Puck\+Simulation.\+java\end{DoxyCompactItemize}

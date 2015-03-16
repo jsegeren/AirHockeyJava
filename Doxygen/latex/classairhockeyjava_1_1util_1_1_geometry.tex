@@ -1,0 +1,320 @@
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry}{}\section{airhockeyjava.\+util.\+Geometry Class Reference}
+\label{classairhockeyjava_1_1util_1_1_geometry}\index{airhockeyjava.\+util.\+Geometry@{airhockeyjava.\+util.\+Geometry}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static Point2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a9f1a4995e82f11e0a7523d1a61d14168}{intersection} (Line2\+D seg, Rectangle2\+D r)
+\item 
+static Point2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a9952fdf877483918292568cc4fb66f43}{intersection} (Point2\+D p1, Point2\+D p2, Rectangle2\+D r)
+\item 
+static Point2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a47eaacf6e4413de59afcd26650d2ef45}{intersection} (double x1, double y1, double x2, double y2, Rectangle2\+D r)
+\item 
+static Point2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a133cc153d210853c81c2475654d99fb5}{intersection} (double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
+\item 
+static boolean \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a185a7c084e107744da8bd5a47e06f9ae}{is\+Bounded} (double a, double min, double max)
+\item 
+static Line2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_ad06c1990d774105f200c375a8353ce32}{get\+Startpoints} (Path2\+D path)
+\item 
+static Line2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_af9088ca58bd8144b057d0743d7483bbf}{get\+Endpoints} (Path2\+D path)
+\item 
+static Point2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a2e2b6c309f15cb6e9a2a5e341eb4fc04}{exit\+Point} (Rectangle2\+D r, double x, double y)
+\item 
+static Path2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_ae059f1d0a55b3b3e00fba3884a44a22a}{get\+Rectilinear\+Path} (Rectangle2\+D r1, Rectangle2\+D r2)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a69dc3ebfcd3dff454ef53a673ce4748c}{}static Path2\+D {\bfseries get\+Rectilinear\+Path} (Point2\+D start, Point2\+D end)\label{classairhockeyjava_1_1util_1_1_geometry_a69dc3ebfcd3dff454ef53a673ce4748c}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a41e477580164d9a497603a9b3e937f20}{}static Path2\+D {\bfseries get\+Rectilinear\+Path} (double x1, double y1, double x2, double y2)\label{classairhockeyjava_1_1util_1_1_geometry_a41e477580164d9a497603a9b3e937f20}
+
+\item 
+static Path2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_aa1af4bad701787131aac7acce273e728}{get\+Connector} (Rectangle2\+D r1, Rectangle2\+D r2)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_acd6a0eb90eeac498be159e85bc7b4ed5}{}static Path2\+D {\bfseries get\+Connector} (Rectangle2\+D r1, Line2\+D entry\+Pin)\label{classairhockeyjava_1_1util_1_1_geometry_acd6a0eb90eeac498be159e85bc7b4ed5}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a15eb8036abd1330e955f09d862b3fc2c}{}static Path2\+D {\bfseries get\+Connector} (Line2\+D exit\+Pin, Rectangle2\+D r2)\label{classairhockeyjava_1_1util_1_1_geometry_a15eb8036abd1330e955f09d862b3fc2c}
+
+\item 
+static Path2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a563dad2a2f1b2cc5ab3a7ed5a12ce133}{get\+Connector} (Line2\+D exit\+Pin, Line2\+D entry\+Pin)
+\item 
+static double \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a3482cd64b75cdb68f0edd3312dd5870b}{get\+Angle} (Point2\+D p1, Point2\+D p2)
+\item 
+static Shape \hyperlink{classairhockeyjava_1_1util_1_1_geometry_ad2453dd0fb46228515b9ce36bd21d628}{add\+End\+Arrow} (Path2\+D path, double arrow\+Size, double arrow\+Angle\+In\+Degree)
+\item 
+static Shape \hyperlink{classairhockeyjava_1_1util_1_1_geometry_adb35da43785602cbe1e7d1834e2cdc80}{add\+Start\+Arrow} (Path2\+D path, double arrow\+Size, double arrow\+Angle\+In\+Degree)
+\item 
+static Shape \hyperlink{classairhockeyjava_1_1util_1_1_geometry_af74b6f040dcbce9059ae3e9c70d4f0a4}{add\+Arrow} (Point2\+D p1, Point2\+D p2, double arrow\+Size, double arrow\+Angle\+In\+Degree)
+\item 
+static Path2\+D.\+Double \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a3c8a934bd7064eb0e5b73adddbff371c}{create\+Arrow} (double arrow\+Angle\+In\+Degree)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_ae9c74508ca50b0d4ef4c13aa22501b0c}{}static Point {\bfseries as\+Point} (Point2\+D p)\label{classairhockeyjava_1_1util_1_1_geometry_ae9c74508ca50b0d4ef4c13aa22501b0c}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a6a9bdbb46b21b506dee86269089cd386}{}static \hyperlink{classairhockeyjava_1_1util_1_1_rectangle}{Rectangle} {\bfseries as\+Rect} (Rectangle2\+D r)\label{classairhockeyjava_1_1util_1_1_geometry_a6a9bdbb46b21b506dee86269089cd386}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a1384c735538eb0de1caa7dd6afb55bfb}{}static void {\bfseries print\+Path} (Path2\+D path)\label{classairhockeyjava_1_1util_1_1_geometry_a1384c735538eb0de1caa7dd6afb55bfb}
+
+\item 
+static Path2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a781e43165b9209326937d43aea922ce8}{detour} (Path2\+D path, Rectangle2\+D r)
+\item 
+static Bit\+Set \hyperlink{classairhockeyjava_1_1util_1_1_geometry_ab9372570e64ecfbe826af91038079d04}{insider} (Rectangle2\+D in, Rectangle2\+D r)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a62d24bd4eb933b5c2101a912847ed65b}{}static Point2\+D {\bfseries mirror} (int i, Rectangle2\+D r, int s)\label{classairhockeyjava_1_1util_1_1_geometry_a62d24bd4eb933b5c2101a912847ed65b}
+
+\item 
+static Point2\+D \hyperlink{classairhockeyjava_1_1util_1_1_geometry_a43f122b34eb7f2b64ee6bbd0a117affb}{vertex} (int i, Rectangle2\+D r)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a7ef614abfc2d4274c92260bb7b6a700f}{}static Path2\+D {\bfseries modify} (Path2\+D original, Point2\+D break\+Point, Point2\+D new\+Point, int vidx)\label{classairhockeyjava_1_1util_1_1_geometry_a7ef614abfc2d4274c92260bb7b6a700f}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a07c2d6ff4a3ad125b3d27d387af2ea53}{}static List$<$ Point2\+D $>$ {\bfseries get\+Line\+Segments} (Path2\+D original)\label{classairhockeyjava_1_1util_1_1_geometry_a07c2d6ff4a3ad125b3d27d387af2ea53}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a2aeadfd2bad43afa4f31c970a8a47b9d}{}static Path2\+D {\bfseries create\+Path} (List$<$ Point2\+D $>$ pts)\label{classairhockeyjava_1_1util_1_1_geometry_a2aeadfd2bad43afa4f31c970a8a47b9d}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_aed1daa2872e6e0b0401b09830ec0b922}{}static Path2\+D {\bfseries create\+Path} (Point2\+D\mbox{[}$\,$\mbox{]} pts)\label{classairhockeyjava_1_1util_1_1_geometry_aed1daa2872e6e0b0401b09830ec0b922}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A set of utility to compute intersection of line segments, creating arrows etc.
+
+\begin{DoxyAuthor}{Author}
+Pinaki Poddar 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_af74b6f040dcbce9059ae3e9c70d4f0a4}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!add\+Arrow@{add\+Arrow}}
+\index{add\+Arrow@{add\+Arrow}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{add\+Arrow}]{\setlength{\rightskip}{0pt plus 5cm}static Shape airhockeyjava.\+util.\+Geometry.\+add\+Arrow (
+\begin{DoxyParamCaption}
+\item[{Point2\+D}]{p1, }
+\item[{Point2\+D}]{p2, }
+\item[{double}]{arrow\+Size, }
+\item[{double}]{arrow\+Angle\+In\+Degree}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_af74b6f040dcbce9059ae3e9c70d4f0a4}
+Creates an arrow for the line segment p1,p2 whose tip is at p2. 
+\begin{DoxyParams}{Parameters}
+{\em p1} & the beginning of the line segment \\
+\hline
+{\em p2} & the end of the line segment \\
+\hline
+{\em scale} & the projected length of the arrow along the line segment \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_ad2453dd0fb46228515b9ce36bd21d628}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!add\+End\+Arrow@{add\+End\+Arrow}}
+\index{add\+End\+Arrow@{add\+End\+Arrow}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{add\+End\+Arrow}]{\setlength{\rightskip}{0pt plus 5cm}static Shape airhockeyjava.\+util.\+Geometry.\+add\+End\+Arrow (
+\begin{DoxyParamCaption}
+\item[{Path2\+D}]{path, }
+\item[{double}]{arrow\+Size, }
+\item[{double}]{arrow\+Angle\+In\+Degree}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_ad2453dd0fb46228515b9ce36bd21d628}
+Gets an arrow shape of given size at the end of the given path. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_adb35da43785602cbe1e7d1834e2cdc80}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!add\+Start\+Arrow@{add\+Start\+Arrow}}
+\index{add\+Start\+Arrow@{add\+Start\+Arrow}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{add\+Start\+Arrow}]{\setlength{\rightskip}{0pt plus 5cm}static Shape airhockeyjava.\+util.\+Geometry.\+add\+Start\+Arrow (
+\begin{DoxyParamCaption}
+\item[{Path2\+D}]{path, }
+\item[{double}]{arrow\+Size, }
+\item[{double}]{arrow\+Angle\+In\+Degree}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_adb35da43785602cbe1e7d1834e2cdc80}
+Creates an arrow shape of given size at the beginning of the given path. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_a3c8a934bd7064eb0e5b73adddbff371c}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!create\+Arrow@{create\+Arrow}}
+\index{create\+Arrow@{create\+Arrow}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{create\+Arrow}]{\setlength{\rightskip}{0pt plus 5cm}static Path2\+D.\+Double airhockeyjava.\+util.\+Geometry.\+create\+Arrow (
+\begin{DoxyParamCaption}
+\item[{double}]{arrow\+Angle\+In\+Degree}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a3c8a934bd7064eb0e5b73adddbff371c}
+Creates an arrow whose tip is at (0,0), unit height and angled theta. \begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a781e43165b9209326937d43aea922ce8}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!detour@{detour}}
+\index{detour@{detour}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{detour}]{\setlength{\rightskip}{0pt plus 5cm}static Path2\+D airhockeyjava.\+util.\+Geometry.\+detour (
+\begin{DoxyParamCaption}
+\item[{Path2\+D}]{path, }
+\item[{Rectangle2\+D}]{r}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a781e43165b9209326937d43aea922ce8}
+Modifies the given path such that it does not intersect the given rectangle. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_a2e2b6c309f15cb6e9a2a5e341eb4fc04}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!exit\+Point@{exit\+Point}}
+\index{exit\+Point@{exit\+Point}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{exit\+Point}]{\setlength{\rightskip}{0pt plus 5cm}static Point2\+D airhockeyjava.\+util.\+Geometry.\+exit\+Point (
+\begin{DoxyParamCaption}
+\item[{Rectangle2\+D}]{r, }
+\item[{double}]{x, }
+\item[{double}]{y}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a2e2b6c309f15cb6e9a2a5e341eb4fc04}
+Gets the point on the periphery of given rectangle to meet the given outside point.
+
+\begin{DoxyReturn}{Returns}
+null if the point is inside the rectangle. 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a3482cd64b75cdb68f0edd3312dd5870b}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!get\+Angle@{get\+Angle}}
+\index{get\+Angle@{get\+Angle}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{get\+Angle}]{\setlength{\rightskip}{0pt plus 5cm}static double airhockeyjava.\+util.\+Geometry.\+get\+Angle (
+\begin{DoxyParamCaption}
+\item[{Point2\+D}]{p1, }
+\item[{Point2\+D}]{p2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a3482cd64b75cdb68f0edd3312dd5870b}
+Get the slope of the given points in radian. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_aa1af4bad701787131aac7acce273e728}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!get\+Connector@{get\+Connector}}
+\index{get\+Connector@{get\+Connector}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{get\+Connector}]{\setlength{\rightskip}{0pt plus 5cm}static Path2\+D airhockeyjava.\+util.\+Geometry.\+get\+Connector (
+\begin{DoxyParamCaption}
+\item[{Rectangle2\+D}]{r1, }
+\item[{Rectangle2\+D}]{r2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_aa1af4bad701787131aac7acce273e728}
+Given a pair of rectangles find the path that connects them without intersecting them. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_a563dad2a2f1b2cc5ab3a7ed5a12ce133}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!get\+Connector@{get\+Connector}}
+\index{get\+Connector@{get\+Connector}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{get\+Connector}]{\setlength{\rightskip}{0pt plus 5cm}static Path2\+D airhockeyjava.\+util.\+Geometry.\+get\+Connector (
+\begin{DoxyParamCaption}
+\item[{Line2\+D}]{exit\+Pin, }
+\item[{Line2\+D}]{entry\+Pin}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a563dad2a2f1b2cc5ab3a7ed5a12ce133}
+Connect a path between two given pins. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_af9088ca58bd8144b057d0743d7483bbf}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!get\+Endpoints@{get\+Endpoints}}
+\index{get\+Endpoints@{get\+Endpoints}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{get\+Endpoints}]{\setlength{\rightskip}{0pt plus 5cm}static Line2\+D airhockeyjava.\+util.\+Geometry.\+get\+Endpoints (
+\begin{DoxyParamCaption}
+\item[{Path2\+D}]{path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_af9088ca58bd8144b057d0743d7483bbf}
+Gets the last two points of the given path.
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+final line 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_ae059f1d0a55b3b3e00fba3884a44a22a}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!get\+Rectilinear\+Path@{get\+Rectilinear\+Path}}
+\index{get\+Rectilinear\+Path@{get\+Rectilinear\+Path}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{get\+Rectilinear\+Path}]{\setlength{\rightskip}{0pt plus 5cm}static Path2\+D airhockeyjava.\+util.\+Geometry.\+get\+Rectilinear\+Path (
+\begin{DoxyParamCaption}
+\item[{Rectangle2\+D}]{r1, }
+\item[{Rectangle2\+D}]{r2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_ae059f1d0a55b3b3e00fba3884a44a22a}
+Get a path between the centers of two given rectangles. The path has two orthogonal line segments. The first segment is horizontal (vertical) if the horizontal displacement between the centers is longer (shorter) than the vertical. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_ad06c1990d774105f200c375a8353ce32}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!get\+Startpoints@{get\+Startpoints}}
+\index{get\+Startpoints@{get\+Startpoints}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{get\+Startpoints}]{\setlength{\rightskip}{0pt plus 5cm}static Line2\+D airhockeyjava.\+util.\+Geometry.\+get\+Startpoints (
+\begin{DoxyParamCaption}
+\item[{Path2\+D}]{path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_ad06c1990d774105f200c375a8353ce32}
+Gets the first two points of the given path.
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+initial line 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_ab9372570e64ecfbe826af91038079d04}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!insider@{insider}}
+\index{insider@{insider}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{insider}]{\setlength{\rightskip}{0pt plus 5cm}static Bit\+Set airhockeyjava.\+util.\+Geometry.\+insider (
+\begin{DoxyParamCaption}
+\item[{Rectangle2\+D}]{in, }
+\item[{Rectangle2\+D}]{r}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_ab9372570e64ecfbe826af91038079d04}
+Find which vertex(s) of i is inside r if any. Ignore if vertex is on edge of r \hypertarget{classairhockeyjava_1_1util_1_1_geometry_a9f1a4995e82f11e0a7523d1a61d14168}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!intersection@{intersection}}
+\index{intersection@{intersection}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{intersection}]{\setlength{\rightskip}{0pt plus 5cm}static Point2\+D airhockeyjava.\+util.\+Geometry.\+intersection (
+\begin{DoxyParamCaption}
+\item[{Line2\+D}]{seg, }
+\item[{Rectangle2\+D}]{r}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a9f1a4995e82f11e0a7523d1a61d14168}
+Computes the intersection of the given line segment with the given rectangle.
+
+\begin{DoxyReturn}{Returns}
+null if the line segment does not intersect the rectangle. 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a9952fdf877483918292568cc4fb66f43}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!intersection@{intersection}}
+\index{intersection@{intersection}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{intersection}]{\setlength{\rightskip}{0pt plus 5cm}static Point2\+D airhockeyjava.\+util.\+Geometry.\+intersection (
+\begin{DoxyParamCaption}
+\item[{Point2\+D}]{p1, }
+\item[{Point2\+D}]{p2, }
+\item[{Rectangle2\+D}]{r}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a9952fdf877483918292568cc4fb66f43}
+Computes the intersection of the line segment represented by the points with the given rectangle.
+
+\begin{DoxyReturn}{Returns}
+null if the line segment does not intersect the rectangle. 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a47eaacf6e4413de59afcd26650d2ef45}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!intersection@{intersection}}
+\index{intersection@{intersection}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{intersection}]{\setlength{\rightskip}{0pt plus 5cm}static Point2\+D airhockeyjava.\+util.\+Geometry.\+intersection (
+\begin{DoxyParamCaption}
+\item[{double}]{x1, }
+\item[{double}]{y1, }
+\item[{double}]{x2, }
+\item[{double}]{y2, }
+\item[{Rectangle2\+D}]{r}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a47eaacf6e4413de59afcd26650d2ef45}
+Computes the intersection of the line segment represented by the points with the given rectangle.
+
+\begin{DoxyReturn}{Returns}
+null if the line segment does not intersect the rectangle. 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a133cc153d210853c81c2475654d99fb5}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!intersection@{intersection}}
+\index{intersection@{intersection}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{intersection}]{\setlength{\rightskip}{0pt plus 5cm}static Point2\+D airhockeyjava.\+util.\+Geometry.\+intersection (
+\begin{DoxyParamCaption}
+\item[{double}]{x1, }
+\item[{double}]{y1, }
+\item[{double}]{x2, }
+\item[{double}]{y2, }
+\item[{double}]{x3, }
+\item[{double}]{y3, }
+\item[{double}]{x4, }
+\item[{double}]{y4}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a133cc153d210853c81c2475654d99fb5}
+Computes intersection between the given line segments.
+
+\begin{DoxyReturn}{Returns}
+null if the line segments do not intersects. 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_a185a7c084e107744da8bd5a47e06f9ae}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!is\+Bounded@{is\+Bounded}}
+\index{is\+Bounded@{is\+Bounded}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{is\+Bounded}]{\setlength{\rightskip}{0pt plus 5cm}static boolean airhockeyjava.\+util.\+Geometry.\+is\+Bounded (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{min, }
+\item[{double}]{max}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a185a7c084e107744da8bd5a47e06f9ae}
+Affirms if the given value is strictly bounded by the given range. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_a43f122b34eb7f2b64ee6bbd0a117affb}{}\index{airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}!vertex@{vertex}}
+\index{vertex@{vertex}!airhockeyjava\+::util\+::\+Geometry@{airhockeyjava\+::util\+::\+Geometry}}
+\subsubsection[{vertex}]{\setlength{\rightskip}{0pt plus 5cm}static Point2\+D airhockeyjava.\+util.\+Geometry.\+vertex (
+\begin{DoxyParamCaption}
+\item[{int}]{i, }
+\item[{Rectangle2\+D}]{r}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_a43f122b34eb7f2b64ee6bbd0a117affb}
+Gets the i-\/th vertex of the given rectangle. 0-\/th vertex is top-\/left, and counted couter-\/clockwise i.\+e bottom-\/left is at index 3. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/util/Geometry.\+java\end{DoxyCompactItemize}

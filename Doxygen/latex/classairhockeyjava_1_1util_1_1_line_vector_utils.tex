@@ -1,0 +1,65 @@
+\hypertarget{classairhockeyjava_1_1util_1_1_line_vector_utils}{}\section{airhockeyjava.\+util.\+Line\+Vector\+Utils Class Reference}
+\label{classairhockeyjava_1_1util_1_1_line_vector_utils}\index{airhockeyjava.\+util.\+Line\+Vector\+Utils@{airhockeyjava.\+util.\+Line\+Vector\+Utils}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_line_vector_utils_ac7d582940d67835e3342d3e72db58bc3}{}static final void {\bfseries scale\+Line} (Line2\+D line, float scaling\+Factor)\label{classairhockeyjava_1_1util_1_1_line_vector_utils_ac7d582940d67835e3342d3e72db58bc3}
+
+\item 
+static final Line2\+D \hyperlink{classairhockeyjava_1_1util_1_1_line_vector_utils_a22a2954771e72704b94ca79fe69969ab}{make\+Line\+From\+Vector} (float x1, float y1, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} projection)
+\item 
+static final Line2\+D \hyperlink{classairhockeyjava_1_1util_1_1_line_vector_utils_a4f792c1276505e91595099b5d1a7ff0a}{rotate\+Line\+About\+Starting\+Point} (Line2\+D line, float theta\+Radians)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Utility class providing methods for working with both java.\+awt and the optimized math classes. Although we want to minimize the number of times we switch between types, each has specific advantages/disadvantages and we need an efficient way of converting. \begin{DoxyAuthor}{Author}
+Joshua Segeren 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1util_1_1_line_vector_utils_a22a2954771e72704b94ca79fe69969ab}{}\index{airhockeyjava\+::util\+::\+Line\+Vector\+Utils@{airhockeyjava\+::util\+::\+Line\+Vector\+Utils}!make\+Line\+From\+Vector@{make\+Line\+From\+Vector}}
+\index{make\+Line\+From\+Vector@{make\+Line\+From\+Vector}!airhockeyjava\+::util\+::\+Line\+Vector\+Utils@{airhockeyjava\+::util\+::\+Line\+Vector\+Utils}}
+\subsubsection[{make\+Line\+From\+Vector}]{\setlength{\rightskip}{0pt plus 5cm}static final Line2\+D airhockeyjava.\+util.\+Line\+Vector\+Utils.\+make\+Line\+From\+Vector (
+\begin{DoxyParamCaption}
+\item[{float}]{x1, }
+\item[{float}]{y1, }
+\item[{{\bf Vector2}}]{projection}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_line_vector_utils_a22a2954771e72704b94ca79fe69969ab}
+Creates and returns a line which starts at (x1, y1) and with a dx, dy given by the input vector. 
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em projection} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+line 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_line_vector_utils_a4f792c1276505e91595099b5d1a7ff0a}{}\index{airhockeyjava\+::util\+::\+Line\+Vector\+Utils@{airhockeyjava\+::util\+::\+Line\+Vector\+Utils}!rotate\+Line\+About\+Starting\+Point@{rotate\+Line\+About\+Starting\+Point}}
+\index{rotate\+Line\+About\+Starting\+Point@{rotate\+Line\+About\+Starting\+Point}!airhockeyjava\+::util\+::\+Line\+Vector\+Utils@{airhockeyjava\+::util\+::\+Line\+Vector\+Utils}}
+\subsubsection[{rotate\+Line\+About\+Starting\+Point}]{\setlength{\rightskip}{0pt plus 5cm}static final Line2\+D airhockeyjava.\+util.\+Line\+Vector\+Utils.\+rotate\+Line\+About\+Starting\+Point (
+\begin{DoxyParamCaption}
+\item[{Line2\+D}]{line, }
+\item[{float}]{theta\+Radians}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_line_vector_utils_a4f792c1276505e91595099b5d1a7ff0a}
+
+\begin{DoxyParams}{Parameters}
+{\em line} & The line to rotate \\
+\hline
+{\em theta\+Radians} & Angle by which to rotate line \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+rotated line 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/util/Line\+Vector\+Utils.\+java\end{DoxyCompactItemize}

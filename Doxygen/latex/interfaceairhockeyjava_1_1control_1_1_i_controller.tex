@@ -1,0 +1,74 @@
+\hypertarget{interfaceairhockeyjava_1_1control_1_1_i_controller}{}\section{airhockeyjava.\+control.\+I\+Controller Interface Reference}
+\label{interfaceairhockeyjava_1_1control_1_1_i_controller}\index{airhockeyjava.\+control.\+I\+Controller@{airhockeyjava.\+control.\+I\+Controller}}
+Inheritance diagram for airhockeyjava.\+control.\+I\+Controller\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.291811cm]{interfaceairhockeyjava_1_1control_1_1_i_controller}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{interfaceairhockeyjava_1_1control_1_1_i_controller_ad70e45ec858fa82506e8dcf166961e43}{control\+Mallet} (\hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} target\+Position, float delta\+Time)
+\item 
+void \hyperlink{interfaceairhockeyjava_1_1control_1_1_i_controller_a5cff7c5681c4bb29e631cebe77e02a93}{initialize} ()
+\item 
+void \hyperlink{interfaceairhockeyjava_1_1control_1_1_i_controller_a734e16cfbd13ec095a71c7dcd60b2e2c}{handle\+Interface\+Message} (String interface\+Message)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface for the mechanical controller layer which is responsible for controlling the mallet, outputting appropriate control signals.
+
+\begin{DoxyAuthor}{Author}
+Joshua Segeren 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{interfaceairhockeyjava_1_1control_1_1_i_controller_ad70e45ec858fa82506e8dcf166961e43}{}\index{airhockeyjava\+::control\+::\+I\+Controller@{airhockeyjava\+::control\+::\+I\+Controller}!control\+Mallet@{control\+Mallet}}
+\index{control\+Mallet@{control\+Mallet}!airhockeyjava\+::control\+::\+I\+Controller@{airhockeyjava\+::control\+::\+I\+Controller}}
+\subsubsection[{control\+Mallet}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+control.\+I\+Controller.\+control\+Mallet (
+\begin{DoxyParamCaption}
+\item[{{\bf Vector2}}]{target\+Position, }
+\item[{float}]{delta\+Time}
+\end{DoxyParamCaption}
+)}\label{interfaceairhockeyjava_1_1control_1_1_i_controller_ad70e45ec858fa82506e8dcf166961e43}
+Plan path and control mallet velocity and/or to reach target position. 
+\begin{DoxyParams}{Parameters}
+{\em target\+Position} & \\
+\hline
+{\em delta\+Time} & step interval \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classairhockeyjava_1_1control_1_1_real_robot_controller_a6cd39edab2adc50e6455e5d90499ca45}{airhockeyjava.\+control.\+Real\+Robot\+Controller}, \hyperlink{classairhockeyjava_1_1control_1_1_simulated_robot_controller_a816642b3d25f3d5de4246c6067875321}{airhockeyjava.\+control.\+Simulated\+Robot\+Controller}, and \hyperlink{classairhockeyjava_1_1control_1_1_user_controller_a1466f596c21f1383f085a5077b488d9e}{airhockeyjava.\+control.\+User\+Controller}.
+
+\hypertarget{interfaceairhockeyjava_1_1control_1_1_i_controller_a734e16cfbd13ec095a71c7dcd60b2e2c}{}\index{airhockeyjava\+::control\+::\+I\+Controller@{airhockeyjava\+::control\+::\+I\+Controller}!handle\+Interface\+Message@{handle\+Interface\+Message}}
+\index{handle\+Interface\+Message@{handle\+Interface\+Message}!airhockeyjava\+::control\+::\+I\+Controller@{airhockeyjava\+::control\+::\+I\+Controller}}
+\subsubsection[{handle\+Interface\+Message}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+control.\+I\+Controller.\+handle\+Interface\+Message (
+\begin{DoxyParamCaption}
+\item[{String}]{interface\+Message}
+\end{DoxyParamCaption}
+)}\label{interfaceairhockeyjava_1_1control_1_1_i_controller_a734e16cfbd13ec095a71c7dcd60b2e2c}
+Respond to interface events or feedback 
+
+Implemented in \hyperlink{classairhockeyjava_1_1control_1_1_real_robot_controller_a2c8d78d1fc2241b822fcf794236fa96d}{airhockeyjava.\+control.\+Real\+Robot\+Controller}, \hyperlink{classairhockeyjava_1_1control_1_1_simulated_robot_controller_a21dbffaa724ca85b72a5aae1494501de}{airhockeyjava.\+control.\+Simulated\+Robot\+Controller}, and \hyperlink{classairhockeyjava_1_1control_1_1_user_controller_a3f542f1d405ba43761105c8746952669}{airhockeyjava.\+control.\+User\+Controller}.
+
+\hypertarget{interfaceairhockeyjava_1_1control_1_1_i_controller_a5cff7c5681c4bb29e631cebe77e02a93}{}\index{airhockeyjava\+::control\+::\+I\+Controller@{airhockeyjava\+::control\+::\+I\+Controller}!initialize@{initialize}}
+\index{initialize@{initialize}!airhockeyjava\+::control\+::\+I\+Controller@{airhockeyjava\+::control\+::\+I\+Controller}}
+\subsubsection[{initialize}]{\setlength{\rightskip}{0pt plus 5cm}void airhockeyjava.\+control.\+I\+Controller.\+initialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{interfaceairhockeyjava_1_1control_1_1_i_controller_a5cff7c5681c4bb29e631cebe77e02a93}
+Initialize the controller. 
+
+Implemented in \hyperlink{classairhockeyjava_1_1control_1_1_real_robot_controller_a12d184d548d39367f6818884e7c4bc4c}{airhockeyjava.\+control.\+Real\+Robot\+Controller}, \hyperlink{classairhockeyjava_1_1control_1_1_simulated_robot_controller_a8b8c0344343abe472b6e3931924ebdd7}{airhockeyjava.\+control.\+Simulated\+Robot\+Controller}, and \hyperlink{classairhockeyjava_1_1control_1_1_user_controller_a484c04e0bd66d132ab0b18065de04dfc}{airhockeyjava.\+control.\+User\+Controller}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/control/I\+Controller.\+java\end{DoxyCompactItemize}

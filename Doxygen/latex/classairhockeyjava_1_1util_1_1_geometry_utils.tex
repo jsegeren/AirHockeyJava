@@ -1,0 +1,135 @@
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils}{}\section{airhockeyjava.\+util.\+Geometry\+Utils Class Reference}
+\label{classairhockeyjava_1_1util_1_1_geometry_utils}\index{airhockeyjava.\+util.\+Geometry\+Utils@{airhockeyjava.\+util.\+Geometry\+Utils}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} \hyperlink{classairhockeyjava_1_1util_1_1_geometry_utils_a624ab363ee8703ba98e7cbea91b9bb9b}{to\+Barycoord} (\hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} p, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} a, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} b, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} c, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} barycentric\+Out)
+\item 
+static boolean \hyperlink{classairhockeyjava_1_1util_1_1_geometry_utils_abce380f5fbde744d788d6daf5a734867}{barycoord\+Inside\+Triangle} (\hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} barycentric)
+\item 
+static \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} \hyperlink{classairhockeyjava_1_1util_1_1_geometry_utils_af9b4d35025c8989ceaf9f1880aba87be}{from\+Barycoord} (\hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} barycentric, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} a, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} b, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} c, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} interpolated\+Out)
+\item 
+static float \hyperlink{classairhockeyjava_1_1util_1_1_geometry_utils_a626a926f2caaf2c5051ccef20e1b1fb3}{from\+Barycoord} (\hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} barycentric, float a, float b, float c)
+\item 
+static float \hyperlink{classairhockeyjava_1_1util_1_1_geometry_utils_a703225e28d4c26571c6e784017d901cb}{lowest\+Positive\+Root} (float a, float b, float c)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_a0e9cdd8e42a44aa5b64a9800c6f37ccd}{}static \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} {\bfseries triangle\+Centroid} (float x1, float y1, float x2, float y2, float x3, float y3, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} centroid)\label{classairhockeyjava_1_1util_1_1_geometry_utils_a0e9cdd8e42a44aa5b64a9800c6f37ccd}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_acd698e6047b7790f370ae2059003c4f0}{}static float {\bfseries triangle\+Area} (float x1, float y1, float x2, float y2, float x3, float y3)\label{classairhockeyjava_1_1util_1_1_geometry_utils_acd698e6047b7790f370ae2059003c4f0}
+
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_a85200b1d92f311912d5b955f2468ae44}{}static \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} {\bfseries quadrilateral\+Centroid} (float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} centroid)\label{classairhockeyjava_1_1util_1_1_geometry_utils_a85200b1d92f311912d5b955f2468ae44}
+
+\item 
+static \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} \hyperlink{classairhockeyjava_1_1util_1_1_geometry_utils_a4dbe55d00442bf26096ac0eb57f74e3f}{polygon\+Centroid} (float\mbox{[}$\,$\mbox{]} polygon, int offset, int count, \hyperlink{classairhockeyjava_1_1util_1_1_vector2}{Vector2} centroid)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_a004f9a0c0426970a594dba55a387ada3}{}static float {\bfseries polygon\+Area} (float\mbox{[}$\,$\mbox{]} polygon, int offset, int count)\label{classairhockeyjava_1_1util_1_1_geometry_utils_a004f9a0c0426970a594dba55a387ada3}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Nathan Sweet 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_abce380f5fbde744d788d6daf5a734867}{}\index{airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}!barycoord\+Inside\+Triangle@{barycoord\+Inside\+Triangle}}
+\index{barycoord\+Inside\+Triangle@{barycoord\+Inside\+Triangle}!airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}}
+\subsubsection[{barycoord\+Inside\+Triangle}]{\setlength{\rightskip}{0pt plus 5cm}static boolean airhockeyjava.\+util.\+Geometry\+Utils.\+barycoord\+Inside\+Triangle (
+\begin{DoxyParamCaption}
+\item[{{\bf Vector2}}]{barycentric}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_utils_abce380f5fbde744d788d6daf5a734867}
+Returns true if the barycentric coordinates are inside the triangle. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_af9b4d35025c8989ceaf9f1880aba87be}{}\index{airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}!from\+Barycoord@{from\+Barycoord}}
+\index{from\+Barycoord@{from\+Barycoord}!airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}}
+\subsubsection[{from\+Barycoord}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf Vector2} airhockeyjava.\+util.\+Geometry\+Utils.\+from\+Barycoord (
+\begin{DoxyParamCaption}
+\item[{{\bf Vector2}}]{barycentric, }
+\item[{{\bf Vector2}}]{a, }
+\item[{{\bf Vector2}}]{b, }
+\item[{{\bf Vector2}}]{c, }
+\item[{{\bf Vector2}}]{interpolated\+Out}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_utils_af9b4d35025c8989ceaf9f1880aba87be}
+Returns interpolated values given the barycentric coordinates of a point in a triangle and the values at each vertex. \begin{DoxyReturn}{Returns}
+interpolated\+Out 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_a626a926f2caaf2c5051ccef20e1b1fb3}{}\index{airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}!from\+Barycoord@{from\+Barycoord}}
+\index{from\+Barycoord@{from\+Barycoord}!airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}}
+\subsubsection[{from\+Barycoord}]{\setlength{\rightskip}{0pt plus 5cm}static float airhockeyjava.\+util.\+Geometry\+Utils.\+from\+Barycoord (
+\begin{DoxyParamCaption}
+\item[{{\bf Vector2}}]{barycentric, }
+\item[{float}]{a, }
+\item[{float}]{b, }
+\item[{float}]{c}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_utils_a626a926f2caaf2c5051ccef20e1b1fb3}
+Returns an interpolated value given the barycentric coordinates of a point in a triangle and the values at each vertex. \begin{DoxyReturn}{Returns}
+interpolated\+Out 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_a703225e28d4c26571c6e784017d901cb}{}\index{airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}!lowest\+Positive\+Root@{lowest\+Positive\+Root}}
+\index{lowest\+Positive\+Root@{lowest\+Positive\+Root}!airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}}
+\subsubsection[{lowest\+Positive\+Root}]{\setlength{\rightskip}{0pt plus 5cm}static float airhockeyjava.\+util.\+Geometry\+Utils.\+lowest\+Positive\+Root (
+\begin{DoxyParamCaption}
+\item[{float}]{a, }
+\item[{float}]{b, }
+\item[{float}]{c}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_utils_a703225e28d4c26571c6e784017d901cb}
+Returns the lowest positive root of the quadric equation given by a$\ast$ x $\ast$ x + b $\ast$ x + c = 0. If no solution is given Float.\+Nan is returned. 
+\begin{DoxyParams}{Parameters}
+{\em a} & the first coefficient of the quadric equation \\
+\hline
+{\em b} & the second coefficient of the quadric equation \\
+\hline
+{\em c} & the third coefficient of the quadric equation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the lowest positive root or Float.\+Nan 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_a4dbe55d00442bf26096ac0eb57f74e3f}{}\index{airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}!polygon\+Centroid@{polygon\+Centroid}}
+\index{polygon\+Centroid@{polygon\+Centroid}!airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}}
+\subsubsection[{polygon\+Centroid}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf Vector2} airhockeyjava.\+util.\+Geometry\+Utils.\+polygon\+Centroid (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{polygon, }
+\item[{int}]{offset, }
+\item[{int}]{count, }
+\item[{{\bf Vector2}}]{centroid}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_utils_a4dbe55d00442bf26096ac0eb57f74e3f}
+Returns the centroid for the specified non-\/self-\/intersecting polygon. \hypertarget{classairhockeyjava_1_1util_1_1_geometry_utils_a624ab363ee8703ba98e7cbea91b9bb9b}{}\index{airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}!to\+Barycoord@{to\+Barycoord}}
+\index{to\+Barycoord@{to\+Barycoord}!airhockeyjava\+::util\+::\+Geometry\+Utils@{airhockeyjava\+::util\+::\+Geometry\+Utils}}
+\subsubsection[{to\+Barycoord}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf Vector2} airhockeyjava.\+util.\+Geometry\+Utils.\+to\+Barycoord (
+\begin{DoxyParamCaption}
+\item[{{\bf Vector2}}]{p, }
+\item[{{\bf Vector2}}]{a, }
+\item[{{\bf Vector2}}]{b, }
+\item[{{\bf Vector2}}]{c, }
+\item[{{\bf Vector2}}]{barycentric\+Out}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_geometry_utils_a624ab363ee8703ba98e7cbea91b9bb9b}
+Computes the barycentric coordinates v,w for the specified point in the triangle. 
+
+If barycentric.\+x $>$= 0 \&\& barycentric.\+y $>$= 0 \&\& barycentric.\+x + barycentric.\+y $<$= 1 then the point is inside the triangle. 
+
+If vertices a,b,c have values aa,bb,cc then to get an interpolated value at point p\+:
+
+
+\begin{DoxyPre}
+GeometryUtils.barycentric(p, a, b, c, barycentric);
+float u = 1.f - barycentric.x - barycentric.y;
+float x = u * aa.x + barycentric.x * bb.x + barycentric.y * cc.x;
+float y = u * aa.y + barycentric.x * bb.y + barycentric.y * cc.y;
+\end{DoxyPre}
+ \begin{DoxyReturn}{Returns}
+barycentric\+Out 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/util/Geometry\+Utils.\+java\end{DoxyCompactItemize}

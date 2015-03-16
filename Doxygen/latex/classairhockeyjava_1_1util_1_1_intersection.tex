@@ -1,0 +1,81 @@
+\hypertarget{classairhockeyjava_1_1util_1_1_intersection}{}\section{airhockeyjava.\+util.\+Intersection Class Reference}
+\label{classairhockeyjava_1_1util_1_1_intersection}\index{airhockeyjava.\+util.\+Intersection@{airhockeyjava.\+util.\+Intersection}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_intersection_a2ded9b380aafd9989b7ce0e9fc37b771}{}static Line2\+D {\bfseries get\+Collision\+Edge} (float x1, float y1, Rectangle2\+D rectangle)\label{classairhockeyjava_1_1util_1_1_intersection_a2ded9b380aafd9989b7ce0e9fc37b771}
+
+\item 
+static Line2\+D \hyperlink{classairhockeyjava_1_1util_1_1_intersection_a7bc3475008f0627c8216effaee7931da}{get\+Collision\+Edge} (Point2\+D point, Rectangle2\+D rectangle)
+\item 
+static float \hyperlink{classairhockeyjava_1_1util_1_1_intersection_ad805d3323aaef487c10a7bbb96073694}{get\+Angle\+Between\+Lines} (Line2\+D line1, Line2\+D line2)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_intersection_a2295f2213c28cec543744289ca6a147f}{}static Point2\+D\mbox{[}$\,$\mbox{]} {\bfseries get\+Intersection\+Points} (Line2\+D line, Rectangle2\+D rectangle)\label{classairhockeyjava_1_1util_1_1_intersection_a2295f2213c28cec543744289ca6a147f}
+
+\item 
+static Point2\+D \hyperlink{classairhockeyjava_1_1util_1_1_intersection_abcd8db2ab228e83d4041fb622e438329}{get\+Intersection\+Point} (Line2\+D line, Rectangle2\+D rectangle)
+\item 
+\hypertarget{classairhockeyjava_1_1util_1_1_intersection_a0f984bf3be361faa2f97c8e867b37670}{}static Point2\+D {\bfseries get\+Intersection\+Point} (Line2\+D line\+A, Line2\+D line\+B)\label{classairhockeyjava_1_1util_1_1_intersection_a0f984bf3be361faa2f97c8e867b37670}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Utility class providing methods for finding intersections. \begin{DoxyAuthor}{Author}
+Joshua Segeren 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1util_1_1_intersection_ad805d3323aaef487c10a7bbb96073694}{}\index{airhockeyjava\+::util\+::\+Intersection@{airhockeyjava\+::util\+::\+Intersection}!get\+Angle\+Between\+Lines@{get\+Angle\+Between\+Lines}}
+\index{get\+Angle\+Between\+Lines@{get\+Angle\+Between\+Lines}!airhockeyjava\+::util\+::\+Intersection@{airhockeyjava\+::util\+::\+Intersection}}
+\subsubsection[{get\+Angle\+Between\+Lines}]{\setlength{\rightskip}{0pt plus 5cm}static float airhockeyjava.\+util.\+Intersection.\+get\+Angle\+Between\+Lines (
+\begin{DoxyParamCaption}
+\item[{Line2\+D}]{line1, }
+\item[{Line2\+D}]{line2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_intersection_ad805d3323aaef487c10a7bbb96073694}
+Gets the angle between two lines 
+\begin{DoxyParams}{Parameters}
+{\em line1} & \\
+\hline
+{\em line2} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Angle in radians 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_intersection_a7bc3475008f0627c8216effaee7931da}{}\index{airhockeyjava\+::util\+::\+Intersection@{airhockeyjava\+::util\+::\+Intersection}!get\+Collision\+Edge@{get\+Collision\+Edge}}
+\index{get\+Collision\+Edge@{get\+Collision\+Edge}!airhockeyjava\+::util\+::\+Intersection@{airhockeyjava\+::util\+::\+Intersection}}
+\subsubsection[{get\+Collision\+Edge}]{\setlength{\rightskip}{0pt plus 5cm}static Line2\+D airhockeyjava.\+util.\+Intersection.\+get\+Collision\+Edge (
+\begin{DoxyParamCaption}
+\item[{Point2\+D}]{point, }
+\item[{Rectangle2\+D}]{rectangle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_intersection_a7bc3475008f0627c8216effaee7931da}
+Method to get the line corresponding to the edge on which the input point lies. \begin{DoxyReturn}{Returns}
+Edge line from collision point 
+\end{DoxyReturn}
+\hypertarget{classairhockeyjava_1_1util_1_1_intersection_abcd8db2ab228e83d4041fb622e438329}{}\index{airhockeyjava\+::util\+::\+Intersection@{airhockeyjava\+::util\+::\+Intersection}!get\+Intersection\+Point@{get\+Intersection\+Point}}
+\index{get\+Intersection\+Point@{get\+Intersection\+Point}!airhockeyjava\+::util\+::\+Intersection@{airhockeyjava\+::util\+::\+Intersection}}
+\subsubsection[{get\+Intersection\+Point}]{\setlength{\rightskip}{0pt plus 5cm}static Point2\+D airhockeyjava.\+util.\+Intersection.\+get\+Intersection\+Point (
+\begin{DoxyParamCaption}
+\item[{Line2\+D}]{line, }
+\item[{Rectangle2\+D}]{rectangle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}\label{classairhockeyjava_1_1util_1_1_intersection_abcd8db2ab228e83d4041fb622e438329}
+Special method to find intersection of trajectory line (in direction of movement) with the edges of the rectangle that contain it. 
+\begin{DoxyParams}{Parameters}
+{\em line} & \\
+\hline
+{\em rectangle} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Single intersection point 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/util/Intersection.\+java\end{DoxyCompactItemize}

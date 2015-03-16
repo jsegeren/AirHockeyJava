@@ -1,0 +1,64 @@
+\hypertarget{classairhockeyjava_1_1control_1_1_serial_connection}{}\section{airhockeyjava.\+control.\+Serial\+Connection Class Reference}
+\label{classairhockeyjava_1_1control_1_1_serial_connection}\index{airhockeyjava.\+control.\+Serial\+Connection@{airhockeyjava.\+control.\+Serial\+Connection}}
+Inheritance diagram for airhockeyjava.\+control.\+Serial\+Connection\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classairhockeyjava_1_1control_1_1_serial_connection}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classairhockeyjava_1_1control_1_1_serial_connection_ac06ea5654cb29fdb2ff03b2649ce9c83}{}void {\bfseries initialize} ()\label{classairhockeyjava_1_1control_1_1_serial_connection_ac06ea5654cb29fdb2ff03b2649ce9c83}
+
+\item 
+synchronized void \hyperlink{classairhockeyjava_1_1control_1_1_serial_connection_a8ed691876774f9b87e24c76be8f32faf}{close} ()
+\item 
+synchronized void \hyperlink{classairhockeyjava_1_1control_1_1_serial_connection_af6aa17bf9771efb1f3f3463f14ea31f8}{serial\+Event} (Serial\+Port\+Event o\+Event)
+\item 
+synchronized void \hyperlink{classairhockeyjava_1_1control_1_1_serial_connection_ab7cac3b03e909f0dc92e98c5df64b8f5}{write\+Bytes} (byte\mbox{[}$\,$\mbox{]} byte\+Data)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classairhockeyjava_1_1control_1_1_serial_connection_a12da525c30de38fcfde874813e1037c4}{Serial\+Connection} (\hyperlink{interfaceairhockeyjava_1_1control_1_1_i_controller}{I\+Controller} controller)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classairhockeyjava_1_1control_1_1_serial_connection_a12da525c30de38fcfde874813e1037c4}{}\index{airhockeyjava\+::control\+::\+Serial\+Connection@{airhockeyjava\+::control\+::\+Serial\+Connection}!Serial\+Connection@{Serial\+Connection}}
+\index{Serial\+Connection@{Serial\+Connection}!airhockeyjava\+::control\+::\+Serial\+Connection@{airhockeyjava\+::control\+::\+Serial\+Connection}}
+\subsubsection[{Serial\+Connection}]{\setlength{\rightskip}{0pt plus 5cm}airhockeyjava.\+control.\+Serial\+Connection.\+Serial\+Connection (
+\begin{DoxyParamCaption}
+\item[{{\bf I\+Controller}}]{controller}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}\label{classairhockeyjava_1_1control_1_1_serial_connection_a12da525c30de38fcfde874813e1037c4}
+Constructor 
+
+\subsection{Member Function Documentation}
+\hypertarget{classairhockeyjava_1_1control_1_1_serial_connection_a8ed691876774f9b87e24c76be8f32faf}{}\index{airhockeyjava\+::control\+::\+Serial\+Connection@{airhockeyjava\+::control\+::\+Serial\+Connection}!close@{close}}
+\index{close@{close}!airhockeyjava\+::control\+::\+Serial\+Connection@{airhockeyjava\+::control\+::\+Serial\+Connection}}
+\subsubsection[{close}]{\setlength{\rightskip}{0pt plus 5cm}synchronized void airhockeyjava.\+control.\+Serial\+Connection.\+close (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1control_1_1_serial_connection_a8ed691876774f9b87e24c76be8f32faf}
+This should be called when you stop using the port. This will prevent port locking on platforms like Linux. \hypertarget{classairhockeyjava_1_1control_1_1_serial_connection_af6aa17bf9771efb1f3f3463f14ea31f8}{}\index{airhockeyjava\+::control\+::\+Serial\+Connection@{airhockeyjava\+::control\+::\+Serial\+Connection}!serial\+Event@{serial\+Event}}
+\index{serial\+Event@{serial\+Event}!airhockeyjava\+::control\+::\+Serial\+Connection@{airhockeyjava\+::control\+::\+Serial\+Connection}}
+\subsubsection[{serial\+Event}]{\setlength{\rightskip}{0pt plus 5cm}synchronized void airhockeyjava.\+control.\+Serial\+Connection.\+serial\+Event (
+\begin{DoxyParamCaption}
+\item[{Serial\+Port\+Event}]{o\+Event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1control_1_1_serial_connection_af6aa17bf9771efb1f3f3463f14ea31f8}
+Handle an event on the serial port. Read the data and print it. \hypertarget{classairhockeyjava_1_1control_1_1_serial_connection_ab7cac3b03e909f0dc92e98c5df64b8f5}{}\index{airhockeyjava\+::control\+::\+Serial\+Connection@{airhockeyjava\+::control\+::\+Serial\+Connection}!write\+Bytes@{write\+Bytes}}
+\index{write\+Bytes@{write\+Bytes}!airhockeyjava\+::control\+::\+Serial\+Connection@{airhockeyjava\+::control\+::\+Serial\+Connection}}
+\subsubsection[{write\+Bytes}]{\setlength{\rightskip}{0pt plus 5cm}synchronized void airhockeyjava.\+control.\+Serial\+Connection.\+write\+Bytes (
+\begin{DoxyParamCaption}
+\item[{byte\mbox{[}$\,$\mbox{]}}]{byte\+Data}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classairhockeyjava_1_1control_1_1_serial_connection_ab7cac3b03e909f0dc92e98c5df64b8f5}
+Write bytes over the serial port. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+M\+R/\+Documents/\+Git\+Hub/\+Air\+Hockey\+Java/src/airhockeyjava/control/Serial\+Connection.\+java\end{DoxyCompactItemize}
