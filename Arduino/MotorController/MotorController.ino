@@ -58,6 +58,9 @@ void setup(){
     
     queuedSerialOutput[0] = "";
     queuedSerialOutput[1] = "";
+    
+    pinMode(12, INPUT);
+    digitalWrite(12, HIGH);
 }
 
 /*
@@ -152,14 +155,14 @@ void moveToPosition(){
 
 void displayScore(){
     //matrix.writeDigitNum(0, 0, false);
-    matrix.writeDigitNum(1, serialScore[0], true);
+    matrix.writeDigitNum(1, 0, true);
     matrix.drawColon(true);
-    matrix.writeDigitNum(3, serialScore[1], true);
+    matrix.writeDigitNum(3, 0, true);
     //matrix.writeDigitNum(4, serialScore[1], true);
     matrix.writeDisplay();
     
-    currentScore[0] = serialScore[0];
-    currentScore[1] = serialScore[1];
+    //currentScore[0] = serialScore[0];
+    //currentScore[1] = serialScore[1];
 }
 
 void printNextChar(){
@@ -192,6 +195,7 @@ void loop(){
     
     stepperX.run();
     stepperY.run();
+    displayScore();
     
     // if there is room in the outputbuffer send the following messages
     if(Serial.isOutputBufferEmpty()){
