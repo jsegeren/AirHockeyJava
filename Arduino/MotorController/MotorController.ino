@@ -126,6 +126,8 @@ boolean getSerialInput(){
         	fieldIndex = -1;                  // Reset field index for next type
         	gotInput = true;
         }
+    }else{
+        readyForNextInput = true;
     }
     return gotInput;
 }
@@ -186,7 +188,6 @@ void printNextChar(){
 void loop(){
     if(getSerialInput()){
         moveToPosition();
-        readyForNextInput = true;
     }
     
 //    if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
@@ -195,7 +196,7 @@ void loop(){
     
     stepperX.run();
     stepperY.run();
-    displayScore();
+//    displayScore();
     
     // if there is room in the outputbuffer send the following messages
     if(Serial.isOutputBufferEmpty()){
