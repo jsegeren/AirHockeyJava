@@ -66,6 +66,7 @@ public class Tracking implements Runnable {
 
 	private boolean isGuiEnabled;
 	
+	private int imageCount = 0;
 
 	// Use this to dynamically resize the JFrame based on the capture size
 	// Only need to resize the JFrame after the first frame capture!
@@ -190,7 +191,7 @@ public class Tracking implements Runnable {
 			if (!originalImage.empty()) {
 				//TODO FIX RESIZING OF FRAME
 				// Dynamically resize the JFrames based on the capture size (device-dependent)
-				if (isFirstCaptureImage) {
+				if (!(imageCount == 2)) {
 					slider.loadTransform();
 //					Dimension actualSize = new Dimension(originalImage.width(),
 //							originalImage.height());
@@ -203,7 +204,7 @@ public class Tracking implements Runnable {
 //						jFrame.setSize(actualSize);
 //						hsvFilteredFrame.setSize(actualSize);
 //					}
-					isFirstCaptureImage = false;
+					imageCount++;
 				}
 
 				// Perspective transformation -> 2D to 2D input warp so capture doesn't have to be flat or level

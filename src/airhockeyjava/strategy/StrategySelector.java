@@ -18,6 +18,8 @@ public class StrategySelector {
 	final private IStrategy naiveDefenseStrategy;
 	final private IStrategy naiveOffenseStrategy;
 	final private IStrategy waypointOffenseStrategy;
+	final private IStrategy hybridDefenseStrategy;
+
 	private IStrategy currentStrategy;
 
 	private long lastUpdatedTime;
@@ -28,6 +30,8 @@ public class StrategySelector {
 		this.naiveDefenseStrategy = new NaiveDefenseStrategy(game);
 		this.naiveOffenseStrategy = new NaiveOffenseStrategy(game);
 		this.waypointOffenseStrategy = new WaypointOffenseStrategy(game);
+		this.hybridDefenseStrategy = new HybridDefence(game);
+
 		this.updateStrategy(naiveDefenseStrategy);
 	}
 

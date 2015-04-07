@@ -132,6 +132,9 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 	@Override
 	public void paint(Graphics graphicsContext) {
 
+		//avoid null pointer error
+		if(this.bufferContext == null){return;}
+		
 		clearScreen();
 		drawTable(this.game.gameTable);
 
