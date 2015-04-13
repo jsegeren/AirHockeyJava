@@ -1,5 +1,7 @@
 package airhockeyjava.strategy;
 
+import java.awt.geom.Line2D;
+
 import airhockeyjava.game.Constants;
 import airhockeyjava.game.Game;
 import airhockeyjava.util.Vector2;
@@ -42,6 +44,12 @@ public class NaiveOffenseStrategy implements IStrategy {
 	public void initStrategy() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Line2D[] getStrategyLines() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

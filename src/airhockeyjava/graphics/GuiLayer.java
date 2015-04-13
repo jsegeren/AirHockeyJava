@@ -47,8 +47,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 
 	AffineTransform coordinateTranslate = new AffineTransform();
 	
-	public Line2D tmpTriangleLine1 = null;
-	public Line2D tmpTriangleLine2 = null;
+	public Line2D[] strategyLines = null;
 
 
 	private static final Map<Boolean, Color> criticalPathColorMap = new HashMap<Boolean, Color>() {
@@ -233,14 +232,27 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		//Draw the table border
 		context.drawRoundRect(Constants.GUI_TABLE_OFFSET_X, Constants.GUI_TABLE_OFFSET_Y,
 				scale(tableWidth), scale(tableHeight), scale(tableCornerRadius),
-				scale(tableCornerRadius));
+				scale(tableCornerRadius));		context.setColor(Constants.GUI_TABLE_COLOR);
 
+		
 		//Draw the center line
 		context.drawLine(Constants.GUI_TABLE_OFFSET_X + scale(tableWidth / 2f),
 				Constants.GUI_TABLE_OFFSET_Y,
 				Constants.GUI_TABLE_OFFSET_X + scale(tableWidth / 2f), Constants.GUI_TABLE_OFFSET_Y
 						+ scale(tableHeight));
 
+		context.setColor(Color.GRAY);
+
+		
+		//Draw the 1/3 line
+		context.drawLine(Constants.GUI_TABLE_OFFSET_X + scale(tableWidth / 3f),
+				Constants.GUI_TABLE_OFFSET_Y,
+				Constants.GUI_TABLE_OFFSET_X + scale(tableWidth / 3f), Constants.GUI_TABLE_OFFSET_Y
+						+ scale(tableHeight));
+
+		context.setColor(Constants.GUI_TABLE_COLOR);
+
+		
 		context.setColor(Constants.GUI_GOAL_COLOR);
 		//Draw player goal
 		context.fillRect(Constants.GUI_TABLE_OFFSET_X, Constants.GUI_TABLE_OFFSET_Y
@@ -254,15 +266,15 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 				scale(Constants.GAME_GOAL_ALLOWANCE), scale(Constants.GAME_GOAL_WIDTH_METERS));
 	
 		//TEST
-		if(this.tmpTriangleLine1 != null && this.tmpTriangleLine2 != null){
-			context.drawLine(Constants.GUI_TABLE_OFFSET_X + scale((float)this.tmpTriangleLine1.getX1()), 
-								   Constants.GUI_TABLE_OFFSET_Y + scale((float)this.tmpTriangleLine1.getY1()), 
-								   Constants.GUI_TABLE_OFFSET_X + scale((float)this.tmpTriangleLine1.getX2()), 
-								   Constants.GUI_TABLE_OFFSET_Y + scale((float)this.tmpTriangleLine1.getY2()));
-			context.drawLine(Constants.GUI_TABLE_OFFSET_X + scale((float)this.tmpTriangleLine2.getX1()), 
-					   Constants.GUI_TABLE_OFFSET_Y + scale((float)this.tmpTriangleLine2.getY1()), 
-					   Constants.GUI_TABLE_OFFSET_X + scale((float)this.tmpTriangleLine2.getX2()), 
-					   Constants.GUI_TABLE_OFFSET_Y + scale((float)this.tmpTriangleLine2.getY2()));
+		
+		if(this.strategyLines != null){
+			for (Line2D line: this.strategyLines){
+				context.drawLine(Constants.GUI_TABLE_OFFSET_X + scale((float) line.getX1()), 
+						   Constants.GUI_TABLE_OFFSET_Y + scale((float)line.getY1()), 
+						   Constants.GUI_TABLE_OFFSET_X + scale((float)line.getX2()), 
+						   Constants.GUI_TABLE_OFFSET_Y + scale((float)line.getY2()));				
+			}
+
 		}
 
 	}

@@ -1,5 +1,6 @@
 package airhockeyjava.strategy;
 
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 import airhockeyjava.game.Constants;
@@ -55,5 +56,11 @@ public class UserInputStrategy implements IStrategy {
 	public void initStrategy() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Line2D[] getStrategyLines() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

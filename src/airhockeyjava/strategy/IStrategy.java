@@ -1,5 +1,7 @@
 package airhockeyjava.strategy;
 
+import java.awt.geom.Line2D;
+
 import airhockeyjava.util.Vector2;
 
 /**
@@ -21,4 +23,6 @@ public interface IStrategy {
 	 */
 	public void initStrategy();
 	
+	public Line2D[] getStrategyLines();
 }
+

@@ -127,7 +127,9 @@ public class Constants {
 	public static final float WALL_PUCK_COLLISION_RESTITUTION_COEFFICIENT = 0.80f;
 	public static final float PUCK_SURFACE_FRICTION_LOSS_COEFFICIENT = 0.001f;
 	public static final float PUCK_AIR_FRICTION_COEFFICIENT = 0.3f;
-	public static final int GAME_SIMULATION_TARGET_FRAMES_PER_SECOND = 10;
+	public static final int GAME_SIMULATION_TARGET_FRAMES_PER_SECOND = 120;
+	public static final int GAME_REAL_TARGET_FRAMES_PER_SECOND = 10;
+
 	public static final float MAX_PUCK_SPEED_METERS_PER_SECOND = 15f;
 	public static final int NUMBER_PREDICTED_PATH_REFLECTIONS = 1;
 	public static final float DIRECTIONAL_FORCE_SCALE_FACTOR = 10000f;
@@ -151,7 +153,7 @@ public class Constants {
 	public static final float STRATEGY_PROJECTED_STEP_DISTANCE_METERS = 0.005f;
 	public static final int STRATEGY_MAX_LOOKAHEAD_BOUNCES = 3;
 	public static final float STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS = 0.15f;
-	public static final float STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE = 1.5f;
+	public static final float STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE = 15f;
 	public static final float MIN_TIME_BETWEEN_STRATEGY_TRANSITION_SECONDS = 0.01f;
 	public static final float STRATEGY_VIA_DISTANCE_BEHIND_PUCK_METERS = 0.15f;
 	public static final float STRATEGY_VIA_DISTANCE_AHEAD_PUCK_METERS = 0.15f;
@@ -164,6 +166,8 @@ public class Constants {
 	public static final String STRATEGY_WAYPOINT_OFFENSE_STRING = "Waypoint offense strategy";
 
 	public static final float STRATEGY_MOVEMENT_TOLERANCE = 0.03f;
+	
+	public static final float VELOCITY_FILTER_ALPHA = 0.5f;
 	
 	/**
 	 * Input Constants

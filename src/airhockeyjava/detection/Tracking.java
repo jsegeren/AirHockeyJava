@@ -374,7 +374,8 @@ public class Tracking implements Runnable {
 							detectedPositionPixelX, Constants.getDetectionWidthScalingFactor()),
 							Conversion.pixelToMeter(detectedPositionPixelY,
 									Constants.getDetectionHeightScalingFactor()));
-					trackingObject.setPosition(updatedPosition);
+					Vector2 filteredPosition = new Vector2(trackingObject.getPosition()).add(updatedPosition.sub(trackingObject.getPosition()).scl(Constants.VELOCITY_FILTER_ALPHA));
+					trackingObject.setPosition(filteredPosition);
 
 					// Log the position
 					// System.out.println(trackingObject.getPosition().toString());

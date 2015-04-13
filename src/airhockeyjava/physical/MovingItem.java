@@ -3,12 +3,14 @@ package airhockeyjava.physical;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.ArrayList;
 
 import airhockeyjava.game.Constants;
+import airhockeyjava.strategy.StrategySelector;
 import airhockeyjava.util.FixedStack;
 import airhockeyjava.util.Geometry;
 import airhockeyjava.util.LineVectorUtils;
@@ -43,6 +45,8 @@ public abstract class MovingItem implements IMovingItem {
 	private final float radius;
 	
 	private FixedStack<Vector2> pastPositions; 
+	
+	private Point2D intersectionPoint = new Point2D.Float();
 	
 	boolean predictedPathFound = true;
 
@@ -155,10 +159,13 @@ public abstract class MovingItem implements IMovingItem {
 		updatePosition(deltaTime);
 	}
 	
-	public void calculateAnUpdateDectectedVelocity(float deltaTime){
+	public void calculateAndUpdateDectectedVelocity(float deltaTime){
 		if(this.pastPositions.size() > 0){
-			this.velocity = new Vector2(this.position).sub(this.pastPositions.peek());
-			System.out.println(this.velocity);			
+			System.out.println("pos: " + this.position + " past pos: " + this.pastPositions.peek());
+			Vector2 newVel = (new Vector2(this.position).sub(this.pastPositions.peek()));
+			//this.velocity.add(newVel.sub(this.velocity).scl(Constants.VELOCITY_FILTER_ALPHA)); 
+			this.velocity = newVel;
+			System.out.println("x vel: " + this.velocity.x + " y vel: " + this.velocity.y);			
 		}
 	}
 
@@ -241,14 +248,31 @@ public abstract class MovingItem implements IMovingItem {
 		}
 
 		// Build path with saved points
+		this.intersectionPoint = null;
+		Line2D[] strategyLines = StrategySelector.getStrategyLines();
+		
 		for (int i = 0; i < predictedPathPoints.size() - 1; i++) {
 			Point2D firstPoint = predictedPathPoints.get(i);
 			Point2D secondPoint = predictedPathPoints.get(i + 1);
-			Path2D path = new Path2D.Float(new Line2D.Float(firstPoint, secondPoint));
+			Line2D line = new Line2D.Float(firstPoint, secondPoint);
+			Path2D path = new Path2D.Float(line);
+
+			if(this.intersectionPoint == null && strategyLines != null){
+				for (int j = 0; j < strategyLines.length; j++){
+					Line2D strategyLine = strategyLines[j];
+					intersectionPoint = Intersection.getIntersectionPoint(line, strategyLine);
+					if(intersectionPoint != null){
+						break;
+					} 
+				
+				}
+			}
+			
 			if (i == 0) {
 				pathAndFlag.predictedPath = path;
 			} else {
-				pathAndFlag.predictedPath.append(path, true);
+				pathAndFlag.predictedPath.append(path, true);	
+				
 			}
 		}
 	}
@@ -333,7 +357,7 @@ public abstract class MovingItem implements IMovingItem {
 	public Point2D getExpectedInterectionWithLine(Line2D line){
 		Point2D intersectionPoint = null;
 		Line2D currentLine;
-
+		
 		for (int i = 0; i < predictedPathPoints.size()-1; i++){
 			Point2D p1 = predictedPathPoints.get(i);
 			Point2D p2 = predictedPathPoints.get(i+1);
@@ -378,4 +402,8 @@ public abstract class MovingItem implements IMovingItem {
 	}	
 
 	
+	public Point2D getExpectedInterectionPoint(){
+		return this.intersectionPoint;
+	}
+
 }

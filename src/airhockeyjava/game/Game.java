@@ -136,9 +136,7 @@ public class Game {
 		}
 	};
 
-	// Local constants and physical parameters
-	private static final long OPTIMAL_TIME = Conversion
-			.secondsToNanoseconds(1f / Constants.GAME_SIMULATION_TARGET_FRAMES_PER_SECOND);
+
 	private static GameTypeEnum gameType;
 
 	// Configurable Game Settings
@@ -177,6 +175,8 @@ public class Game {
 	// GUI frame
 	private JFrame jFrame;
 
+	private static long OPTIMAL_TIME;
+	
 	/**
 	 * Top-level constructor
 	 */
@@ -216,12 +216,16 @@ public class Game {
 			setupRealDetection(true);
 			robotController = new RealRobotController(this.robotMallet);
 			robotController.initialize();
+			OPTIMAL_TIME = Conversion
+					.secondsToNanoseconds(1f / Constants.GAME_SIMULATION_TARGET_FRAMES_PER_SECOND);
 			break;
 		// Real game without GUI output
 		case REAL_HEADLESS_GAME_TYPE:
 			setupRealDetection(false);
 			robotController = new RealRobotController(this.robotMallet);
 			robotController.initialize();
+			OPTIMAL_TIME = Conversion
+					.secondsToNanoseconds(1f / Constants.GAME_REAL_TARGET_FRAMES_PER_SECOND);
 			break;
 		// Simulated game (with GUI output, and input controls)
 		case SIMULATED_GAME_TYPE:
@@ -230,6 +234,9 @@ public class Game {
 			detectionLayer = new SimulatedDetection(this, inputLayer);
 			setKeyBindings();
 			robotController = new SimulatedRobotController(this.robotMallet);
+			// Local constants and physical parameters
+			OPTIMAL_TIME = Conversion
+					.secondsToNanoseconds(1f / Constants.GAME_SIMULATION_TARGET_FRAMES_PER_SECOND);
 			break;
 		default:
 			break;
@@ -403,7 +410,7 @@ public class Game {
 		// Otherwise we will use the vision system
 		else if (gameType.equals(GameTypeEnum.REAL_GAME_TYPE)) {
 			// Update predicted path
-			game.gamePuck.calculateAnUpdateDectectedVelocity(deltaTime);
+			game.gamePuck.calculateAndUpdateDectectedVelocity(deltaTime);
 			game.gamePuck.updatePredictedPath(Constants.NUMBER_PREDICTED_PATH_REFLECTIONS,
 					true);
 		}

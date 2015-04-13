@@ -35,23 +35,22 @@ public class HybridDefence implements IStrategy {
 		defenceLines[0] = frontLine;		
 		defenceLines[1] = new Line2D.Float(homePosition, traingleBase1);
 		defenceLines[2] = new Line2D.Float(homePosition, traingleBase2);
+		
 	}
 
 	@Override
 	public Vector2 getTargetPosition(float deltaTime) {
 		if(game.guiLayer != null){
-			game.guiLayer.tmpTriangleLine1 = defenceLines[0];
-			game.guiLayer.tmpTriangleLine2 = defenceLines[1];			
+			game.guiLayer.strategyLines = defenceLines;
 		}
 
-		Point2D collisionPoint = game.gamePuck.getExpectedInterectionWithLine(this.defenceLines);
-		
-		
+		Point2D collisionPoint = game.gamePuck.getExpectedInterectionPoint();
 		
 		Vector2 puckPosition = game.gamePuck.getPosition();
 		if(puckPosition.x < game.gameTable.getWidth() / 3){
 			return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
 		} else {
+
 			if(collisionPoint != null){
 				return new Vector2((float)collisionPoint.getX(), (float)collisionPoint.getY());
 			}else{
@@ -67,5 +66,10 @@ public class HybridDefence implements IStrategy {
 	public void initStrategy() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Line2D[] getStrategyLines() {
+		return defenceLines;
 	}
 }

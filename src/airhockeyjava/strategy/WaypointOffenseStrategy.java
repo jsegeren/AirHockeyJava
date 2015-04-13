@@ -1,5 +1,6 @@
 package airhockeyjava.strategy;
 
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,5 +72,11 @@ public class WaypointOffenseStrategy implements IStrategy {
 	public void initStrategy() {
 		waypointsList.clear();
 		nextWaypointIndex = 0;
+	}
+
+	@Override
+	public Line2D[] getStrategyLines() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

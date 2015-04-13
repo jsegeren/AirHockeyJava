@@ -42,11 +42,10 @@ public class TriangleDefenseStrategy implements IStrategy {
 	@Override
 	public Vector2 getTargetPosition(float deltaTime) {
 		if(game.guiLayer != null){
-			game.guiLayer.tmpTriangleLine1 = triangleLines[0];
-			game.guiLayer.tmpTriangleLine2 = triangleLines[1];			
+			game.guiLayer.strategyLines = triangleLines;
 		}
 
-		Point2D collisionPoint = game.gamePuck.getExpectedInterectionWithLine(this.triangleLines);
+		Point2D collisionPoint = game.gamePuck.getExpectedInterectionPoint();
 		
 		Vector2 puckPosition = game.gamePuck.getPosition();
 		if(puckPosition.x < game.gameTable.getWidth() / 3){
@@ -72,5 +71,10 @@ public class TriangleDefenseStrategy implements IStrategy {
 	public void initStrategy() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Line2D[] getStrategyLines() {
+		return triangleLines;
 	}
 }

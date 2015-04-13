@@ -36,8 +36,10 @@ public class PathPlanner implements IPathPlanner {
 	@Override
 	// Gets the appropriate current smoothing acceleration (limiting overshoot) based on position difference.
 	public Vector2 targetPositionToAcceleration(Vector2 targetPosition) {
-		return getPositionDeltaVector(targetPosition).scl(Constants.DIRECTIONAL_FORCE_SCALE_FACTOR)
+		Vector2 aceeleration =  getPositionDeltaVector(targetPosition).scl(Constants.DIRECTIONAL_FORCE_SCALE_FACTOR)
 				.sub(new Vector2(mallet.getVelocity()).scl(Constants.DAMPENING_FORCE_SCALE_FACTOR));
+
+		return aceeleration;
 	}
 
 	private Vector2 getPositionDeltaVector(Vector2 targetPosition) {

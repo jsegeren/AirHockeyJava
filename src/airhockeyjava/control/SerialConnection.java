@@ -102,7 +102,7 @@ public class SerialConnection implements SerialPortEventListener {
 ////				System.out.println(inputChar);
 //				if(inputChar == '\n'){
 					inputBuffer = input.readLine();
-					System.out.println("FROM ARDUINO: " + inputBuffer);
+//					System.out.println("FROM ARDUINO: " + inputBuffer);
 //					controller.handleInterfaceMessage(inputBuffer);
 //					inputBuffer = "";
 //	

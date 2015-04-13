@@ -1,5 +1,7 @@
 package airhockeyjava.strategy;
 
+import java.awt.geom.Line2D;
+
 import airhockeyjava.game.Constants;
 import airhockeyjava.game.Game;
 import airhockeyjava.util.Conversion;
@@ -19,8 +21,9 @@ public class StrategySelector {
 	final private IStrategy naiveOffenseStrategy;
 	final private IStrategy waypointOffenseStrategy;
 	final private IStrategy hybridDefenseStrategy;
-
-	private IStrategy currentStrategy;
+	final private IStrategy homePositionStrategy;
+	
+	private static IStrategy currentStrategy;
 
 	private long lastUpdatedTime;
 
@@ -31,13 +34,13 @@ public class StrategySelector {
 		this.naiveOffenseStrategy = new NaiveOffenseStrategy(game);
 		this.waypointOffenseStrategy = new WaypointOffenseStrategy(game);
 		this.hybridDefenseStrategy = new HybridDefence(game);
-
+		this.homePositionStrategy = new HomePositionStrategy(game);
 		this.updateStrategy(naiveDefenseStrategy);
 	}
 
 	public IStrategy getBestStrategy() {
-//		Vector2 puckPosition = game.gamePuck.getPosition();
-//		Vector2 puckVelocity = game.gamePuck.getVelocity();
+		Vector2 puckPosition = game.gamePuck.getPosition();
+		Vector2 puckVelocity = game.gamePuck.getVelocity();
 //		if (puckPosition.x > game.gameTable.getWidth() / 2) {
 //			if (puckPosition.x <= (float) game.gameTable.getWidth() - game.robotMallet.getRadius()
 //					* 2 - Constants.STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS) {
@@ -56,7 +59,25 @@ public class StrategySelector {
 //		} else {
 //			updateStrategy(triangleDefenseStrategy);
 //		}
-		updateStrategy(triangleDefenseStrategy);
+		
+
+		if (puckPosition.x > game.gameTable.getWidth() / 2) {
+			if(puckVelocity.len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE){
+				updateStrategy(waypointOffenseStrategy);
+
+			}else{
+				updateStrategy(hybridDefenseStrategy);
+	
+			}
+		} else {
+			if(puckVelocity.len() > 0.001f){
+				updateStrategy(hybridDefenseStrategy);
+
+			}else{
+				updateStrategy(homePositionStrategy);
+	
+			}		
+		}
 		return currentStrategy;
 
 	}
@@ -74,4 +95,8 @@ public class StrategySelector {
 		}
 	}
 
+	
+	public static Line2D[] getStrategyLines(){
+		return currentStrategy.getStrategyLines();
+	}
 }
