@@ -1,7 +1,8 @@
 #include <AccelStepper.h>
 #include <Wire.h>
-#include "Adafruit_LEDBackpack.h"
-#include "Adafruit_GFX.h"
+#include <Adafruit_LEDBackpack.h>
+#include <Adafruit_GFX.h>
+#include <avr/interrupt.h>
 
 // X - Direction Motor Settings
 #define X_MOTOR_PIN 10
@@ -15,6 +16,11 @@
 #define Y_MOTOR_MAX_SPEED 5000
 #define Y_MOTOR_ACCELERATION 100000
 
+// Game Goal detection settings
+#define RB_GOAL 2
+#define USR_GOAL 3
+#define DEBOUNCE_TIME 300
+
 // Other constants
 #define FIELD_DELIMITER ','
 #define OUTPUT_POSITION_PREFIX '_'
@@ -23,10 +29,14 @@
 AccelStepper stepperX(AccelStepper::DRIVER, X_MOTOR_PIN, X_MOTOR_DIRECTION_PIN);
 AccelStepper stepperY(AccelStepper::DRIVER, Y_MOTOR_PIN, Y_MOTOR_DIRECTION_PIN);
 
-
 long serialCoordinates[2];         // Input X,Y coordinates from Serial connection
 int serialScore[2];             // Input User and Robot score from Serial connection
-int currentScore[2];             // Current User and Robot scores
+volatile uint8_t currentScore[2];             // Current User and Robot scores
+volatile unsigned long currentTimeRB;         // RB Goal debounce times
+volatile unsigned long lastTimeRB;
+volatile unsigned long currentTimeUSR;        // USR Goal debounce times
+volatile unsigned long lastTimeUSR;
+
 int directionVector[2];
 int fieldIndex = -1;
 char type;// Type of data being received
@@ -38,7 +48,6 @@ int outputBufferIndex = 0;
 String queuedSerialOutput[2];    // The queue of output messages. PLEASE USE FOR ALL PRINT MESSAGES
 const int OUTPUT_BUFFER_SIZE = 2;
 int serialOutputIndex = 0;
-
 boolean readyForNextInput = false;
 
 void setup(){
@@ -51,16 +60,22 @@ void setup(){
     stepperY.setMaxSpeed(Y_MOTOR_MAX_SPEED);
     stepperY.setAcceleration(Y_MOTOR_ACCELERATION);
     
-    matrix.begin(0x70);
-    
     directionVector[0] = 1;
     directionVector[1] = 1;
     
+    // Initialize and display the score
+    matrix.begin(0x70);
+    displayScore();
+
+    // Enable RB and USR side goal interrupts for goal detection
+    pinMode(RB_GOAL, INPUT_PULLUP);      
+    pinMode(USR_GOAL, INPUT_PULLUP);
+    attachInterrupt(0, updateRBScore, RISING);
+    attachInterrupt(1, updateUSRScore, RISING);
+    
     queuedSerialOutput[0] = "";
     queuedSerialOutput[1] = "";
-    
-    pinMode(12, INPUT);
-    digitalWrite(12, HIGH);
+
 }
 
 /*
@@ -137,11 +152,6 @@ void resetCoordinates(){
     serialCoordinates[1] = 0;
 }
 
-void resetScore(){
-    serialScore[0] = 0;
-    serialScore[1] = 0;
-}
-
 void moveToPosition(){
 
     //long distanceX = serialCoordinates[0] - stepperX.currentPosition();
@@ -157,14 +167,37 @@ void moveToPosition(){
 
 void displayScore(){
     //matrix.writeDigitNum(0, 0, false);
-    matrix.writeDigitNum(1, 0, true);
+    matrix.writeDigitNum(1, currentScore[0], true);
     matrix.drawColon(true);
-    matrix.writeDigitNum(3, 0, true);
-    //matrix.writeDigitNum(4, serialScore[1], true);
+    matrix.writeDigitNum(3, currentScore[1], true);
+    //matrix.writeDigitNum(4, 0, false);
     matrix.writeDisplay();
     
-    //currentScore[0] = serialScore[0];
-    //currentScore[1] = serialScore[1];
+    serialScore[0] = currentScore[0];
+    serialScore[1] = currentScore[1];
+}
+
+void updateRBScore(){
+  // Debounce the switch 
+  currentTimeRB = millis();
+  if((currentTimeRB - lastTimeRB) >= DEBOUNCE_TIME){
+    currentScore[1]++;    // Increment Robot score
+  }
+  lastTimeRB = millis();
+}
+
+void updateUSRScore(){
+  // Debounce Switch
+  currentTimeUSR = millis();
+  if((currentTimeUSR - lastTimeUSR) >= DEBOUNCE_TIME){
+    currentScore[0]++;    // Increment Robot score
+  }
+  lastTimeUSR = millis();
+}
+
+void resetScore(){
+    currentScore[0] = 0;
+    currentScore[1] = 0;
 }
 
 void printNextChar(){
@@ -190,13 +223,12 @@ void loop(){
         moveToPosition();
     }
     
-//    if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
-//        displayScore();
-//    }
+    if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
+        displayScore();
+    }
     
     stepperX.run();
     stepperY.run();
-//    displayScore();
     
     // if there is room in the outputbuffer send the following messages
     if(Serial.isOutputBufferEmpty()){
