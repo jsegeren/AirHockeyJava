@@ -36,9 +36,12 @@ public class RealRobotController implements IController {
 	 */
 	@Override
 	public void controlMallet(Vector2 targetPosition, float deltaTime) {
+		// (1) Filter the target position high frequency noise, jitter
+		Vector2 filteredTargetPosition = new Vector2(mallet.getPosition()).add(new Vector2(targetPosition).sub(mallet.getPosition()).scl(Constants.VELOCITY_FILTER_ALPHA));
+		
 		// Send/output control positions to Arduino
 		if (serialConnection != null && this.isArduinoReadyNextPosition) {
-			sendAbsolutePositionOverSerial(distancesToStepsVector(targetPosition));
+			sendAbsolutePositionOverSerial(distancesToStepsVector(filteredTargetPosition));
 			this.isArduinoReadyNextPosition = false; // Wait until Arduino ready for next position
 		}
 	}
