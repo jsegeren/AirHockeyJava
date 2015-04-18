@@ -232,7 +232,7 @@ public class GuiLayer extends JPanel implements IGuiLayer {
 		//Draw the table border
 		context.drawRoundRect(Constants.GUI_TABLE_OFFSET_X, Constants.GUI_TABLE_OFFSET_Y,
 				scale(tableWidth), scale(tableHeight), scale(tableCornerRadius),
-				scale(tableCornerRadius));		context.setColor(Constants.GUI_TABLE_COLOR);
+				scale(tableCornerRadius));	
 
 		
 		//Draw the center line

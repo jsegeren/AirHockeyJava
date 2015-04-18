@@ -23,7 +23,7 @@ public class NaiveDefenseStrategy implements IStrategy {
 
 	public NaiveDefenseStrategy(Game game) {
 		this.game = game;
-		this.defenceLines[0] = new Line2D.Float(Constants.ROBOT_MALLET_INTIIAL_POSITION_X,0f,Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.GAME_TABLE_HEIGHT_METERS );
+		this.defenceLines[0] = new Line2D.Float(Constants.ROBOT_MALLET_INITIAL_POSITION_X,0f,Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.GAME_TABLE_HEIGHT_METERS );
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class NaiveDefenseStrategy implements IStrategy {
 		
 		Vector2 puckPosition = game.gamePuck.getPosition();
 		if(puckPosition.x < game.gameTable.getWidth() / 3){
-			return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
+			return new Vector2(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
 //		} else {
 //			if(collisionPoint != null){
 //				System.out.println("collision detected!");
@@ -61,7 +61,7 @@ public class NaiveDefenseStrategy implements IStrategy {
 			}else{
 				System.out.println("no collision point detected!");
 
-				return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
+				return new Vector2(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
 			}
 
 		}
@@ -69,9 +69,8 @@ public class NaiveDefenseStrategy implements IStrategy {
 	
 	}
 
-	@Override
-	public String toString() {
-		return strategyLabelString;
+	public String getLabelString(){
+		return this.strategyLabelString;
 	}
 
 	@Override

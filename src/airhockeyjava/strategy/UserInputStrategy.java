@@ -18,6 +18,7 @@ import airhockeyjava.util.Vector2;
  */
 public class UserInputStrategy implements IStrategy {
 
+	final private static String strategyLabelString = Constants.STRATEGY_USER_INPUT_STRING;
 	private Game game;
 	private final Rectangle2D tablePuckCollisionFrame;
 
@@ -52,6 +53,10 @@ public class UserInputStrategy implements IStrategy {
 		return new Vector2(targetPositionX, targetPositionY);
 	}
 
+	public String getLabelString(){
+		return this.strategyLabelString;
+	}
+	
 	@Override
 	public void initStrategy() {
 		// TODO Auto-generated method stub

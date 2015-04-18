@@ -364,6 +364,10 @@ public class Tracking implements Runnable {
 			// Skip if not enough areas detected to update targets
 			if (maxAreaHeap.size() >= trackingObjectList.size()) {
 				for (ITrackingObject trackingObject : trackingObjectList) {
+					if(maxAreaHeap.size() > 1){
+						System.out.println("");
+					}
+					
 					Moments moment = maxAreaHeap.peek();
 					// TODO Use real dimensions! Need to figure out ratio
 					// between captured pixels

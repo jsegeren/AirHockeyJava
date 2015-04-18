@@ -36,7 +36,7 @@ public class NaiveOffenseStrategy implements IStrategy {
 	}
 
 	@Override
-	public String toString() {
+	public String getLabelString() {
 		return strategyLabelString;
 	}
 

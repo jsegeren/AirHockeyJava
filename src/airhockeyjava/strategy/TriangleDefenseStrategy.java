@@ -26,7 +26,7 @@ public class TriangleDefenseStrategy implements IStrategy {
 		//Generate lines to represent the triangle
 		this.game = game;
 		
-		Point2D homePosition = new Point2D.Float(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
+		Point2D homePosition = new Point2D.Float(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
 		Point2D traingleBase1 = new Point2D.Float(Constants.GAME_TABLE_WIDTH_METERS - Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS, 
 												  Constants.GAME_TABLE_HEIGHT_METERS / 2 - Constants.GAME_GOAL_WIDTH_METERS / 2);
 				 //Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS);
@@ -49,12 +49,12 @@ public class TriangleDefenseStrategy implements IStrategy {
 		
 		Vector2 puckPosition = game.gamePuck.getPosition();
 		if(puckPosition.x < game.gameTable.getWidth() / 3){
-			return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
+			return new Vector2(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
 		} else {
 			if(collisionPoint != null){
 				return new Vector2((float)collisionPoint.getX(), (float)collisionPoint.getY());
 			}else{
-				return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
+				return new Vector2(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
 			}
 
 		}
@@ -62,9 +62,8 @@ public class TriangleDefenseStrategy implements IStrategy {
 	
 	}
 
-	@Override
-	public String toString() {
-		return strategyLabelString;
+	public String getLabelString(){
+		return this.strategyLabelString;
 	}
 
 	@Override

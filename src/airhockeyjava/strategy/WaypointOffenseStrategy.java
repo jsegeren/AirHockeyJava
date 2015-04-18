@@ -24,7 +24,7 @@ public class WaypointOffenseStrategy implements IStrategy {
 	private List<Vector2> waypointsList = new ArrayList<Vector2>();
 	private int nextWaypointIndex = 0; // Index of the waypoint to which we are going
 	
-	private Vector2 homePosition = new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
+	private Vector2 homePosition = new Vector2(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
 
 	public WaypointOffenseStrategy(Game game) {
 		this.game = game;
@@ -63,17 +63,25 @@ public class WaypointOffenseStrategy implements IStrategy {
 //			nextWaypointIndex++;
 //		}
 		
-		if (game.robotMallet.getPosition().x > game.gamePuck.getPosition().x){
+		//if (game.robotMallet.getPosition().x > game.gamePuck.getPosition().x){
 			// Just behind the puck
-			Vector2 behindPuckTargetPosition = new Vector2(game.gamePuck.getPosition()).add(new Vector2(game.gamePuck.getRadius() * 3, 0));
+			Vector2 behindPuckTargetPosition = new Vector2(game.gamePuck.getPosition()).add(new Vector2(game.gamePuck.getRadius() * 2, 0));
+			
+			if(game.guiLayer != null){
+				game.guiLayer.strategyLines = new Line2D[]{ new Line2D.Float(behindPuckTargetPosition.x, behindPuckTargetPosition.y, behindPuckTargetPosition.x, behindPuckTargetPosition.y)};
+			}
+			
+			
 			Vector2 targetDiff = new Vector2(game.robotMallet.getPosition()).sub(behindPuckTargetPosition);
-			System.out.println("Targetdiff = " + targetDiff);
-			if (!(targetDiff.x < 0.001 && targetDiff.y < 0.0001) && waypointsList.size() == 0) {
+			System.out.println("Target Diff: " + targetDiff);
+			if (!(Math.abs(targetDiff.x) < 0.02 && Math.abs(targetDiff.y) < 0.02) && waypointsList.size() == 0) {
 				return behindPuckTargetPosition;
 			}
 			else {
 				if (waypointsList.size() == 0) {
-					waypointsList.add(new Vector2(game.robotMallet.getPosition()).add(new Vector2(-2f,0f)));
+					float waypointX = (float) Math.max(game.gameTable.getWidth() / 2f + Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS,  game.robotMallet.getPosition().x - 1f);
+					System.out.println("Making a Shot X-Away: " + waypointX);
+					waypointsList.add(new Vector2(waypointX,game.robotMallet.getPosition().y));
 					return waypointsList.get(0);
 				}
 				else {
@@ -87,18 +95,18 @@ public class WaypointOffenseStrategy implements IStrategy {
 				}
 			}
 
-		} else {
-			return new Vector2(game.robotMallet.getPosition());
-		}
+		//}
+	//else {
+		//	return this.hom;
+		//}
 		
 		//return waypointsList.get(nextWaypointIndex);
 	}
 
-	@Override
-	public String toString() {
-		return strategyLabelString;
+	public String getLabelString(){
+		return this.strategyLabelString;
 	}
-
+	
 	@Override
 	public void initStrategy() {
 		waypointsList.clear();

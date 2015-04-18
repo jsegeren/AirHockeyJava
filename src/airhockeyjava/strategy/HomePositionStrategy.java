@@ -9,7 +9,7 @@ import airhockeyjava.util.Vector2;
 
 public class HomePositionStrategy implements IStrategy {
 
-	final private static String strategyLabelString = Constants.STRATEGY_TRIANGLE_DEFENSE_STRING;
+	final private static String strategyLabelString = Constants.STRATEGY_HOMING_POSITION_STRING;
 
 	public HomePositionStrategy(Game game) {
 
@@ -18,12 +18,16 @@ public class HomePositionStrategy implements IStrategy {
 	@Override
 	public Vector2 getTargetPosition(float deltaTime) {
 
-		return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
+		return new Vector2(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
 
 		
 	
 	}
 
+	public String getLabelString(){
+		return this.strategyLabelString;
+	}
+	
 	@Override
 	public void initStrategy() {
 		// TODO Auto-generated method stub

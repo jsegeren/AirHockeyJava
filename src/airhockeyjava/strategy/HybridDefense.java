@@ -7,17 +7,17 @@ import airhockeyjava.game.Constants;
 import airhockeyjava.game.Game;
 import airhockeyjava.util.Vector2;
 
-public class HybridDefence implements IStrategy {
+public class HybridDefense implements IStrategy {
 
-	final private static String strategyLabelString = Constants.STRATEGY_TRIANGLE_DEFENSE_STRING;
+	final private static String strategyLabelString = Constants.STRATEGY_HYBRID_DEFENSE_STRING;
 	final private Game game;
 	private Line2D[] defenceLines = new Line2D.Float[3];
 
-	public HybridDefence(Game game) {
+	public HybridDefense(Game game) {
 		//Generate lines to represent the triangle
 		this.game = game;
 		
-		Point2D homePosition = new Point2D.Float(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
+		Point2D homePosition = new Point2D.Float(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
 		
 
 		
@@ -29,8 +29,8 @@ public class HybridDefence implements IStrategy {
 												 Constants.GAME_TABLE_HEIGHT_METERS / 2 + 2*Constants.GAME_GOAL_WIDTH_METERS / 3);
 												//Constants.GAME_TABLE_HEIGHT_METERS - Constants.MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS);
 
-			Line2D frontLine = new Line2D.Float(new Point2D.Float(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.GAME_TABLE_HEIGHT_METERS / 2 - 2*Constants.GAME_GOAL_WIDTH_METERS / 3),
-												new Point2D.Float(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.GAME_TABLE_HEIGHT_METERS / 2 + 2*Constants.GAME_GOAL_WIDTH_METERS / 3));
+			Line2D frontLine = new Line2D.Float(new Point2D.Float(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.GAME_TABLE_HEIGHT_METERS / 2 - 2*Constants.GAME_GOAL_WIDTH_METERS / 3),
+												new Point2D.Float(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.GAME_TABLE_HEIGHT_METERS / 2 + 2*Constants.GAME_GOAL_WIDTH_METERS / 3));
 		
 		defenceLines[0] = frontLine;		
 		defenceLines[1] = new Line2D.Float(homePosition, traingleBase1);
@@ -48,20 +48,24 @@ public class HybridDefence implements IStrategy {
 		
 		Vector2 puckPosition = game.gamePuck.getPosition();
 		if(puckPosition.x < game.gameTable.getWidth() / 3){
-			return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
+			return new Vector2(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);
 		} else {
 
 			if(collisionPoint != null){
 				return new Vector2((float)collisionPoint.getX(), (float)collisionPoint.getY());
 			}else{
-				return new Vector2(Constants.ROBOT_MALLET_INTIIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
+				return new Vector2(Constants.ROBOT_MALLET_INITIAL_POSITION_X, Constants.ROBOT_MALLET_INITIAL_POSITION_Y);			
 			}
 
 		}
 		
 	
 	}
-
+	
+	public String getLabelString(){
+		return this.strategyLabelString;
+	}
+	
 	@Override
 	public void initStrategy() {
 		// TODO Auto-generated method stub

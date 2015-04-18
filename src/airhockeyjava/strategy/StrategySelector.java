@@ -8,7 +8,8 @@ import airhockeyjava.util.Conversion;
 import airhockeyjava.util.Vector2;
 
 /**
- * Strategy selector. Transitions into the most appropriate strategy based on game conditions.
+ * Strategy selector. Transitions into the most appropriate strategy based on
+ * game conditions.
  * 
  * @author Joshua Segeren
  *
@@ -22,7 +23,9 @@ public class StrategySelector {
 	final private IStrategy waypointOffenseStrategy;
 	final private IStrategy hybridDefenseStrategy;
 	final private IStrategy homePositionStrategy;
-	
+	final private IStrategy aroundPuckStrategy;
+	final private IStrategy retreatDefenseStrategy;
+
 	private static IStrategy currentStrategy;
 
 	private long lastUpdatedTime;
@@ -33,51 +36,81 @@ public class StrategySelector {
 		this.naiveDefenseStrategy = new NaiveDefenseStrategy(game);
 		this.naiveOffenseStrategy = new NaiveOffenseStrategy(game);
 		this.waypointOffenseStrategy = new WaypointOffenseStrategy(game);
-		this.hybridDefenseStrategy = new HybridDefence(game);
+		this.hybridDefenseStrategy = new HybridDefense(game);
 		this.homePositionStrategy = new HomePositionStrategy(game);
+		this.aroundPuckStrategy = new AroundPuckStrategy(game);
+		this.retreatDefenseStrategy = new RetreatingDefenseStrategy(game);
 		this.updateStrategy(naiveDefenseStrategy);
 	}
 
 	public IStrategy getBestStrategy() {
 		Vector2 puckPosition = game.gamePuck.getPosition();
 		Vector2 puckVelocity = game.gamePuck.getVelocity();
-//		if (puckPosition.x > game.gameTable.getWidth() / 2) {
-//			if (puckPosition.x <= (float) game.gameTable.getWidth() - game.robotMallet.getRadius()
-//					* 2 - Constants.STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS) {
-//				if (game.gamePuck.getVelocity().len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE) {
-//					updateStrategy(waypointOffenseStrategy);
-//				} else {
-//					updateStrategy(naiveDefenseStrategy);
-//				}
-//				// Check if puck moving slowly, and in the positive x direction
-//			} else if (puckVelocity.len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE
-//					&& puckVelocity.x > 0) {
-//				updateStrategy(waypointOffenseStrategy);
-//			} else {
-//				updateStrategy(triangleDefenseStrategy);
-//			}
-//		} else {
-//			updateStrategy(triangleDefenseStrategy);
-//		}
+
+		boolean isHighSpeed = (puckVelocity.len() > Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE) ? true	: false;
+		boolean isPuckInFrontOfMallet = (game.robotMallet.getPosition().x > puckPosition.x) ? true	: false;
+		boolean isMalletInDefendableRegion = (game.robotMallet.getPosition().x > Constants.MALLET_DEFENDABLE_REGION) ? true	: false;
+		boolean isPuckOnRobotSide = (game.gamePuck.getPosition().x > Constants.GAME_TABLE_WIDTH_METERS / 2) ? true : false;
+		boolean shouldRetreat = false;
 		
+		System.out.println("STRATEGY: " + currentStrategy.getLabelString());
+		System.out.println("isHighSpeed: " + isHighSpeed
+				+ ", isPuckInFrontOfMallet: " + isPuckInFrontOfMallet
+				+ ", isMalletInDefendableRegion: " + isMalletInDefendableRegion
+				+ ", isPuckOnRobotSide: " + isPuckOnRobotSide
+				+ ", shouldRetreat: " + shouldRetreat);
 
-		if (puckPosition.x > game.gameTable.getWidth() / 2) {
-			if(puckVelocity.len() < Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE){
-				updateStrategy(waypointOffenseStrategy);
-
-			}else{
-				updateStrategy(hybridDefenseStrategy);
-	
-			}
-		} else {
-			if(puckVelocity.len() > 0.001f){
-				updateStrategy(hybridDefenseStrategy);
-
-			}else{
-				updateStrategy(homePositionStrategy);
-	
-			}		
+		// Retreat when the robot is vulnerable (not in a defendable region) and the user is able to shoot
+		if (!isPuckOnRobotSide && !isMalletInDefendableRegion) {
+			shouldRetreat = true;
 		}
+
+		if (shouldRetreat) {
+			if (isMalletInDefendableRegion) {
+				// Once we can safely defend stop retreating
+				shouldRetreat = false;
+			}
+
+			updateStrategy(retreatDefenseStrategy);
+		} else {
+			if (!isHighSpeed && isPuckOnRobotSide) {
+				// Puck is slow, ATTACK!
+				if (isPuckInFrontOfMallet) {
+					updateStrategy(waypointOffenseStrategy);
+				} else {
+					updateStrategy(aroundPuckStrategy);
+				}
+			} else {
+				// Puck is fast, DEFEND!
+				updateStrategy(hybridDefenseStrategy);
+
+			}
+		}
+
+		// if (puckPosition.x > game.gameTable.getWidth() / 2) {
+		// if(puckPosition.x > game.robotMallet.getPosition().x &&
+		// puckPosition.x < (Constants.GAME_TABLE_WIDTH_METERS * 3)/4){
+		// updateStrategy(aroundPuckStrategy);
+		// }else
+		// {
+		//
+		// if(puckVelocity.len() <
+		// Constants.STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE){
+		// updateStrategy(waypointOffenseStrategy);
+		//
+		// }else{
+		// updateStrategy(hybridDefenseStrategy);
+		//
+		// }
+		// }
+		// } else {
+		// if(puckVelocity.len() > 0.001f){
+		// updateStrategy(hybridDefenseStrategy);
+		// }else{
+		// updateStrategy(homePositionStrategy);
+		//
+		// }
+		// }
 		return currentStrategy;
 
 	}
@@ -95,8 +128,7 @@ public class StrategySelector {
 		}
 	}
 
-	
-	public static Line2D[] getStrategyLines(){
+	public static Line2D[] getStrategyLines() {
 		return currentStrategy.getStrategyLines();
 	}
 }

@@ -23,6 +23,8 @@ public interface IStrategy {
 	 */
 	public void initStrategy();
 	
+	public String getLabelString();
+	
 	public Line2D[] getStrategyLines();
 }
 

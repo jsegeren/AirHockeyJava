@@ -37,12 +37,15 @@ public class RealRobotController implements IController {
 	@Override
 	public void controlMallet(Vector2 targetPosition, float deltaTime) {
 		// (1) Filter the target position high frequency noise, jitter
-		Vector2 filteredTargetPosition = new Vector2(mallet.getPosition()).add(new Vector2(targetPosition).sub(mallet.getPosition()).scl(Constants.VELOCITY_FILTER_ALPHA));
+		float distanceTo = mallet.getPosition().dst2(targetPosition);
 		
-		// Send/output control positions to Arduino
-		if (serialConnection != null && this.isArduinoReadyNextPosition) {
-			sendAbsolutePositionOverSerial(distancesToStepsVector(filteredTargetPosition));
-			this.isArduinoReadyNextPosition = false; // Wait until Arduino ready for next position
+		if(distanceTo > Constants.CONTROLLER_MOVEMENT_TOLERANCE_SQUARED){
+			
+			// Send/output control positions to Arduino
+			if (serialConnection != null && this.isArduinoReadyNextPosition) {
+				sendAbsolutePositionOverSerial(distancesToStepsVector(targetPosition));
+				this.isArduinoReadyNextPosition = false; // Wait until Arduino ready for next position
+			}
 		}
 	}
 
@@ -76,7 +79,7 @@ public class RealRobotController implements IController {
 					Vector2 stepsOffset = stepsToDistancesVector(new Vector2(Integer
 							.parseInt(stepPosition[0]), Integer.parseInt(stepPosition[1])));
 					stepsOffset.y += Constants.ROBOT_MALLET_INITIAL_POSITION_Y;
-					stepsOffset.x += Constants.ROBOT_MALLET_INTIIAL_POSITION_X;
+					stepsOffset.x += Constants.ROBOT_MALLET_INITIAL_POSITION_X;
 					mallet.setPosition(stepsOffset);
 				} else {
 					throw new InvalidMessageException("Unexpected position message length.");
@@ -95,7 +98,7 @@ public class RealRobotController implements IController {
 	}
 
 	private static Vector2 distancesToStepsVector(Vector2 position) {
-		return new Vector2(Conversion.meterToStepsX(position.x - Constants.ROBOT_MALLET_INTIIAL_POSITION_X),
+		return new Vector2(Conversion.meterToStepsX(position.x - Constants.ROBOT_MALLET_INITIAL_POSITION_X),
 				Conversion.meterToStepsY(position.y - Constants.ROBOT_MALLET_INITIAL_POSITION_Y));
 	}
 

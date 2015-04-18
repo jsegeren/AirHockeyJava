@@ -46,7 +46,7 @@ public class Mallet extends MovingItem {
 	 */
 	public Mallet(boolean isUserControlled, Table table) {
 		super(new Vector2(isUserControlled ? Constants.USER_MALLET_INITIAL_POSITION_X
-				: Constants.ROBOT_MALLET_INTIIAL_POSITION_X,
+				: Constants.ROBOT_MALLET_INITIAL_POSITION_X,
 				isUserControlled ? Constants.USER_MALLET_INITIAL_POSITION_Y
 						: Constants.ROBOT_MALLET_INITIAL_POSITION_Y), new Vector2(
 				isUserControlled ? Constants.USER_MALLET_INITIAL_VELOCITY_X

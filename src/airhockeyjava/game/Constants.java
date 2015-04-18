@@ -29,10 +29,10 @@ public class Constants {
 	 */
 	public static final double INTERSECTION_EPSILON_METERS = 0.025; // 2.5 millimetres
 	public static final float GAME_TIME_SECONDS = 5f;
-	public static final float GAME_TABLE_HEIGHT_METERS = 1.3f;
-	public static final float GAME_TABLE_WIDTH_METERS = 2.5f;
+	public static final float GAME_TABLE_HEIGHT_METERS = 1.2192f;
+	public static final float GAME_TABLE_WIDTH_METERS = 2.4384f;
 	public static final float GAME_TABLE_CORNER_RADIUS_METERS = 0.25f;
-	public static final float GAME_PUCK_RADIUS_METERS = 0.05f; // 2.5 centimetres
+	public static final float GAME_PUCK_RADIUS_METERS = 0.04f; // 2.5 centimetres
 	public static final float GAME_PUCK_MASS_GRAMS = 1f;
 	public static final float GAME_MALLET_RADIUS_METERS = 0.05f; // 3.5 centimetres
 	public static final float GAME_MALLET_MASS_GRAMS = Float.MAX_VALUE; // Effectively infinite
@@ -58,7 +58,7 @@ public class Constants {
 	public static final float USER_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float USER_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float USER_MALLET_INITIAL_VELOCITY_Y = 0f;
-	public static final float ROBOT_MALLET_INTIIAL_POSITION_X = 0.85f * GAME_TABLE_WIDTH_METERS;
+	public static final float ROBOT_MALLET_INITIAL_POSITION_X = GAME_TABLE_WIDTH_METERS - 0.375f;
 	public static final float ROBOT_MALLET_INITIAL_POSITION_Y = GAME_TABLE_HEIGHT_METERS / 2f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_X = 0f;
 	public static final float ROBOT_MALLET_INITIAL_VELOCITY_Y = 0f;
@@ -78,7 +78,7 @@ public class Constants {
 	public final static Color GUI_MALLET_COLOR = Color.GREEN;
 	public final static Color GUI_PREDICTED_PATH_COLOR = Color.CYAN;
 	public final static Color GUI_PREDICTED_GOAL_COLOR = Color.RED;
-	public final static Color GUI_TABLE_COLOR = Color.BLUE;
+	public final static Color GUI_TABLE_COLOR = Color.RED;
 	public final static Color GUI_GOAL_COLOR = Color.RED;
 	public final static Color GUI_BG_COLOR = Color.BLACK;
 	public final static Color GUI_TEXT_COLOR = Color.WHITE;
@@ -116,7 +116,7 @@ public class Constants {
 	public static int DETECTION_FRAME_HEIGHT = 480;
 	public static int DETECTION_FRAME_WIDTH = 640;
 	public static final int DETECTION_PUCK_MAX_AREA = 100 * 100;
-	public static final int DETECTION_PUCK_MIN_AREA = 20 * 20;
+	public static final int DETECTION_PUCK_MIN_AREA = 2000;
 	public static final int DETECTION_MAX_OBJECTS = 10;
 	public static final String DETECTION_THRESHOLD_FILE_NAME = "threshVals.txt";
 	public static final String DETECTION_TRANSFORM_FILE_NAME = "transformVals.txt";
@@ -144,7 +144,7 @@ public class Constants {
 	public static final float MECHANICAL_STEPS_PER_METER_X = 2247;
 	public static final float MECHANICAL_STEPS_PER_METER_Y = 3333; // TODO update with physical calc
 //	public static final float MECHANICAL_STEPS_PER_METER_Y = 3193; // TODO update with physical calc
-	public static final float MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS = 0.15f;
+	public static final float MECHANICAL_ROBOT_EDGE_SAFETY_MARGIN_METERS = 0.10f;
 
 	/**
 	 * Strategy Constants
@@ -153,22 +153,28 @@ public class Constants {
 	public static final float STRATEGY_PROJECTED_STEP_DISTANCE_METERS = 0.005f;
 	public static final int STRATEGY_MAX_LOOKAHEAD_BOUNCES = 3;
 	public static final float STRATEGY_TRIANGLE_DISTANCE_FROM_GOAL_METERS = 0.15f;
-	public static final float STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE = 15f;
+	public static final float STRATEGY_OFFENSE_MAX_PUCK_SPEED_TO_ENGAGE = 0.01f;
 	public static final float MIN_TIME_BETWEEN_STRATEGY_TRANSITION_SECONDS = 0.01f;
 	public static final float STRATEGY_VIA_DISTANCE_BEHIND_PUCK_METERS = 0.15f;
 	public static final float STRATEGY_VIA_DISTANCE_AHEAD_PUCK_METERS = 0.15f;
 	public static final float STRATEGY_VIA_SWITCH_DISTANCE_METERS_SQUARED = 0.05f*0.05f;
 	public static final float STRATEGY_VIA_ROTATE_ANGLE_DEGREES = 120f;
 
+	public static final String STRATEGY_USER_INPUT_STRING = "User input strategy";
 	public static final String STRATEGY_NAIVE_DEFENSE_STRING = "Naive defense strategy";
 	public static final String STRATEGY_TRIANGLE_DEFENSE_STRING = "Triangle defense strategy";
 	public static final String STRATEGY_NAIVE_OFFENSE_STRING = "Naive offense strategy";
 	public static final String STRATEGY_WAYPOINT_OFFENSE_STRING = "Waypoint offense strategy";
+	public static final String STRATEGY_HYBRID_DEFENSE_STRING = "Hybrid defense strategy";
+	public static final String STRATEGY_RETREATING_DEFENSE_STRING = "Retreating defense strategy";
+	public static final String STRATEGY_AROUND_PUCK_MANNEUVER_STRING = "Around puck manneuver strategy";
+	public static final String STRATEGY_HOMING_POSITION_STRING = "Homing position strategy";
 
 	public static final float STRATEGY_MOVEMENT_TOLERANCE = 0.03f;
+	public static final float MALLET_DEFENDABLE_REGION = GAME_TABLE_WIDTH_METERS - 0.4f;
 	
 	public static final float VELOCITY_FILTER_ALPHA = 0.5f;
-	
+	public static final float CONTROLLER_MOVEMENT_TOLERANCE_SQUARED = 0.005f;
 	/**
 	 * Input Constants
 	 */
