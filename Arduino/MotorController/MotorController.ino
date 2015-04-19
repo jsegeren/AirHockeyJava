@@ -1,8 +1,8 @@
 #include <AccelStepper.h>
 #include <Wire.h>
-#include <Adafruit_LEDBackpack.h>
-#include <Adafruit_GFX.h>
-#include <avr/interrupt.h>
+#include "Adafruit_LEDBackpack.h"
+#include "Adafruit_GFX.h"
+
 
 // X - Direction Motor Settings
 #define X_MOTOR_PIN 10
@@ -16,39 +16,37 @@
 #define Y_MOTOR_MAX_SPEED 5000
 #define Y_MOTOR_ACCELERATION 100000
 
-// Game Goal detection settings
-#define RB_GOAL 2
-#define USR_GOAL 3
-#define DEBOUNCE_TIME 300
-
 // Other constants
 #define FIELD_DELIMITER ','
 #define OUTPUT_POSITION_PREFIX '_'
 #define PULL_NEXT_POSITION_CHAR 'N'
 
+// Y-axis Homing Sensor
+#define Y_HOMING_PIN 2 // This is the INT0 pin of the UNO
+
 AccelStepper stepperX(AccelStepper::DRIVER, X_MOTOR_PIN, X_MOTOR_DIRECTION_PIN);
 AccelStepper stepperY(AccelStepper::DRIVER, Y_MOTOR_PIN, Y_MOTOR_DIRECTION_PIN);
 
-long serialCoordinates[2];         // Input X,Y coordinates from Serial connection
-int serialScore[2];             // Input User and Robot score from Serial connection
-volatile uint8_t currentScore[2];             // Current User and Robot scores
-volatile unsigned long currentTimeRB;         // RB Goal debounce times
-volatile unsigned long lastTimeRB;
-volatile unsigned long currentTimeUSR;        // USR Goal debounce times
-volatile unsigned long lastTimeUSR;
-
-int directionVector[2];
+// SERIAL INPUT
 int fieldIndex = -1;
 char type;// Type of data being received
-int outputDelayCounter = 0;
-Adafruit_7segment matrix = Adafruit_7segment();
-String currentSerialOutput = "";   // The current serial message to output
 
-int outputBufferIndex = 0;
-String queuedSerialOutput[2];    // The queue of output messages. PLEASE USE FOR ALL PRINT MESSAGES
-const int OUTPUT_BUFFER_SIZE = 2;
-int serialOutputIndex = 0;
+// Position
+int directionVector[2];
+long serialCoordinates[2];         // Input X,Y coordinates from Serial connection
 boolean readyForNextInput = false;
+
+// Score
+int serialScore[2];             // Input User and Robot score from Serial connection
+int currentScore[2];             // Current User and Robot scores
+
+// 7 Segment
+Adafruit_7segment matrix = Adafruit_7segment();
+
+
+// HOMINGz
+bool isHoming = false;
+long deltaY;         // Error Y coordinate Detected by homing
 
 void setup(){
     #ifndef __AVR_ATtiny85__
@@ -60,22 +58,26 @@ void setup(){
     stepperY.setMaxSpeed(Y_MOTOR_MAX_SPEED);
     stepperY.setAcceleration(Y_MOTOR_ACCELERATION);
     
+    matrix.begin(0x70);
+    
     directionVector[0] = 1;
     directionVector[1] = 1;
     
-    // Initialize and display the score
-    matrix.begin(0x70);
-    displayScore();
-
-    // Enable RB and USR side goal interrupts for goal detection
-    pinMode(RB_GOAL, INPUT_PULLUP);      
-    pinMode(USR_GOAL, INPUT_PULLUP);
-    attachInterrupt(0, updateRBScore, RISING);
-    attachInterrupt(1, updateUSRScore, RISING);
+    deltaY = 0;
     
-    queuedSerialOutput[0] = "";
-    queuedSerialOutput[1] = "";
+    // set up homing on interrupt 0
+    pinMode(Y_HOMING_PIN, INPUT_PULLUP);
+    attachInterrupt(0, homingY, RISING);
+    
+    pinMode(12, INPUT);
+    digitalWrite(12, HIGH);
+}
 
+//install interrupt routine
+void homingY(){
+//  deltaY = -1 * stepperY.currentPosition();
+//  isHoming = true;
+  stepperY.setCurrentPosition(0);
 }
 
 /*
@@ -141,8 +143,6 @@ boolean getSerialInput(){
         	fieldIndex = -1;                  // Reset field index for next type
         	gotInput = true;
         }
-    }else{
-        readyForNextInput = true;
     }
     return gotInput;
 }
@@ -150,6 +150,11 @@ boolean getSerialInput(){
 void resetCoordinates(){
     serialCoordinates[0] = 0;
     serialCoordinates[1] = 0;
+}
+
+void resetScore(){
+    serialScore[0] = 0;
+    serialScore[1] = 0;
 }
 
 void moveToPosition(){
@@ -167,71 +172,41 @@ void moveToPosition(){
 
 void displayScore(){
     //matrix.writeDigitNum(0, 0, false);
-    matrix.writeDigitNum(1, currentScore[0], true);
+    matrix.writeDigitNum(1, 0, true);
     matrix.drawColon(true);
-    matrix.writeDigitNum(3, currentScore[1], true);
-    //matrix.writeDigitNum(4, 0, false);
+    matrix.writeDigitNum(3, 0, true);
+    //matrix.writeDigitNum(4, serialScore[1], true);
     matrix.writeDisplay();
     
-    serialScore[0] = currentScore[0];
-    serialScore[1] = currentScore[1];
+    //currentScore[0] = serialScore[0];
+    //currentScore[1] = serialScore[1];
 }
 
-void updateRBScore(){
-  // Debounce the switch 
-  currentTimeRB = millis();
-  if((currentTimeRB - lastTimeRB) >= DEBOUNCE_TIME){
-    currentScore[1]++;    // Increment Robot score
-  }
-  lastTimeRB = millis();
+void correctPositionError(){
+  stepperY.setCurrentPosition(deltaY);
+  isHoming = false;
+  deltaY = 0;
 }
 
-void updateUSRScore(){
-  // Debounce Switch
-  currentTimeUSR = millis();
-  if((currentTimeUSR - lastTimeUSR) >= DEBOUNCE_TIME){
-    currentScore[0]++;    // Increment Robot score
-  }
-  lastTimeUSR = millis();
-}
-
-void resetScore(){
-    currentScore[0] = 0;
-    currentScore[1] = 0;
-}
-
-void printNextChar(){
-  if(currentSerialOutput != ""){
-    if(serialOutputIndex < currentSerialOutput.length()){
-      Serial.print(currentSerialOutput[serialOutputIndex]);
-      serialOutputIndex++;
-    }else{
-      Serial.print('\n');
-      serialOutputIndex = 0;
-      currentSerialOutput = "";
-    }
-    
-  }else{
-      currentSerialOutput = queuedSerialOutput[outputBufferIndex];
-      queuedSerialOutput[outputBufferIndex] = "";
-      outputBufferIndex = (outputBufferIndex + 1) % OUTPUT_BUFFER_SIZE;   
-  }
-}
 
 void loop(){
     if(getSerialInput()){
         moveToPosition();
+        readyForNextInput = true;
     }
-    
-    if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
-        displayScore();
+    if(isHoming && stepperX.currentPosition() == 0 && stepperY.currentPosition() == 0){
+//      correctPositionError();
     }
+//    if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
+//        displayScore();
+//    }
     
     stepperX.run();
     stepperY.run();
     
     // if there is room in the outputbuffer send the following messages
     if(Serial.isOutputBufferEmpty()){
+
       // Send back current motor position
       Serial.println((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition());
        
@@ -240,6 +215,5 @@ void loop(){
           readyForNextInput = false;
        }  
     }
-//    printNextChar();
 }
 
