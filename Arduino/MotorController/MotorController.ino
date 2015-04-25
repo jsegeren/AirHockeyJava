@@ -46,7 +46,7 @@ Adafruit_7segment matrix = Adafruit_7segment();
 
 // HOMINGz
 bool isHoming = false;
-long deltaY;         // Error Y coordinate Detected by homing
+volatile long deltaY;         // Error Y coordinate Detected by homing
 
 void setup(){
     #ifndef __AVR_ATtiny85__
@@ -75,9 +75,9 @@ void setup(){
 
 //install interrupt routine
 void homingY(){
-//  deltaY = -1 * stepperY.currentPosition();
-//  isHoming = true;
-  stepperY.setCurrentPosition(0);
+  //deltaY = stepperY.currentPosition();
+  isHoming = true;
+  //Serial.println("Delta" + (String) deltaY);
 }
 
 /*
@@ -162,9 +162,10 @@ void moveToPosition(){
     //long distanceX = serialCoordinates[0] - stepperX.currentPosition();
     //long distanceY = serialCoordinates[1] - stepperY.currentPosition();
     //Serial.println("Moving " + distanceX + " in the X, and " + distanceY + " in the Y.");
+    long positionY = serialCoordinates[1] + deltaY;
     
     stepperX.moveTo(serialCoordinates[0]);
-    stepperY.moveTo(serialCoordinates[1]);
+    stepperY.moveTo(positionY);
     
     //Reset coordinates for next input
     resetCoordinates();
@@ -194,21 +195,27 @@ void loop(){
         moveToPosition();
         readyForNextInput = true;
     }
-    if(isHoming && stepperX.currentPosition() == 0 && stepperY.currentPosition() == 0){
+//    if(isHoming && stepperX.currentPosition() == 0 && stepperY.currentPosition() == 0){
 //      correctPositionError();
-    }
+//    }
 //    if(serialScore[0] != currentScore[0] || serialScore[1] != currentScore[1]){
 //        displayScore();
 //    }
     
+    noInterrupts();
     stepperX.run();
     stepperY.run();
-    
+    interrupts();
+
+     if(isHoming){
+        isHoming = false;
+        deltaY = stepperY.currentPosition();
+     } 
     // if there is room in the outputbuffer send the following messages
     if(Serial.isOutputBufferEmpty()){
 
       // Send back current motor position
-      Serial.println((String) OUTPUT_POSITION_PREFIX + stepperX.currentPosition() + (String) FIELD_DELIMITER + stepperY.currentPosition());
+      Serial.println((String) OUTPUT_POSITION_PREFIX + (String)stepperX.currentPosition() + (String) FIELD_DELIMITER + (String)(stepperY.currentPosition() - deltaY));
        
        if(readyForNextInput){
           Serial.println(PULL_NEXT_POSITION_CHAR);
